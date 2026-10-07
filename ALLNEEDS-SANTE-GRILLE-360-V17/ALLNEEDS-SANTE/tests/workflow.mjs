@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {seed,can,saveEntry,review} from '../src/model.ts';
+const [director,reception,accountant]=seed.users;
+assert.equal(can(reception,'paiements'),false);
+assert.equal(can(accountant,'patients'),false);
+assert.equal(can({...director,active:false},'patients'),false);
+const draft={...seed.entries[0],id:'test',status:'Validé'};
+const created=saveEntry(seed,reception,draft);
+assert.equal(created.entries[0].status,'À vérifier');
+assert.equal(created.entries[0].author,reception.id);
+assert.throws(()=>review(created,reception,'test','Validé',''),/directeur/);
+assert.equal(review(created,director,'test','Validé','OK').entries[0].status,'Validé');
+assert.throws(()=>saveEntry(seed,accountant,draft),/refusé/);
+assert.throws(()=>saveEntry(created,{...reception,id:'other'},created.entries[0]),/refusée/);
+assert.throws(()=>saveEntry(created,{...reception,edit:false},created.entries[0]),/refusée/);
+assert.equal(created.history.length,seed.history.length+1);
+console.log('PASS · modules, suspension, création, validation, auteur, modification, historique');

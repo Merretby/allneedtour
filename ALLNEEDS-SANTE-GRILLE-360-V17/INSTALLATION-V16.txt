@@ -1,0 +1,12 @@
+ALLNEEDS V16
+
+PRINCIPAL:
+Copier le contenu de ALLNEEDS-PRINCIPAL dans votre dépôt local ALLNEED-S-V3 en conservant le dossier .git local.
+Puis: npm install ; npm run build ; git add . ; git commit ; git push origin main
+
+SANTE:
+Copier le contenu de ALLNEEDS-SANTE dans votre dépôt local ALLNEED-S-Sante en conservant le dossier .git local.
+Puis: npm install ; npm run build ; git add . ; git commit ; git push origin main
+
+Le lien Santé dans le principal est codé directement vers:
+https://allneed-s-sante.vercel.app

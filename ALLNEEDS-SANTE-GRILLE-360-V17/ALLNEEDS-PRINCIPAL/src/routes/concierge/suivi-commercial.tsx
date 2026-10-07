@@ -1,0 +1,13 @@
+import { createFileRoute } from '@tanstack/react-router'
+import { ConciergeGuard, ConciergeHeading, OrgIdentity, ScopedEmpty } from '@/features/concierge/ScopedSection'
+import { conciergeScope, orgHasSaasAccess, useDemo } from '@/store/store'
+import { Badge, Card, Progress } from '@/components/ui'
+import { LEAD_STAGE } from '@/lib/status'
+import { money } from '@/lib/format'
+
+export const Route = createFileRoute('/concierge/suivi-commercial')({ component: ConciergeCommercial })
+function ConciergeCommercial(){
+ const {state}=useDemo(); const {orgIds,orgs}=conciergeScope(state); const leads=state.leads.filter(l=>l.convertedOrgId && orgIds.has(l.convertedOrgId))
+ return <ConciergeGuard><ConciergeHeading eyebrow="Pilotage" title="Suivi commercial & accès" description="Qualification, abonnement et statut SaaS des entreprises de votre portefeuille. Les droits globaux restent gérés par l’administrateur."/>
+ <div className="mt-8 space-y-4">{orgs.map(org=>{const lead=leads.find(l=>l.convertedOrgId===org.id);const needs=state.needs.filter(n=>n.orgId===org.id);const max=state.subscription.tier==='PRIORITE'?30:state.subscription.tier==='PLUS'?15:6;const open=orgHasSaasAccess(state,org.id,org.sector);return <Card key={org.id} className="p-5"><div className="flex flex-wrap items-start justify-between gap-4"><div><OrgIdentity orgId={org.id}/><p className="mt-2 text-sm text-ink-500">{org.kind} · {org.city}</p></div><div className="flex gap-2"><Badge tone={open?'success':'neutral'}>{open?'SaaS activé':'SaaS verrouillé'}</Badge><Badge tone="brand">{state.subscription.tier}</Badge></div></div><div className="mt-5 grid gap-4 md:grid-cols-3"><div className="rounded-xl bg-ink-50 p-4"><p className="text-xs text-ink-500">Besoins consommés</p><p className="mt-1 text-xl font-display text-ink-950">{needs.length}/{max}</p><Progress className="mt-2" value={Math.min(100,Math.round(needs.length/max*100))}/></div><div className="rounded-xl bg-ink-50 p-4"><p className="text-xs text-ink-500">Qualification</p>{lead?<><p className="mt-1 text-xl font-display text-ink-950">{lead.score}/100</p><Badge tone={LEAD_STAGE[lead.stage].tone}>{LEAD_STAGE[lead.stage].label}</Badge></>:<p className="mt-2 text-sm text-ink-500">Pas de lead converti.</p>}</div><div className="rounded-xl bg-ink-50 p-4"><p className="text-xs text-ink-500">Budget identifié</p><p className="mt-1 text-xl font-display text-ink-950">{lead?.budget?money(lead.budget):'—'}</p><p className="text-xs text-ink-500">{lead?.nextAction||'Aucune action planifiée'}</p></div></div></Card>})}{!orgs.length&&<ScopedEmpty/>}</div></ConciergeGuard>
+}

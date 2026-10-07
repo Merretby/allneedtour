@@ -1,0 +1,7 @@
+import { createFileRoute } from '@tanstack/react-router'
+import { PageHeader } from '@/components/layouts'
+import { useDemo } from '@/store/store'
+import { resolveSituation, situationLabel } from '@/lib/operational'
+
+export const Route = createFileRoute('/app/parametres')({ component: SettingsPage })
+function SettingsPage(){const {state,orgId,user,dispatch}=useDemo();const org=state.orgs.find(o=>o.id===orgId);return <><PageHeader eyebrow="Paramètres" title="Entreprise, profil et contexte." description="Cette version conserve les réglages existants et rend visible le contexte utilisé par l’expérience."/><div className="settings-cockpit"><section><small>ENTREPRISE</small><h2>{org?.name}</h2><p>{org?.kind} · {org?.city} · {org?.size}</p></section><section><small>PROFIL</small><h2>{user.name}</h2><p>{user.roleLabel}</p></section><section><small>CONTEXTE</small><h2>{situationLabel(resolveSituation(state))}</h2><p>Ce contexte pilote la lecture des priorités et la prochaine action.</p></section></div><section className="workspace-role-selector"><small>VUE PAR RÔLE · DÉMONSTRATION</small><h2>Adapter l’expérience au rôle</h2><p>Le rôle ne crée pas un nouveau produit : il filtre ce qui est utile à la personne.</p><div>{(['dirigeant','manager','collaborateur'] as const).map((role)=><button key={role} className={state.clientWorkspaceRole===role?'active':''} onClick={()=>dispatch({type:'CLIENT_WORKSPACE_ROLE_SET',role})}>{role==='dirigeant'?'Dirigeant':role==='manager'?'Manager / responsable':'Collaborateur'}</button>)}</div></section></>}
