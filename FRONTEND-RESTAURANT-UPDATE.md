@@ -1,4 +1,4 @@
-# Maison Atlas — Restaurant Frontend Update
+# ALLNEEDS - TOURISM — Restaurant Frontend Update
 
 This update is **frontend-only**. No backend/API/database logic was added or changed.
 

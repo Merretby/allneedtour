@@ -1,4 +1,4 @@
-# Maison Atlas — Unified Business Platform
+# ALLNEEDS - TOURISM — Unified Business Platform
 
 Frontend demonstration of a multi-business management platform. One owner account can switch between Restaurant, Travel Agency, Transport, Activities, and Accommodation.
 
@@ -33,7 +33,7 @@ These are demonstration identities only. They are not real mailboxes and no emai
 | --- | --- | --- |
 | Super Admin / Owner | `sofia.owner@maisonatlas.com` | All businesses, global dashboard, users, roles, permissions, reports, settings and audit logs |
 
-### Restaurant — Maison Atlas
+### Restaurant — ALLNEEDS - TOURISM
 
 | Role | Email |
 | --- | --- |
