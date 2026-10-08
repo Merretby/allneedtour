@@ -768,7 +768,7 @@ export function makeQuote(input: {
     needId: input.needId,
     providerId: input.providerId,
     amount: input.amount,
-    currency: 'MAD',
+    currency: '€',
     delayWeeks: input.delayWeeks,
     validUntil: input.validUntil,
     status: 'recu',

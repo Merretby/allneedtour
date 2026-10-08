@@ -29,80 +29,80 @@ These are demonstration identities only. They are not real mailboxes and no emai
 
 ### Global Account
 
-| Role | Email | Access |
-| --- | --- | --- |
+| Role                | Email                         | Access                                                                                        |
+| ------------------- | ----------------------------- | --------------------------------------------------------------------------------------------- |
 | Super Admin / Owner | `sofia.owner@maisonatlas.com` | All businesses, global dashboard, users, roles, permissions, reports, settings and audit logs |
 
 ### Restaurant — ALLNEEDS - TOURISM
 
-| Role | Email |
-| --- | --- |
-| Super Admin / Owner | `sofia.restaurant-owner@maisonatlas.com` |
-| Direction / Manager | `karim.direction@maisonatlas.com` |
-| Restaurant Manager | `nora.restaurant-manager@maisonatlas.com` |
-| Head Waiter / Supervisor | `yassine.supervisor@maisonatlas.com` |
-| Chef / Kitchen Manager | `lina.chef@maisonatlas.com` |
-| Kitchen Staff | `adam.kitchen@maisonatlas.com` |
-| Cashier | `thomas.cashier@maisonatlas.com` |
-| Purchasing / Stock Manager | `ines.purchasing@maisonatlas.com` |
-| HR / Administration | `salma.hr@maisonatlas.com` |
-| Employee / Staff | `mehdi.staff@maisonatlas.com` |
+| Role                       | Email                                     |
+| -------------------------- | ----------------------------------------- |
+| Super Admin / Owner        | `sofia.restaurant-owner@maisonatlas.com`  |
+| Direction / Manager        | `karim.direction@maisonatlas.com`         |
+| Restaurant Manager         | `nora.restaurant-manager@maisonatlas.com` |
+| Head Waiter / Supervisor   | `yassine.supervisor@maisonatlas.com`      |
+| Chef / Kitchen Manager     | `lina.chef@maisonatlas.com`               |
+| Kitchen Staff              | `adam.kitchen@maisonatlas.com`            |
+| Cashier                    | `thomas.cashier@maisonatlas.com`          |
+| Purchasing / Stock Manager | `ines.purchasing@maisonatlas.com`         |
+| HR / Administration        | `salma.hr@maisonatlas.com`                |
+| Employee / Staff           | `mehdi.staff@maisonatlas.com`             |
 
 Restaurant navigation includes dashboard, reservations, floor plan, tables, services, menu, technical sheets, stock, purchases, suppliers, merchandise reception, inventories, losses and waste, payments, expenses, team, documents, reports, settings, users, roles, permissions and audit logs.
 
 ### Travel Agency — Atlas Travel Agency
 
-| Role | Email |
-| --- | --- |
-| Travel Agency Owner | `sofia.travel-owner@maisonatlas.com` |
-| Agency Manager | `nabil.travel-manager@maisonatlas.com` |
-| Travel Agent | `aya.travel-agent@maisonatlas.com` |
-| Accountant | `youssef.travel-accountant@maisonatlas.com` |
-| Operations Manager | `meryem.travel-operations@maisonatlas.com` |
-| Agency Staff | `omar.travel-staff@maisonatlas.com` |
+| Role                | Email                                       |
+| ------------------- | ------------------------------------------- |
+| Travel Agency Owner | `sofia.travel-owner@maisonatlas.com`        |
+| Agency Manager      | `nabil.travel-manager@maisonatlas.com`      |
+| Travel Agent        | `aya.travel-agent@maisonatlas.com`          |
+| Accountant          | `youssef.travel-accountant@maisonatlas.com` |
+| Operations Manager  | `meryem.travel-operations@maisonatlas.com`  |
+| Agency Staff        | `omar.travel-staff@maisonatlas.com`         |
 
 Navigation includes today, client requests, dossiers, quotes, reservations, trips and circuits, services, suppliers, planning, clients, payments, documents, team, reports and settings.
 
 ### Transport — Atlas Transport
 
-| Role | Email |
-| --- | --- |
-| Transport Owner | `sofia.transport-owner@maisonatlas.com` |
-| Transport Manager | `hamza.transport-manager@maisonatlas.com` |
-| Dispatch Manager | `amina.dispatch@maisonatlas.com` |
-| Fleet Manager | `rachid.fleet@maisonatlas.com` |
-| Driver | `ahmed.driver@maisonatlas.com` |
-| Accountant | `nadia.transport-accountant@maisonatlas.com` |
-| Transport Staff | `bilal.transport-staff@maisonatlas.com` |
+| Role              | Email                                        |
+| ----------------- | -------------------------------------------- |
+| Transport Owner   | `sofia.transport-owner@maisonatlas.com`      |
+| Transport Manager | `hamza.transport-manager@maisonatlas.com`    |
+| Dispatch Manager  | `amina.dispatch@maisonatlas.com`             |
+| Fleet Manager     | `rachid.fleet@maisonatlas.com`               |
+| Driver            | `ahmed.driver@maisonatlas.com`               |
+| Accountant        | `nadia.transport-accountant@maisonatlas.com` |
+| Transport Staff   | `bilal.transport-staff@maisonatlas.com`      |
 
 Navigation includes today, transfers and trips, reservations, dispatch planning, vehicles, drivers, clients, payments, maintenance, incidents, reports and settings.
 
 ### Activities — Atlas Activities
 
-| Role | Email |
-| --- | --- |
-| Activities Owner | `sofia.activities-owner@maisonatlas.com` |
-| Activities Manager | `ikram.activities-manager@maisonatlas.com` |
-| Activity Coordinator | `yanis.activity-coordinator@maisonatlas.com` |
-| Guide / Instructor | `hajar.guide@maisonatlas.com` |
-| Equipment Manager | `mehdi.equipment@maisonatlas.com` |
-| Accountant | `siham.activities-accountant@maisonatlas.com` |
-| Activity Staff | `soufiane.activity-staff@maisonatlas.com` |
+| Role                 | Email                                         |
+| -------------------- | --------------------------------------------- |
+| Activities Owner     | `sofia.activities-owner@maisonatlas.com`      |
+| Activities Manager   | `ikram.activities-manager@maisonatlas.com`    |
+| Activity Coordinator | `yanis.activity-coordinator@maisonatlas.com`  |
+| Guide / Instructor   | `hajar.guide@maisonatlas.com`                 |
+| Equipment Manager    | `mehdi.equipment@maisonatlas.com`             |
+| Accountant           | `siham.activities-accountant@maisonatlas.com` |
+| Activity Staff       | `soufiane.activity-staff@maisonatlas.com`     |
 
 Navigation includes today, activities, sessions and slots, reservations, participants, planning, guides, equipment, payments, incidents, reports and settings.
 
 ### Accommodation — Atlas Hébergement
 
-| Role | Email |
-| --- | --- |
-| Accommodation Owner | `sofia.accommodation-owner@maisonatlas.com` |
+| Role                          | Email                                         |
+| ----------------------------- | --------------------------------------------- |
+| Accommodation Owner           | `sofia.accommodation-owner@maisonatlas.com`   |
 | Hotel / Accommodation Manager | `karim.accommodation-manager@maisonatlas.com` |
-| Receptionist | `loubna.reception@maisonatlas.com` |
-| Housekeeping Manager | `fatima.housekeeping-manager@maisonatlas.com` |
-| Housekeeping Staff | `amina.housekeeping@maisonatlas.com` |
-| Maintenance | `rachid.maintenance@maisonatlas.com` |
-| Accountant | `imad.accommodation-accountant@maisonatlas.com` |
-| Accommodation Staff | `sara.accommodation-staff@maisonatlas.com` |
+| Receptionist                  | `loubna.reception@maisonatlas.com`            |
+| Housekeeping Manager          | `fatima.housekeeping-manager@maisonatlas.com` |
+| Housekeeping Staff            | `amina.housekeeping@maisonatlas.com`          |
+| Maintenance                   | `rachid.maintenance@maisonatlas.com`          |
+| Accountant                    | `i€.accommodation-accountant@maisonatlas.com` |
+| Accommodation Staff           | `sara.accommodation-staff@maisonatlas.com`    |
 
 Navigation includes today, reservations, planning, rooms and units, guests, check-in and check-out, housekeeping, services, payments, team, documents, reports and settings.
 

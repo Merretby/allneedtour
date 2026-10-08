@@ -6,6 +6,7 @@ Référentiel appliqué : `ALLNEEDS — Réflexion stratégique UX/UI & Architec
 ## Vérifications exécutées
 
 ### Principal
+
 - PASS — questionnaires : 3 secteurs distincts, 4 leviers et 28 questions par secteur.
 - PASS — accès V9 : verrou SaaS client, activation par entreprise, scope concierge.
 - PASS — règles V10 : quotas CONNECT/PLUS/PRIORITÉ, abonnement non forcé, bloqueur quota, prix barrés, vue concierge.
@@ -14,6 +15,7 @@ Référentiel appliqué : `ALLNEEDS — Réflexion stratégique UX/UI & Architec
 - PASS — scan encodage : aucune séquence mojibake `Ã`, `Â`, `â€™` dans les sources modifiées.
 
 ### Santé
+
 - PASS — workflow existant : modules, suspension, création, validation, auteur, modification, historique.
 - PASS — parsing syntaxique TypeScript/TSX.
 - V16 ajoute la logique `One Next Action` au dashboard sans supprimer le workflow métier existant.

@@ -1,6 +1,6 @@
 const DH = new Intl.NumberFormat('fr-MA', {
   style: 'currency',
-  currency: 'MAD',
+  currency: '€',
   maximumFractionDigits: 0,
 })
 

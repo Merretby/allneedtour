@@ -21,7 +21,7 @@ try {
   for (const element of [React.createElement(SectorPage,{sector}),React.createElement(MissionIndex,{sector}),...['STARTER','PRO','PERFORMANCE'].map(code=>React.createElement(MissionPage,{sector,code}))]) {
    const html=render(element)
    assert.ok(!html.includes('<table'), 'No public mission comparison before diagnostic')
-   assert.ok(!/\d[\d\s,.]*\s*(?:DH|MAD)\b|PRIX DE LANCEMENT|Prix normal HT/.test(html), 'No offer prices: '+sector+' '+html.match(/.{0,60}(?:DH|MAD|PRIX DE LANCEMENT|Prix normal HT).{0,60}/g))
+   assert.ok(!/\d[\d\s,.]*\s*(?:DH|€)\b|PRIX DE LANCEMENT|Prix normal HT/.test(html), 'No offer prices: '+sector+' '+html.match(/.{0,60}(?:DH|€|PRIX DE LANCEMENT|Prix normal HT).{0,60}/g))
   }
  }
  const html=render(React.createElement(SectorPage,{sector:'sante'}))

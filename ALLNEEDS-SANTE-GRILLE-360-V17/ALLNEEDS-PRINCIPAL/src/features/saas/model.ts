@@ -4,7 +4,7 @@ export type Field = { key: string; label: string; type?: 'number' | 'date' | 'ti
 export type Module = { id: string; title: string; description: string; fields: Field[] }
 const f = (key: string, label: string, type?: Field['type'], options?: string[]): Field => ({ key, label, type, options, required: true })
 const contact = [f('name','Nom'), f('phone','Téléphone')]
-const payment = [f('name','Référence / client'),f('total','Montant dû (MAD)','number'),f('paid','Montant reçu (MAD)','number'),f('date','Échéance','date'),f('method','Mode',undefined,['Espèces','Virement','Carte','Chèque'])]
+const payment = [f('name','Référence / client'),f('total','Montant dû (€)','number'),f('paid','Montant reçu (€)','number'),f('date','Échéance','date'),f('method','Mode',undefined,['Espèces','Virement','Carte','Chèque'])]
 const planning = [f('name','Intitulé'),f('resource','Intervenant / ressource'),f('date','Date','date'),f('start','Début','time'),f('end','Fin','time')]
 const documents = [f('name','Nom du document'),f('owner','Dossier associé'),f('category','Type'),f('date','Date','date'),f('status','Statut',undefined,['À recevoir','Reçu','Archivé'])]
 export const titles: Record<Industry,string> = { sante:'Santé', enseignement:'Éducation', tourisme:'Tourisme' }
@@ -24,9 +24,9 @@ export const modules: Record<Industry,Module[]> = {
  {id:'paiements',title:'Scolarité & échéances',description:'Frais, règlements et soldes.',fields:payment}],
  tourisme:[
  {id:'clients',title:'Clients & voyageurs',description:'Coordonnées fictives et préférences.',fields:[...contact,f('email','E-mail','email')]},
- {id:'hebergements',title:'Hébergements',description:'Unités, capacité et prix par nuit.',fields:[f('name','Chambre / unité'),f('capacity','Capacité','number'),f('price','Prix / nuit (MAD)','number')]},
+ {id:'hebergements',title:'Hébergements',description:'Unités, capacité et prix par nuit.',fields:[f('name','Chambre / unité'),f('capacity','Capacité','number'),f('price','Prix / nuit (€)','number')]},
  {id:'reservations',title:'Réservations séjour',description:'Dates exclusives de départ, capacité et absence de double réservation.',fields:[f('name','Client'),f('resource','Unité (nom exact)'),f('date','Arrivée','date'),f('endDate','Départ','date'),f('people','Voyageurs','number'),f('status','Statut',undefined,['Confirmée','Option','Annulée'])]},
- {id:'activites',title:'Activités',description:'Excursions, ateliers, sorties et guides.',fields:[f('name','Activité'),f('resource','Guide / lieu'),f('date','Date','date'),f('start','Début','time'),f('end','Fin','time'),f('capacity','Places','number'),f('price','Prix / personne (MAD)','number')]},
+ {id:'activites',title:'Activités',description:'Excursions, ateliers, sorties et guides.',fields:[f('name','Activité'),f('resource','Guide / lieu'),f('date','Date','date'),f('start','Début','time'),f('end','Fin','time'),f('capacity','Places','number'),f('price','Prix / personne (€)','number')]},
  {id:'participants',title:'Réservations activités',description:'Inscription et contrôle des places restantes.',fields:[f('name','Client'),f('activity','Activité (nom exact)'),f('people','Nombre de places','number'),f('status','Statut',undefined,['Confirmée','Annulée'])]},
  {id:'tables',title:'Tables & salle',description:'Organisation de la restauration.',fields:[f('name','Table'),f('capacity','Couverts','number'),f('zone','Zone')]},
  {id:'tables-rdv',title:'Réservations restaurant',description:'Créneaux, tables et couverts.',fields:[...planning,f('people','Couverts','number')]},

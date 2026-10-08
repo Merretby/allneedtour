@@ -311,7 +311,7 @@ export interface Quote {
   needId: string
   providerId: string
   amount: number
-  currency: 'MAD'
+  currency: '€'
   delayWeeks: number
   validUntil: string
   status: 'recu' | 'en_etude' | 'accepte' | 'refuse'

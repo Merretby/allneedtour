@@ -148,7 +148,7 @@ export const QUESTIONS:DiagnosticQuestion[] = [
       "Le dirigeant quand il a le temps (moins d'1 h par semaine)",
       "Le dirigeant, avec un créneau fixe chaque semaine",
       "Une personne désignée, avec des objectifs écrits",
-      "Une personne formée, objectifs écrits, point hebdomadaire, résultats partagés"
+      "Une personne formée, objectifs écrits, point hebdo€aire, résultats partagés"
     ],
     "weight": 2,
     "type": "Interne"

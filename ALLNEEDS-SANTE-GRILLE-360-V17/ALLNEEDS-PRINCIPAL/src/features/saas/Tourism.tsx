@@ -7,7 +7,7 @@ import { Restaurant } from './Workspace'
 import { RestaurantOperations, AgencyBuilder, SupplierRequests } from './TourismOperations'
 import './workspace.css'
 import './tourism.css'
-export const money=(n:number)=>new Intl.NumberFormat('fr-MA',{style:'currency',currency:'MAD'}).format(n)
+export const money=(n:number)=>new Intl.NumberFormat('fr-MA',{style:'currency',currency:'€'}).format(n)
 export function Tourism({branch:initial}:{branch?:Branch}){
  const {user}=useDemo();const org=String((user as {orgId?:string})?.orgId||'demo')
  return <TourismWorkspace key={org} org={org} initial={initial}/>
@@ -52,7 +52,7 @@ function Records({branch,module,data,update,notify}:{branch:Branch;module:TModul
  const rows=data.rows[module.id]||[]
  const label=(ref:string,id:string)=>data.rows[ref]?.find(r=>r.id===id)?.name||data.rows[ref]?.find(r=>r.id===id)?.client||id
  const derived=module.id==='clotures'?['difference']:branch==='transport'&&module.id==='trajets'?['total','cost']:branch==='agence'&&module.id==='prestations'?['total','totalCost']:['reservations','participants'].includes(module.id)&&branch!=='restauration'?['total']:[]
- const names:Record<string,string>={total:'Total (MAD)',cost:'Coût estimatif (MAD)',totalCost:'Coût fournisseur (MAD)',difference:'Écart de caisse (MAD)'}
+ const names:Record<string,string>={total:'Total (€)',cost:'Coût estimatif (€)',totalCost:'Coût fournisseur (€)',difference:'Écart de caisse (€)'}
  function submit(e:React.FormEvent<HTMLFormElement>){e.preventDefault();const form=new FormData(e.currentTarget);let row:Row={...edit,id:edit?.id||crypto.randomUUID()};module.fields.forEach(f=>row[f.key]=String(form.get(f.key)||'').trim());row=enrich(branch,module.id,row,data);const error=validateTourism(branch,module.id,row,data);if(error){notify(error);return}update({...data,rows:{...data.rows,[module.id]:[...rows.filter(r=>r.id!==row.id),row]}});setEdit(null);notify('Fiche enregistrée.');e.currentTarget.reset()}
  function remove(row:Row){
  if(module.id==='prestations' && row.status==='Confirmée'){notify('Annulez cette prestation avant toute suppression, afin de libérer sa réservation fournisseur.');return}
