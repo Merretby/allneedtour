@@ -567,7 +567,7 @@ function ModulePage({
   if (page === "stock") return <StockIngredientsPage />;
   if (page === "purchases") return <PurchasesPage />;
   if (page === "suppliers") return <SuppliersPage />;
-  if (page === "merchandise") return <MerchandiseReceptionPage />;
+  if (page === "receptions") return <MerchandiseReceptionPage />;
   if (page === "inventories") return <InventoriesPage />;
   if (page === "losses") return <LossesWastePage />;
   const blocked = !allowed(page);
