@@ -1,6 +1,9 @@
 import { MenuPage } from "./MenuPage";
 import { TechnicalSheetsPage } from "./TechnicalSheetsPage";
 import { StockIngredientsPage } from "./StockIngredientsPage";
+import { PurchasesPage } from './PurchasesPage';
+import { SuppliersPage } from './SuppliersPage';
+import { MerchandiseReceptionPage } from './MerchandiseReceptionPage';
 import React, { useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
