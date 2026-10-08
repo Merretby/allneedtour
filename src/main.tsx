@@ -563,6 +563,9 @@ function ModulePage({
   if (page === "menu") return <MenuPage />;
   if (page === "technical") return <TechnicalSheetsPage />;
   if (page === "stock") return <StockIngredientsPage />;
+  if (page === "purchases") return <PurchasesPage />;
+  if (page === "suppliers") return <SuppliersPage />;
+  if (page === "merchandise") return <MerchandiseReceptionPage />;
   const blocked = !allowed(page);
   const Icon = icons[page];
   const configs: Record<
