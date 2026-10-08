@@ -1,4 +1,5 @@
 import { MenuPage } from './MenuPage';
+import { TechnicalSheetsPage } from './TechnicalSheetsPage';
 import React,{useMemo,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {Activity,AlertTriangle,Archive,ArrowRight,BarChart3,BriefcaseBusiness,CalendarDays,Check,ChevronDown,Clock3,Copy,Database,Download,FileKey,FileText,LayoutDashboard,LockKeyhole,Menu,MoreHorizontal,Plus,RefreshCw,Search,Settings,ShieldCheck,SlidersHorizontal,Trash2,UserCog,Users,Wallet,X} from 'lucide-react';
@@ -19,6 +20,7 @@ function ModulePage({page,allowed,go,sensitive}:{page:ModuleId;allowed:(m:Module
  if(page==='reservations')return <ReservationsPage/>;
  if(page==='floor')return <TablesServicePage/>;
  if(page==='menu')return <MenuPage />;
+  if(page==='technical')return <TechnicalSheetsPage />;
  const blocked=!allowed(page); const Icon=icons[page];
  const configs:Record<ModuleId,{eyebrow:string;description:string;tabs:string[];records:string[];metrics:string[]}>={
   dashboard:{eyebrow:'COMMAND CENTER',description:'Your daily service overview, alerts and next actions.',tabs:['Overview','Live service','Alerts'],records:['Dinner service · 19:30','12 reservations need confirmation','Stock approval · 2 items','Team handover · 18:30'],metrics:['24 reservations','€ 8,420 collected','7 stock alerts','18 team on shift']},
