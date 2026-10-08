@@ -4,6 +4,8 @@ import { StockIngredientsPage } from "./StockIngredientsPage";
 import { PurchasesPage } from './PurchasesPage';
 import { SuppliersPage } from './SuppliersPage';
 import { MerchandiseReceptionPage } from './MerchandiseReceptionPage';
+import { InventoriesPage } from './InventoriesPage';
+import { LossesWastePage } from './LossesWastePage';
 import React, { useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
@@ -566,6 +568,8 @@ function ModulePage({
   if (page === "purchases") return <PurchasesPage />;
   if (page === "suppliers") return <SuppliersPage />;
   if (page === "merchandise") return <MerchandiseReceptionPage />;
+  if (page === "inventories") return <InventoriesPage />;
+  if (page === "losses") return <LossesWastePage />;
   const blocked = !allowed(page);
   const Icon = icons[page];
   const configs: Record<
