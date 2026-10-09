@@ -8,12 +8,16 @@ interface KPIReport {
   period: string;
   trend: 'up' | 'down' | 'stable';
   value: string;
+  comparison: string;
+  status: 'Generated' | 'Scheduled';
 }
 
 const MOCK_REPORTS: KPIReport[] = [
-  { id: '1', title: 'Monthly Revenue', category: 'Financial', period: 'October 2023', trend: 'up', value: '142,500.00 MAD' },
-  { id: '2', title: 'Average Table Turn', category: 'Operations', period: 'Last 7 Days', trend: 'down', value: '45 mins' },
-  { id: '3', title: 'Staff Attendance', category: 'HR', period: 'This Week', trend: 'stable', value: '98%' },
+  { id: '1', title: 'Monthly Revenue Summary', category: 'Financial', period: 'October 2023', trend: 'up', value: '142,500.00 MAD', comparison: '+12.4% vs last month', status: 'Generated' },
+  { id: '2', title: 'Average Table Turn', category: 'Operations', period: 'Last 7 Days', trend: 'down', value: '45 mins', comparison: '-5 mins vs last week', status: 'Generated' },
+  { id: '3', title: 'Staff Attendance', category: 'HR', period: 'This Week', trend: 'stable', value: '98%', comparison: 'Unchanged', status: 'Generated' },
+  { id: '4', title: 'Food Waste Cost', category: 'Operations', period: 'October 2023', trend: 'down', value: '4,200.00 MAD', comparison: '-15% vs last month', status: 'Scheduled' },
+  { id: '5', title: 'Customer Satisfaction Score', category: 'Marketing', period: 'Q3 2023', trend: 'up', value: '4.8/5.0', comparison: '+0.2 pts vs Q2', status: 'Generated' },
 ];
 
 export const ReportsKPIsPage: React.FC = () => {
@@ -42,35 +46,40 @@ export const ReportsKPIsPage: React.FC = () => {
     );
   };
 
+  const getStatusBadge = (status: string) => {
+    if (status === 'Generated') {
+      return (
+        <span className="badge active" style={{ background: '#f0f2f1', color: '#536f6d' }}>
+          <i style={{ background: '#536f6d' }}/> Ready
+        </span>
+      );
+    }
+    return (
+      <span className="badge off" style={{ background: '#e0f2fe', color: '#0369a1' }}>
+        <i style={{ background: '#0369a1' }}/> Scheduled
+      </span>
+    );
+  };
+
+  const reportsGenerated = MOCK_REPORTS.filter(r => r.status === 'Generated').length;
+
   return (
-    <div>
-      <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '14px' }}>
-        <div className="record">
-          <div className="module-symbol">
-            <TrendingUp size={20} />
-          </div>
-          <div>
-            <strong>142,500 MAD</strong>
-            <small>Total Revenue (MTD)</small>
-          </div>
+    <section className="admin-page">
+      <div className="admin-intro">
+        <div>
+          <span className="eyebrow">PEOPLE & CONTROL</span>
+          <h2>Reports & KPIs.</h2>
+          <p>Track financial, operational, and HR performance of your establishment.</p>
         </div>
-        <div className="record">
-          <div className="module-symbol">
-            <Users size={20} />
-          </div>
-          <div>
-            <strong>4,200</strong>
-            <small>Guests Served (MTD)</small>
-          </div>
-        </div>
-        <div className="record">
-          <div className="module-symbol">
-            <BarChart2 size={20} />
-          </div>
-          <div>
-            <strong>24.5%</strong>
-            <small>Avg. Profit Margin</small>
-          </div>
+        <div className="admin-metrics">
+          <strong>
+            {reportsGenerated}
+            <small>reports ready</small>
+          </strong>
+          <strong>
+            24.5%
+            <small>avg. profit margin</small>
+          </strong>
         </div>
       </div>
 
@@ -80,7 +89,7 @@ export const ReportsKPIsPage: React.FC = () => {
             <Search size={15} />
             <input 
               type="text" 
-              placeholder="Search reports..." 
+              placeholder="Search reports or metrics..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -95,10 +104,21 @@ export const ReportsKPIsPage: React.FC = () => {
             <option value="Financial">Financial</option>
             <option value="Operations">Operations</option>
             <option value="HR">HR</option>
+            <option value="Marketing">Marketing</option>
           </select>
           
-          <button className="secondary" onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: "Generating report..." }))}>
-            <Download size={12} style={{ marginRight: '5px', display: 'inline-block' }}/> Export CSV
+          <select className="filter">
+            <option>Last 30 days</option>
+            <option>This Quarter</option>
+            <option>This Year</option>
+          </select>
+          
+          <button className="secondary" onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: "Generating report archive..." }))}>
+            <Download size={13} style={{ marginRight: '6px', verticalAlign: 'text-bottom' }} /> Export All
+          </button>
+
+          <button className="secondary" style={{ background: '#0F172A', color: 'white', borderColor: '#0F172A' }} onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: "Create new report dialog" }))}>
+            + New Report
           </button>
         </div>
 
@@ -111,6 +131,7 @@ export const ReportsKPIsPage: React.FC = () => {
                 <th>Period</th>
                 <th>Key Metric</th>
                 <th>Trend</th>
+                <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -124,14 +145,18 @@ export const ReportsKPIsPage: React.FC = () => {
                   <td>{report.period}</td>
                   <td>
                     <strong>{report.value}</strong>
+                    <small>{report.comparison}</small>
                   </td>
                   <td>
                     {getTrendBadge(report.trend)}
                   </td>
                   <td>
+                    {getStatusBadge(report.status)}
+                  </td>
+                  <td>
                     <div className="row-actions">
                       <button>View Data</button>
-                      <button>Download PDF</button>
+                      <button>PDF</button>
                     </div>
                   </td>
                 </tr>
@@ -140,6 +165,6 @@ export const ReportsKPIsPage: React.FC = () => {
           </table>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
