@@ -569,7 +569,7 @@ function ModulePage({
   if (page === "suppliers") return <SuppliersPage />;
   if (page === "receptions") return <MerchandiseReceptionPage />;
   if (page === "inventories") return <InventoriesPage />;
-  if (page === "losses") return <LossesWastePage />;
+  if (page === "waste") return <LossesWastePage />;
   const blocked = !allowed(page);
   const Icon = icons[page];
   const configs: Record<
