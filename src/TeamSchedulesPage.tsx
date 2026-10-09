@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Download, Calendar } from 'lucide-react';
+import { Search, Download, Calendar, X } from 'lucide-react';
 
 interface TeamMember {
   id: string;
@@ -24,6 +24,10 @@ const MOCK_TEAM: TeamMember[] = [
 export const TeamSchedulesPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState('All');
+  
+  // Modal states
+  const [isAddStaffOpen, setIsAddStaffOpen] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
 
   const getStatusBadge = (status: string) => {
     if (status === 'On Shift') {
@@ -99,11 +103,11 @@ export const TeamSchedulesPage: React.FC = () => {
              <input type="date" style={{ padding: '8px 0' }} />
           </div>
           
-          <button className="secondary" style={{ cursor: "pointer" }} onClick={() => alert("Exported Schedule CSV")}>
+          <button className="secondary" style={{ cursor: 'pointer' }} onClick={() => setIsExportOpen(true)}>
             <Download size={13} style={{ marginRight: '6px', verticalAlign: 'text-bottom' }} /> Export
           </button>
           
-          <button className="secondary" style={{ cursor: "pointer", background: '#0F172A', color: 'white', borderColor: '#0F172A' }} onClick={() => alert("Add staff member dialog")}>
+          <button className="secondary" style={{ cursor: 'pointer', background: '#0F172A', color: 'white', borderColor: '#0F172A' }} onClick={() => setIsAddStaffOpen(true)}>
             + Add Staff
           </button>
         </div>
@@ -153,8 +157,8 @@ export const TeamSchedulesPage: React.FC = () => {
                   </td>
                   <td>
                     <div className="row-actions">
-                      <button onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: `Scheduling for ${member.name}` }))}>Schedule</button>
-                      <button onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: `Editing ${member.name}` }))}>Edit</button>
+                      <button style={{ cursor: 'pointer' }} onClick={() => setIsAddStaffOpen(true)}>Schedule</button>
+                      <button style={{ cursor: 'pointer' }} onClick={() => setIsAddStaffOpen(true)}>Edit</button>
                     </div>
                   </td>
                 </tr>
@@ -163,6 +167,96 @@ export const TeamSchedulesPage: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Add Staff Modal */}
+      {isAddStaffOpen && (
+        <div className="modal-overlay">
+          <div className="menu-modal">
+            <div className="modal-header">
+              <h3 style={{ margin: 0, fontSize: '16px', color: '#0F172A' }}>Add New Staff Member</h3>
+              <button style={{ background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => setIsAddStaffOpen(false)}>
+                <X size={18} color="#64748B" />
+              </button>
+            </div>
+            <div style={{ padding: '24px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>First Name</label>
+                  <input type="text" placeholder="e.g. Karim" style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #E2E8F0' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>Last Name</label>
+                  <input type="text" placeholder="e.g. Haddad" style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #E2E8F0' }} />
+                </div>
+              </div>
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>Email Address</label>
+                <input type="email" placeholder="staff@restaurant.com" style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #E2E8F0' }} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>Role</label>
+                  <select style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #E2E8F0', background: 'white' }}>
+                    <option>Head Chef</option>
+                    <option>Waitress</option>
+                    <option>Bartender</option>
+                    <option>Manager</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>Department</label>
+                  <select style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #E2E8F0', background: 'white' }}>
+                    <option>Kitchen</option>
+                    <option>Service</option>
+                    <option>Bar</option>
+                    <option>Front of house</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div className="modal-actions" style={{ padding: '16px 24px', borderTop: '1px solid #F1F5F9', background: '#F8FAFC' }}>
+              <button className="secondary" style={{ cursor: 'pointer' }} onClick={() => setIsAddStaffOpen(false)}>Cancel</button>
+              <button className="secondary" style={{ cursor: 'pointer', background: '#0F172A', color: 'white', borderColor: '#0F172A' }} onClick={() => setIsAddStaffOpen(false)}>Save Staff</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Export Modal */}
+      {isExportOpen && (
+        <div className="modal-overlay">
+          <div className="menu-modal" style={{ maxWidth: '400px' }}>
+            <div className="modal-header">
+              <h3 style={{ margin: 0, fontSize: '16px', color: '#0F172A' }}>Export Schedule</h3>
+              <button style={{ background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => setIsExportOpen(false)}>
+                <X size={18} color="#64748B" />
+              </button>
+            </div>
+            <div style={{ padding: '24px' }}>
+              <p style={{ fontSize: '13px', color: '#475569', margin: '0 0 16px 0' }}>Select the format and date range for your export.</p>
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>Format</label>
+                <select style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #E2E8F0', background: 'white' }}>
+                  <option>CSV (Excel)</option>
+                  <option>PDF Document</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>Date Range</label>
+                <select style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #E2E8F0', background: 'white' }}>
+                  <option>This Week</option>
+                  <option>Next Week</option>
+                  <option>This Month</option>
+                </select>
+              </div>
+            </div>
+            <div className="modal-actions" style={{ padding: '16px 24px', borderTop: '1px solid #F1F5F9', background: '#F8FAFC' }}>
+              <button className="secondary" style={{ cursor: 'pointer' }} onClick={() => setIsExportOpen(false)}>Cancel</button>
+              <button className="secondary" style={{ cursor: 'pointer', background: '#0F172A', color: 'white', borderColor: '#0F172A' }} onClick={() => { setIsExportOpen(false); alert("Downloading..."); }}>Download</button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

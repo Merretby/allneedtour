@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Download, Trash2, Eye } from 'lucide-react';
+import { Search, Download, Trash2, Eye, X, Upload } from 'lucide-react';
 
 interface DocumentRecord {
   id: string;
@@ -24,6 +24,9 @@ const MOCK_DOCS: DocumentRecord[] = [
 export const DocumentsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState('All');
+
+  // Modal states
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
 
   const getStatusBadge = (status: string) => {
     if (status === 'Valid') {
@@ -108,7 +111,7 @@ export const DocumentsPage: React.FC = () => {
             <option>Expired</option>
           </select>
           
-          <button className="secondary" style={{ cursor: "pointer", background: '#0F172A', color: 'white', borderColor: '#0F172A' }} onClick={() => alert("Upload dialog opened")}>
+          <button className="secondary" style={{ cursor: 'pointer', background: '#0F172A', color: 'white', borderColor: '#0F172A' }} onClick={() => setIsUploadOpen(true)}>
             + Upload File
           </button>
         </div>
@@ -147,9 +150,9 @@ export const DocumentsPage: React.FC = () => {
                   </td>
                   <td>
                     <div className="row-actions">
-                      <button title="View" onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: `Viewing ${doc.name}` }))}><Eye size={13} style={{ verticalAlign: 'middle' }}/></button>
-                      <button title="Download" onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: `Downloading ${doc.name}` }))}><Download size={13} style={{ verticalAlign: 'middle' }}/></button>
-                      <button title="Delete" style={{ color: '#ef4444' }} onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: `Deleting ${doc.name}` }))}><Trash2 size={13} style={{ verticalAlign: 'middle' }}/></button>
+                      <button title="View" style={{ cursor: 'pointer' }} onClick={() => alert("Viewing " + doc.name)}><Eye size={13} style={{ verticalAlign: 'middle' }}/></button>
+                      <button title="Download" style={{ cursor: 'pointer' }} onClick={() => alert("Downloading " + doc.name)}><Download size={13} style={{ verticalAlign: 'middle' }}/></button>
+                      <button title="Delete" style={{ color: '#ef4444', cursor: 'pointer' }} onClick={() => alert("Deleting " + doc.name)}><Trash2 size={13} style={{ verticalAlign: 'middle' }}/></button>
                     </div>
                   </td>
                 </tr>
@@ -158,6 +161,52 @@ export const DocumentsPage: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Upload File Modal */}
+      {isUploadOpen && (
+        <div className="modal-overlay">
+          <div className="menu-modal">
+            <div className="modal-header">
+              <h3 style={{ margin: 0, fontSize: '16px', color: '#0F172A' }}>Upload New Document</h3>
+              <button style={{ background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => setIsUploadOpen(false)}>
+                <X size={18} color="#64748B" />
+              </button>
+            </div>
+            <div style={{ padding: '24px' }}>
+              <div style={{ border: '2px dashed #CBD5E1', borderRadius: '8px', padding: '32px', textAlign: 'center', marginBottom: '16px', background: '#F8FAFC', cursor: 'pointer' }}>
+                <Upload size={24} color="#64748B" style={{ margin: '0 auto 12px auto' }} />
+                <p style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: 600, color: '#334155' }}>Click to upload or drag and drop</p>
+                <p style={{ margin: 0, fontSize: '12px', color: '#64748B' }}>PDF, ZIP, DOCX, JPG (Max 50MB)</p>
+              </div>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>Category</label>
+                  <select style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #E2E8F0', background: 'white' }}>
+                    <option>Certificates</option>
+                    <option>Contracts</option>
+                    <option>HR & Payroll</option>
+                    <option>Licenses</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>Expiry Date (Optional)</label>
+                  <input type="date" style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #E2E8F0' }} />
+                </div>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>Additional Notes</label>
+                <textarea rows={3} placeholder="Enter any relevant details..." style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #E2E8F0', resize: 'none' }}></textarea>
+              </div>
+            </div>
+            <div className="modal-actions" style={{ padding: '16px 24px', borderTop: '1px solid #F1F5F9', background: '#F8FAFC' }}>
+              <button className="secondary" style={{ cursor: 'pointer' }} onClick={() => setIsUploadOpen(false)}>Cancel</button>
+              <button className="secondary" style={{ cursor: 'pointer', background: '#0F172A', color: 'white', borderColor: '#0F172A' }} onClick={() => setIsUploadOpen(false)}>Upload File</button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

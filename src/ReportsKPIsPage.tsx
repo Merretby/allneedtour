@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Download, BarChart2, TrendingUp, Users } from 'lucide-react';
+import { Search, Download, BarChart2, TrendingUp, Users, X } from 'lucide-react';
 
 interface KPIReport {
   id: string;
@@ -23,6 +23,10 @@ const MOCK_REPORTS: KPIReport[] = [
 export const ReportsKPIsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState('All');
+
+  // Modal states
+  const [isNewReportOpen, setIsNewReportOpen] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
 
   const getTrendBadge = (trend: string) => {
     if (trend === 'up') {
@@ -113,11 +117,11 @@ export const ReportsKPIsPage: React.FC = () => {
             <option>This Year</option>
           </select>
           
-          <button className="secondary" style={{ cursor: "pointer" }} onClick={() => alert("Generating report archive...")}>
+          <button className="secondary" style={{ cursor: 'pointer' }} onClick={() => setIsExportOpen(true)}>
             <Download size={13} style={{ marginRight: '6px', verticalAlign: 'text-bottom' }} /> Export All
           </button>
 
-          <button className="secondary" style={{ cursor: "pointer", background: '#0F172A', color: 'white', borderColor: '#0F172A' }} onClick={() => alert("Create new report dialog")}>
+          <button className="secondary" style={{ cursor: 'pointer', background: '#0F172A', color: 'white', borderColor: '#0F172A' }} onClick={() => setIsNewReportOpen(true)}>
             + New Report
           </button>
         </div>
@@ -155,8 +159,8 @@ export const ReportsKPIsPage: React.FC = () => {
                   </td>
                   <td>
                     <div className="row-actions">
-                      <button onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: `Viewing data for ${report.title}` }))}>View Data</button>
-                      <button onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: `Downloading PDF for ${report.title}` }))}>PDF</button>
+                      <button style={{ cursor: 'pointer' }} onClick={() => alert("Viewing " + report.title)}>View Data</button>
+                      <button style={{ cursor: 'pointer' }} onClick={() => alert("Downloading PDF")}>PDF</button>
                     </div>
                   </td>
                 </tr>
@@ -165,6 +169,81 @@ export const ReportsKPIsPage: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* New Report Modal */}
+      {isNewReportOpen && (
+        <div className="modal-overlay">
+          <div className="menu-modal">
+            <div className="modal-header">
+              <h3 style={{ margin: 0, fontSize: '16px', color: '#0F172A' }}>Generate New Report</h3>
+              <button style={{ background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => setIsNewReportOpen(false)}>
+                <X size={18} color="#64748B" />
+              </button>
+            </div>
+            <div style={{ padding: '24px' }}>
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>Report Type</label>
+                <select style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #E2E8F0', background: 'white' }}>
+                  <option>Financial Summary</option>
+                  <option>Sales by Category</option>
+                  <option>Staff Attendance & Payroll</option>
+                  <option>Inventory & Waste Logs</option>
+                </select>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>Start Date</label>
+                  <input type="date" style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #E2E8F0' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>End Date</label>
+                  <input type="date" style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #E2E8F0' }} />
+                </div>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>Delivery Method</label>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <label style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}><input type="checkbox" defaultChecked /> View on Dashboard</label>
+                  <label style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}><input type="checkbox" /> Send via Email</label>
+                </div>
+              </div>
+            </div>
+            <div className="modal-actions" style={{ padding: '16px 24px', borderTop: '1px solid #F1F5F9', background: '#F8FAFC' }}>
+              <button className="secondary" style={{ cursor: 'pointer' }} onClick={() => setIsNewReportOpen(false)}>Cancel</button>
+              <button className="secondary" style={{ cursor: 'pointer', background: '#0F172A', color: 'white', borderColor: '#0F172A' }} onClick={() => setIsNewReportOpen(false)}>Generate</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Export Modal */}
+      {isExportOpen && (
+        <div className="modal-overlay">
+          <div className="menu-modal" style={{ maxWidth: '400px' }}>
+            <div className="modal-header">
+              <h3 style={{ margin: 0, fontSize: '16px', color: '#0F172A' }}>Export Reports</h3>
+              <button style={{ background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => setIsExportOpen(false)}>
+                <X size={18} color="#64748B" />
+              </button>
+            </div>
+            <div style={{ padding: '24px' }}>
+              <p style={{ fontSize: '13px', color: '#475569', margin: '0 0 16px 0' }}>Export the current filtered list of reports.</p>
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>Format</label>
+                <select style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #E2E8F0', background: 'white' }}>
+                  <option>CSV (Excel)</option>
+                  <option>PDF Document</option>
+                  <option>JSON</option>
+                </select>
+              </div>
+            </div>
+            <div className="modal-actions" style={{ padding: '16px 24px', borderTop: '1px solid #F1F5F9', background: '#F8FAFC' }}>
+              <button className="secondary" style={{ cursor: 'pointer' }} onClick={() => setIsExportOpen(false)}>Cancel</button>
+              <button className="secondary" style={{ cursor: 'pointer', background: '#0F172A', color: 'white', borderColor: '#0F172A' }} onClick={() => { setIsExportOpen(false); alert("Downloading archive..."); }}>Download All</button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
