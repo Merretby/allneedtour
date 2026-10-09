@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Search, Filter, Download, DollarSign, CreditCard, Receipt, FileText, CheckCircle, Clock, AlertTriangle, ArrowUpRight, ArrowDownRight, MoreHorizontal } from 'lucide-react';
+import { Plus, Search, Calendar } from 'lucide-react';
 
 interface Payment {
   id: string;
@@ -8,224 +8,155 @@ interface Payment {
   amount: number;
   method: 'Cash' | 'Card' | 'Transfer' | 'Check';
   type: 'Collection' | 'Invoice' | 'Settlement';
-  status: 'Completed' | 'Pending' | 'Overdue';
+  status: 'Completed' | 'Pending';
   client?: string;
   notes?: string;
 }
 
 const MOCK_PAYMENTS: Payment[] = [
-  { id: '1', reference: 'POS-Z-1042', date: 'Today, 23:15', amount: 8420, method: 'Card', type: 'Collection', status: 'Completed', notes: 'Daily POS Settlement' },
-  { id: '2', reference: 'INV-2023-089', date: 'Today, 14:30', amount: 1240, method: 'Transfer', type: 'Invoice', status: 'Pending', client: 'Acme Corp', notes: 'Corporate Lunch Event' },
-  { id: '3', reference: 'CHK-9921', date: 'Yesterday, 11:00', amount: 450, method: 'Check', type: 'Settlement', status: 'Completed', client: 'John Doe', notes: 'Settlement for INV-2023-085' },
-  { id: '4', reference: 'INV-2023-082', date: 'Oct 01, 2023', amount: 3200, method: 'Transfer', type: 'Invoice', status: 'Overdue', client: 'TechStart Inc', notes: 'Team Dinner' },
-  { id: '5', reference: 'POS-Z-1041', date: 'Yesterday, 23:20', amount: 7850, method: 'Cash', type: 'Collection', status: 'Completed', notes: 'Daily Cash Drawer' },
+  { id: '1', client: 'Salma R.', reference: 'REC-001', date: '2023-10-08', amount: 450.00, method: 'Card', type: 'Collection', status: 'Completed', notes: 'Settled' },
+  { id: '2', client: 'Omar B.', reference: 'REC-002', date: '2023-10-08', amount: 300.00, method: 'Cash', type: 'Collection', status: 'Pending', notes: 'Settled' },
 ];
 
 export const PaymentsCollectionsPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'All' | 'Collections' | 'Invoices'>('All');
   const [searchQuery, setSearchQuery] = useState('');
-
-  const filteredPayments = MOCK_PAYMENTS.filter(p => {
-    const matchesSearch = p.reference.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          (p.client && p.client.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    if (activeTab === 'All') return matchesSearch;
-    if (activeTab === 'Collections') return matchesSearch && (p.type === 'Collection' || p.type === 'Settlement');
-    if (activeTab === 'Invoices') return matchesSearch && p.type === 'Invoice';
-    return matchesSearch;
-  });
-
-  const totalCollected = MOCK_PAYMENTS.filter(p => p.status === 'Completed').reduce((sum, p) => sum + p.amount, 0);
-  const totalOutstanding = MOCK_PAYMENTS.filter(p => p.status === 'Pending' || p.status === 'Overdue').reduce((sum, p) => sum + p.amount, 0);
+  const [filter, setFilter] = useState('All');
 
   const formatCurrency = (amount: number) => {
-    return amount.toLocaleString('en-US') + ' MAD';
+    return amount.toFixed(2).replace('.', ',') + ' MAD';
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Completed': return 'text-emerald-600 bg-emerald-50 border-emerald-200';
-      case 'Pending': return 'text-amber-600 bg-amber-50 border-amber-200';
-      case 'Overdue': return 'text-rose-600 bg-rose-50 border-rose-200';
-      default: return 'text-slate-600 bg-slate-50 border-slate-200';
+  const getStatusBadge = (status: string) => {
+    if (status === 'Completed') {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+          Validé
+        </span>
+      );
     }
-  };
-
-  const getMethodIcon = (method: string) => {
-    switch (method) {
-      case 'Cash': return <DollarSign size={16} className="text-emerald-500" />;
-      case 'Card': return <CreditCard size={16} className="text-blue-500" />;
-      case 'Transfer': return <ArrowUpRight size={16} className="text-indigo-500" />;
-      case 'Check': return <FileText size={16} className="text-slate-500" />;
-      default: return <Receipt size={16} className="text-slate-500" />;
-    }
+    return (
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700">
+        <div className="w-1.5 h-1.5 rounded-full bg-amber-500"></div>
+        À vérifier
+      </span>
+    );
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="p-8 max-w-7xl mx-auto min-h-screen bg-[#F8FAFC]">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex justify-between items-start mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Payments & Collections</h1>
-          <p className="text-slate-500">Track daily revenue, corporate invoices, and cash settlements.</p>
+          <div className="text-blue-600 text-xs font-bold tracking-wider mb-2 uppercase">ALLNEEDS / TOURISM</div>
+          <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Payments</h1>
+          <p className="text-slate-500 text-sm">Organize, find and track information for your structure.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <button className="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 flex items-center gap-2 transition-colors">
-            <Download size={18} />
-            <span>Export Report</span>
-          </button>
-          <button className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 flex items-center gap-2 transition-colors shadow-sm">
-            <Plus size={18} />
-            <span>New Transaction</span>
-          </button>
-        </div>
+        <button className="px-4 py-2 bg-[#0F172A] text-white rounded-lg hover:bg-slate-800 flex items-center gap-2 text-sm font-medium transition-colors">
+          <Plus size={16} />
+          <span>Add</span>
+        </button>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center border border-emerald-100 text-emerald-600">
-            <DollarSign size={24} />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-slate-500 mb-1">Total Collected (Recent)</p>
-            <p className="text-2xl font-bold text-slate-900">{formatCurrency(totalCollected)}</p>
-          </div>
-        </div>
+      {/* Main Container */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 bg-amber-50 rounded-full flex items-center justify-center border border-amber-100 text-amber-600">
-            <Clock size={24} />
+        {/* Top Controls */}
+        <div className="p-4 flex items-center gap-4">
+          <div className="flex-1 relative">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input 
+              type="text" 
+              placeholder="Search a name, a record..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 bg-slate-50 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-200 text-sm"
+            />
           </div>
-          <div>
-            <p className="text-sm font-medium text-slate-500 mb-1">Total Outstanding</p>
-            <p className="text-2xl font-bold text-slate-900">{formatCurrency(totalOutstanding)}</p>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 bg-rose-50 rounded-full flex items-center justify-center border border-rose-100 text-rose-600">
-            <AlertTriangle size={24} />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-slate-500 mb-1">Overdue Invoices</p>
-            <p className="text-2xl font-bold text-slate-900">
-              {MOCK_PAYMENTS.filter(p => p.status === 'Overdue').length}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content Area */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        {/* Filters & Search */}
-        <div className="p-4 border-b border-slate-200 space-y-4">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div className="flex space-x-1 bg-slate-100 p-1 rounded-lg">
-              {['All', 'Collections', 'Invoices'].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab as any)}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    activeTab === tab 
-                      ? 'bg-white text-slate-900 shadow-sm' 
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
+          
+          <div className="flex items-center gap-3">
+            <select 
+              className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-200 appearance-none pr-8 cursor-pointer relative"
+              style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394A3B8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.7rem top 50%', backgroundSize: '0.65rem auto' }}
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            >
+              <option value="All">All</option>
+              <option value="Completed">Completed</option>
+              <option value="Pending">Pending</option>
+            </select>
+            
+            <div className="relative">
+              <input 
+                type="date" 
+                className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-200"
+              />
             </div>
             
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              <div className="relative flex-1 sm:w-64">
-                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input 
-                  type="text" 
-                  placeholder="Search reference or client..." 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm"
-                />
-              </div>
-              <button className="p-2 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-colors">
-                <Filter size={18} />
-              </button>
+            <div className="text-sm text-slate-500 font-medium px-2">
+              {MOCK_PAYMENTS.length} results
             </div>
           </div>
         </div>
 
-        {/* Transactions Table */}
-        <div className="overflow-x-auto">
+        {/* Table */}
+        <div className="overflow-x-auto px-4 pb-4">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50 text-slate-500 text-sm border-b border-slate-200">
-                <th className="px-6 py-4 font-medium">Reference</th>
-                <th className="px-6 py-4 font-medium">Date</th>
-                <th className="px-6 py-4 font-medium">Type</th>
-                <th className="px-6 py-4 font-medium">Method</th>
-                <th className="px-6 py-4 font-medium">Amount</th>
-                <th className="px-6 py-4 font-medium">Status</th>
-                <th className="px-6 py-4 font-medium text-right">Actions</th>
+              <tr className="border-b border-slate-100">
+                <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">CLIENT / RECORD</th>
+                <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">INFORMATIONS</th>
+                <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">DATE</th>
+                <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">AMOUNT</th>
+                <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">STATE</th>
+                <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">ACTIONS</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-sm">
-              {filteredPayments.map((payment) => (
-                <tr key={payment.id} className="hover:bg-slate-50/50 transition-colors group">
-                  <td className="px-6 py-4">
-                    <div className="font-medium text-slate-900">{payment.reference}</div>
-                    {payment.client && <div className="text-xs text-slate-500 mt-0.5">{payment.client}</div>}
+            <tbody className="divide-y divide-slate-50 text-sm">
+              {MOCK_PAYMENTS.map((payment) => (
+                <tr key={payment.id} className="hover:bg-slate-50/50 transition-colors">
+                  <td className="px-4 py-4">
+                    <div className="font-semibold text-slate-900">{payment.client || 'Unknown Client'}</div>
+                    <div className="text-xs text-slate-400 mt-0.5">Youssef Idrissi</div>
                   </td>
-                  <td className="px-6 py-4 text-slate-600">{payment.date}</td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
-                      {payment.type}
-                    </span>
+                  <td className="px-4 py-4 text-slate-500">
+                    Receipt {payment.reference} · {payment.method} · {payment.notes}
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2 text-slate-700">
-                      {getMethodIcon(payment.method)}
-                      <span>{payment.method}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 font-medium text-slate-900">
+                  <td className="px-4 py-4 text-slate-500">{payment.date}</td>
+                  <td className="px-4 py-4 font-medium text-slate-900">
                     {formatCurrency(payment.amount)}
                   </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(payment.status)}`}>
-                      {payment.status === 'Completed' && <CheckCircle size={14} />}
-                      {payment.status === 'Pending' && <Clock size={14} />}
-                      {payment.status === 'Overdue' && <AlertTriangle size={14} />}
-                      {payment.status}
-                    </span>
+                  <td className="px-4 py-4">
+                    {getStatusBadge(payment.status)}
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <button className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors">
-                      <MoreHorizontal size={18} />
-                    </button>
+                  <td className="px-4 py-4">
+                    <div className="flex items-center gap-2">
+                      <button className="px-3 py-1.5 text-xs font-medium text-slate-600 border border-slate-200 rounded hover:bg-slate-50 transition-colors">
+                        Edit
+                      </button>
+                      {payment.status === 'Pending' && (
+                        <>
+                          <button className="px-3 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 rounded hover:bg-emerald-100 transition-colors">
+                            Validate
+                          </button>
+                          <button className="px-3 py-1.5 text-xs font-medium text-slate-600 border border-slate-200 rounded hover:bg-slate-50 transition-colors">
+                            To correct
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-
-          {filteredPayments.length === 0 && (
-            <div className="p-12 text-center text-slate-500">
-              <Receipt size={48} className="mx-auto text-slate-300 mb-4" />
-              <p className="text-lg font-medium text-slate-900 mb-1">No transactions found</p>
-              <p>Try adjusting your search or filters.</p>
-            </div>
-          )}
         </div>
-        
-        {/* Pagination */}
-        <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between text-sm text-slate-500 bg-slate-50/50">
-          <div>Showing {filteredPayments.length} of {MOCK_PAYMENTS.length} transactions</div>
-          <div className="flex items-center gap-2">
-            <button className="px-3 py-1.5 border border-slate-200 rounded hover:bg-white transition-colors disabled:opacity-50" disabled>Previous</button>
-            <button className="px-3 py-1.5 border border-slate-200 rounded hover:bg-white transition-colors">Next</button>
-          </div>
-        </div>
+      </div>
+      
+      {/* Footer */}
+      <div className="flex justify-between items-center mt-8 text-xs text-slate-400">
+        <div>ALLNEEDS Tourism</div>
+        <div>Independent demo · Administrative & organization management</div>
       </div>
     </div>
   );
