@@ -8,6 +8,11 @@ import { InventoriesPage } from './InventoriesPage';
 import { LossesWastePage } from './LossesWastePage';
 import { PaymentsCollectionsPage } from './PaymentsCollectionsPage';
 import { ExpensesPage } from './ExpensesPage';
+
+import { TeamSchedulesPage } from './TeamSchedulesPage';
+import { ReportsKPIsPage } from './ReportsKPIsPage';
+import { DocumentsPage } from './DocumentsPage';
+
 import React, { useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
