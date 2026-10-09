@@ -574,6 +574,11 @@ function ModulePage({
   if (page === "waste") return <LossesWastePage />;
   if (page === "payments") return <PaymentsCollectionsPage />;
   if (page === "expenses") return <ExpensesPage />;
+
+  if (page === "team") return <TeamSchedulesPage />;
+  if (page === "reports") return <ReportsKPIsPage />;
+  if (page === "documents") return <DocumentsPage />;
+
   const blocked = !allowed(page);
   const Icon = icons[page];
   const configs: Record<
