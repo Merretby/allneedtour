@@ -153,8 +153,8 @@ export const TeamSchedulesPage: React.FC = () => {
                   </td>
                   <td>
                     <div className="row-actions">
-                      <button>Schedule</button>
-                      <button>Edit</button>
+                      <button onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: `Scheduling for ${member.name}` }))}>Schedule</button>
+                      <button onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: `Editing ${member.name}` }))}>Edit</button>
                     </div>
                   </td>
                 </tr>

@@ -147,9 +147,9 @@ export const DocumentsPage: React.FC = () => {
                   </td>
                   <td>
                     <div className="row-actions">
-                      <button title="View"><Eye size={13} style={{ verticalAlign: 'middle' }}/></button>
-                      <button title="Download"><Download size={13} style={{ verticalAlign: 'middle' }}/></button>
-                      <button title="Delete" style={{ color: '#ef4444' }}><Trash2 size={13} style={{ verticalAlign: 'middle' }}/></button>
+                      <button title="View" onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: `Viewing ${doc.name}` }))}><Eye size={13} style={{ verticalAlign: 'middle' }}/></button>
+                      <button title="Download" onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: `Downloading ${doc.name}` }))}><Download size={13} style={{ verticalAlign: 'middle' }}/></button>
+                      <button title="Delete" style={{ color: '#ef4444' }} onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: `Deleting ${doc.name}` }))}><Trash2 size={13} style={{ verticalAlign: 'middle' }}/></button>
                     </div>
                   </td>
                 </tr>

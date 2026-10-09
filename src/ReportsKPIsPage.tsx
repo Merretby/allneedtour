@@ -155,8 +155,8 @@ export const ReportsKPIsPage: React.FC = () => {
                   </td>
                   <td>
                     <div className="row-actions">
-                      <button>View Data</button>
-                      <button>PDF</button>
+                      <button onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: `Viewing data for ${report.title}` }))}>View Data</button>
+                      <button onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: `Downloading PDF for ${report.title}` }))}>PDF</button>
                     </div>
                   </td>
                 </tr>
