@@ -12,6 +12,8 @@ import { ExpensesPage } from './ExpensesPage';
 import { TeamSchedulesPage } from './TeamSchedulesPage';
 import { ReportsKPIsPage } from './ReportsKPIsPage';
 import { DocumentsPage } from './DocumentsPage';
+import { SystemSettingsPage } from './SystemSettingsPage';
+
 
 import React, { useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
@@ -583,6 +585,8 @@ function ModulePage({
   if (page === "team") return <TeamSchedulesPage />;
   if (page === "reports") return <ReportsKPIsPage />;
   if (page === "documents") return <DocumentsPage />;
+  if (page === "settings") return <SystemSettingsPage />;
+
 
   const blocked = !allowed(page);
   const Icon = icons[page];
