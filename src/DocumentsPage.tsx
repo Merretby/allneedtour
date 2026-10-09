@@ -108,7 +108,7 @@ export const DocumentsPage: React.FC = () => {
             <option>Expired</option>
           </select>
           
-          <button className="secondary" style={{ background: '#0F172A', color: 'white', borderColor: '#0F172A' }} onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: "Upload dialog opened" }))}>
+          <button className="secondary" style={{ cursor: "pointer", background: '#0F172A', color: 'white', borderColor: '#0F172A' }} onClick={() => alert("Upload dialog opened")}>
             + Upload File
           </button>
         </div>

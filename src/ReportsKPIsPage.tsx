@@ -113,11 +113,11 @@ export const ReportsKPIsPage: React.FC = () => {
             <option>This Year</option>
           </select>
           
-          <button className="secondary" onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: "Generating report archive..." }))}>
+          <button className="secondary" style={{ cursor: "pointer" }} onClick={() => alert("Generating report archive...")}>
             <Download size={13} style={{ marginRight: '6px', verticalAlign: 'text-bottom' }} /> Export All
           </button>
 
-          <button className="secondary" style={{ background: '#0F172A', color: 'white', borderColor: '#0F172A' }} onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: "Create new report dialog" }))}>
+          <button className="secondary" style={{ cursor: "pointer", background: '#0F172A', color: 'white', borderColor: '#0F172A' }} onClick={() => alert("Create new report dialog")}>
             + New Report
           </button>
         </div>

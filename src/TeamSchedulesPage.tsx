@@ -99,11 +99,11 @@ export const TeamSchedulesPage: React.FC = () => {
              <input type="date" style={{ padding: '8px 0' }} />
           </div>
           
-          <button className="secondary" onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: "Exported Schedule CSV" }))}>
+          <button className="secondary" style={{ cursor: "pointer" }} onClick={() => alert("Exported Schedule CSV")}>
             <Download size={13} style={{ marginRight: '6px', verticalAlign: 'text-bottom' }} /> Export
           </button>
           
-          <button className="secondary" style={{ background: '#0F172A', color: 'white', borderColor: '#0F172A' }} onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: "Add staff member dialog" }))}>
+          <button className="secondary" style={{ cursor: "pointer", background: '#0F172A', color: 'white', borderColor: '#0F172A' }} onClick={() => alert("Add staff member dialog")}>
             + Add Staff
           </button>
         </div>
