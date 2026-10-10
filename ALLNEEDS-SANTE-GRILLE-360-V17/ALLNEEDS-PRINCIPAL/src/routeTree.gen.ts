@@ -9,78 +9,40 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as PublicRouteImport } from './routes/_public'
-import { Route as AdminRouteImport } from './routes/admin'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/app'
-import { Route as ConciergeRouteImport } from './routes/concierge'
-import { Route as ConnexionRouteImport } from './routes/connexion'
-import { Route as InscriptionRouteImport } from './routes/inscription'
-import { Route as OnboardingRouteImport } from './routes/onboarding'
-import { Route as PublicIndexRouteImport } from './routes/_public/index'
-import { Route as PublicAProposRouteImport } from './routes/_public/a-propos'
-import { Route as PublicAccesRouteImport } from './routes/_public/acces'
-import { Route as PublicConditionsRouteImport } from './routes/_public/conditions'
-import { Route as PublicContactRouteImport } from './routes/_public/contact'
-import { Route as PublicDemandeRouteImport } from './routes/_public/demande'
-import { Route as PublicDiagnosticRouteImport } from './routes/_public/diagnostic'
-import { Route as PublicFaqRouteImport } from './routes/_public/faq'
-import { Route as PublicTarifsRouteImport } from './routes/_public/tarifs'
-import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as AdminConciergesRouteImport } from './routes/admin/concierges'
-import { Route as AdminDiagnosticsAutoRouteImport } from './routes/admin/diagnostics-auto'
-import { Route as AdminGrilleRouteImport } from './routes/admin/grille'
-import { Route as AdminPipelineRouteImport } from './routes/admin/pipeline'
-import { Route as AdminQualificationRouteImport } from './routes/admin/qualification'
-import { Route as AdminQuotasRouteImport } from './routes/admin/quotas'
-import { Route as AdminRelancesRouteImport } from './routes/admin/relances'
-import { Route as AppIndexRouteImport } from './routes/app/index'
-import { Route as AppAbonnementRouteImport } from './routes/app/abonnement'
-import { Route as AppDevisRouteImport } from './routes/app/devis'
-import { Route as AppDiagnosticAutoRouteImport } from './routes/app/diagnostic-auto'
-import { Route as AppDiagnosticsRouteImport } from './routes/app/diagnostics'
-import { Route as AppDocumentsRouteImport } from './routes/app/documents'
-import { Route as AppEspaceMetierRouteImport } from './routes/app/espace-metier'
-import { Route as AppLivrablesRouteImport } from './routes/app/livrables'
-import { Route as AppMessagesRouteImport } from './routes/app/messages'
-import { Route as AppPrestatairesRouteImport } from './routes/app/prestataires'
-import { Route as AppRendezVousRouteImport } from './routes/app/rendez-vous'
-import { Route as ConciergeIndexRouteImport } from './routes/concierge/index'
-import { Route as ConciergeBesoinsRouteImport } from './routes/concierge/besoins'
-import { Route as ConciergeDiagnosticsRouteImport } from './routes/concierge/diagnostics'
-import { Route as ConciergeDocumentsRouteImport } from './routes/concierge/documents'
-import { Route as ConciergeMessagesRouteImport } from './routes/concierge/messages'
-import { Route as ConciergeMissionsRouteImport } from './routes/concierge/missions'
-import { Route as ConciergePrestatairesRouteImport } from './routes/concierge/prestataires'
-import { Route as ConciergeRendezVousRouteImport } from './routes/concierge/rendez-vous'
-import { Route as ConciergeSuiviCommercialRouteImport } from './routes/concierge/suivi-commercial'
-import { Route as PublicMissionsIndexRouteImport } from './routes/_public/missions/index'
-import { Route as PublicMissionsCodeRouteImport } from './routes/_public/missions/$code'
-import { Route as PublicSecteursIndexRouteImport } from './routes/_public/secteurs/index'
-import { Route as PublicSecteursSectorRouteImport } from './routes/_public/secteurs/$sector'
-import { Route as PublicSecteursEnseignementRouteImport } from './routes/_public/secteurs/enseignement'
-import { Route as PublicSecteursSanteRouteImport } from './routes/_public/secteurs/sante'
-import { Route as PublicSecteursTourismeRouteImport } from './routes/_public/secteurs/tourisme'
-import { Route as AdminBesoinsIndexRouteImport } from './routes/admin/besoins/index'
-import { Route as AdminClientsIndexRouteImport } from './routes/admin/clients/index'
-import { Route as AdminClientsIdRouteImport } from './routes/admin/clients/$id'
-import { Route as AdminDiagnosticsIndexRouteImport } from './routes/admin/diagnostics/index'
-import { Route as AdminMissionsIndexRouteImport } from './routes/admin/missions/index'
-import { Route as AdminPrestatairesIndexRouteImport } from './routes/admin/prestataires/index'
-import { Route as AppBesoinsIndexRouteImport } from './routes/app/besoins/index'
-import { Route as AppBesoinsIdRouteImport } from './routes/app/besoins/$id'
-import { Route as AppMissionsIndexRouteImport } from './routes/app/missions/index'
-import { Route as AppMissionsIdRouteImport } from './routes/app/missions/$id'
-import { Route as AppTourismeBranchRouteImport } from './routes/app/tourisme/$branch'
-import { Route as ConciergeEntreprisesIndexRouteImport } from './routes/concierge/entreprises/index'
-import { Route as ConciergeEntreprisesIdRouteImport } from './routes/concierge/entreprises/$id'
+import { Route as AppDashboardRouteImport } from './routes/app/dashboard'
+import { Route as AppInsightsRouteImport } from './routes/app/insights'
+import { Route as AppNotificationsRouteImport } from './routes/app/notifications'
+import { Route as AppAdminPlatformRouteImport } from './routes/app/admin/platform'
+import { Route as AppAdminSettingsRouteImport } from './routes/app/admin/settings'
+import { Route as AppAdminSubscriptionRouteImport } from './routes/app/admin/subscription'
+import { Route as AppGrowthCustomersRouteImport } from './routes/app/growth/customers'
+import { Route as AppGrowthDigitalMenuRouteImport } from './routes/app/growth/digital-menu'
+import { Route as AppGrowthLoyaltyRouteImport } from './routes/app/growth/loyalty'
+import { Route as AppGrowthOnlineOrderingRouteImport } from './routes/app/growth/online-ordering'
+import { Route as AppIntelligenceIntegrationsRouteImport } from './routes/app/intelligence/integrations'
+import { Route as AppIntelligenceProductPerformanceRouteImport } from './routes/app/intelligence/product-performance'
+import { Route as AppIntelligenceProfitabilityRouteImport } from './routes/app/intelligence/profitability'
+import { Route as AppIntelligenceSalesReportsRouteImport } from './routes/app/intelligence/sales-reports'
+import { Route as AppIntelligenceWasteAnalysisRouteImport } from './routes/app/intelligence/waste-analysis'
+import { Route as AppManagementCashRegisterRouteImport } from './routes/app/management/cash-register'
+import { Route as AppManagementEmployeesRouteImport } from './routes/app/management/employees'
+import { Route as AppManagementExpensesRouteImport } from './routes/app/management/expenses'
+import { Route as AppManagementInventoryRouteImport } from './routes/app/management/inventory'
+import { Route as AppManagementPurchasingRouteImport } from './routes/app/management/purchasing'
+import { Route as AppManagementRecipesRouteImport } from './routes/app/management/recipes'
+import { Route as AppManagementSuppliersRouteImport } from './routes/app/management/suppliers'
+import { Route as AppOperationsKitchenRouteImport } from './routes/app/operations/kitchen'
+import { Route as AppOperationsMenuRouteImport } from './routes/app/operations/menu'
+import { Route as AppOperationsOrdersRouteImport } from './routes/app/operations/orders'
+import { Route as AppOperationsPosRouteImport } from './routes/app/operations/pos'
+import { Route as AppOperationsReservationsRouteImport } from './routes/app/operations/reservations'
+import { Route as AppOperationsTablesRouteImport } from './routes/app/operations/tables'
 
-const PublicRoute = PublicRouteImport.update({
-  id: '/_public',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRoute = AppRouteImport.update({
@@ -88,729 +50,362 @@ const AppRoute = AppRouteImport.update({
   path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ConciergeRoute = ConciergeRouteImport.update({
-  id: '/concierge',
-  path: '/concierge',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConnexionRoute = ConnexionRouteImport.update({
-  id: '/connexion',
-  path: '/connexion',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InscriptionRoute = InscriptionRouteImport.update({
-  id: '/inscription',
-  path: '/inscription',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OnboardingRoute = OnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PublicIndexRoute = PublicIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicAProposRoute = PublicAProposRouteImport.update({
-  id: '/a-propos',
-  path: '/a-propos',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicAccesRoute = PublicAccesRouteImport.update({
-  id: '/acces',
-  path: '/acces',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicConditionsRoute = PublicConditionsRouteImport.update({
-  id: '/conditions',
-  path: '/conditions',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicContactRoute = PublicContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicDemandeRoute = PublicDemandeRouteImport.update({
-  id: '/demande',
-  path: '/demande',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicDiagnosticRoute = PublicDiagnosticRouteImport.update({
-  id: '/diagnostic',
-  path: '/diagnostic',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicFaqRoute = PublicFaqRouteImport.update({
-  id: '/faq',
-  path: '/faq',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicTarifsRoute = PublicTarifsRouteImport.update({
-  id: '/tarifs',
-  path: '/tarifs',
-  getParentRoute: () => PublicRoute,
-} as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminConciergesRoute = AdminConciergesRouteImport.update({
-  id: '/concierges',
-  path: '/concierges',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminDiagnosticsAutoRoute = AdminDiagnosticsAutoRouteImport.update({
-  id: '/diagnostics-auto',
-  path: '/diagnostics-auto',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminGrilleRoute = AdminGrilleRouteImport.update({
-  id: '/grille',
-  path: '/grille',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminPipelineRoute = AdminPipelineRouteImport.update({
-  id: '/pipeline',
-  path: '/pipeline',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminQualificationRoute = AdminQualificationRouteImport.update({
-  id: '/qualification',
-  path: '/qualification',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminQuotasRoute = AdminQuotasRouteImport.update({
-  id: '/quotas',
-  path: '/quotas',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminRelancesRoute = AdminRelancesRouteImport.update({
-  id: '/relances',
-  path: '/relances',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AppIndexRoute = AppIndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => AppRoute,
 } as any)
-const AppAbonnementRoute = AppAbonnementRouteImport.update({
-  id: '/abonnement',
-  path: '/abonnement',
+const AppInsightsRoute = AppInsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
   getParentRoute: () => AppRoute,
 } as any)
-const AppDevisRoute = AppDevisRouteImport.update({
-  id: '/devis',
-  path: '/devis',
+const AppNotificationsRoute = AppNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
   getParentRoute: () => AppRoute,
 } as any)
-const AppDiagnosticAutoRoute = AppDiagnosticAutoRouteImport.update({
-  id: '/diagnostic-auto',
-  path: '/diagnostic-auto',
+const AppAdminPlatformRoute = AppAdminPlatformRouteImport.update({
+  id: '/admin/platform',
+  path: '/admin/platform',
   getParentRoute: () => AppRoute,
 } as any)
-const AppDiagnosticsRoute = AppDiagnosticsRouteImport.update({
-  id: '/diagnostics',
-  path: '/diagnostics',
+const AppAdminSettingsRoute = AppAdminSettingsRouteImport.update({
+  id: '/admin/settings',
+  path: '/admin/settings',
   getParentRoute: () => AppRoute,
 } as any)
-const AppDocumentsRoute = AppDocumentsRouteImport.update({
-  id: '/documents',
-  path: '/documents',
+const AppAdminSubscriptionRoute = AppAdminSubscriptionRouteImport.update({
+  id: '/admin/subscription',
+  path: '/admin/subscription',
   getParentRoute: () => AppRoute,
 } as any)
-const AppEspaceMetierRoute = AppEspaceMetierRouteImport.update({
-  id: '/espace-metier',
-  path: '/espace-metier',
+const AppGrowthCustomersRoute = AppGrowthCustomersRouteImport.update({
+  id: '/growth/customers',
+  path: '/growth/customers',
   getParentRoute: () => AppRoute,
 } as any)
-const AppLivrablesRoute = AppLivrablesRouteImport.update({
-  id: '/livrables',
-  path: '/livrables',
+const AppGrowthDigitalMenuRoute = AppGrowthDigitalMenuRouteImport.update({
+  id: '/growth/digital-menu',
+  path: '/growth/digital-menu',
   getParentRoute: () => AppRoute,
 } as any)
-const AppMessagesRoute = AppMessagesRouteImport.update({
-  id: '/messages',
-  path: '/messages',
+const AppGrowthLoyaltyRoute = AppGrowthLoyaltyRouteImport.update({
+  id: '/growth/loyalty',
+  path: '/growth/loyalty',
   getParentRoute: () => AppRoute,
 } as any)
-const AppPrestatairesRoute = AppPrestatairesRouteImport.update({
-  id: '/prestataires',
-  path: '/prestataires',
+const AppGrowthOnlineOrderingRoute = AppGrowthOnlineOrderingRouteImport.update({
+  id: '/growth/online-ordering',
+  path: '/growth/online-ordering',
   getParentRoute: () => AppRoute,
 } as any)
-const AppRendezVousRoute = AppRendezVousRouteImport.update({
-  id: '/rendez-vous',
-  path: '/rendez-vous',
-  getParentRoute: () => AppRoute,
-} as any)
-const ConciergeIndexRoute = ConciergeIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => ConciergeRoute,
-} as any)
-const ConciergeBesoinsRoute = ConciergeBesoinsRouteImport.update({
-  id: '/besoins',
-  path: '/besoins',
-  getParentRoute: () => ConciergeRoute,
-} as any)
-const ConciergeDiagnosticsRoute = ConciergeDiagnosticsRouteImport.update({
-  id: '/diagnostics',
-  path: '/diagnostics',
-  getParentRoute: () => ConciergeRoute,
-} as any)
-const ConciergeDocumentsRoute = ConciergeDocumentsRouteImport.update({
-  id: '/documents',
-  path: '/documents',
-  getParentRoute: () => ConciergeRoute,
-} as any)
-const ConciergeMessagesRoute = ConciergeMessagesRouteImport.update({
-  id: '/messages',
-  path: '/messages',
-  getParentRoute: () => ConciergeRoute,
-} as any)
-const ConciergeMissionsRoute = ConciergeMissionsRouteImport.update({
-  id: '/missions',
-  path: '/missions',
-  getParentRoute: () => ConciergeRoute,
-} as any)
-const ConciergePrestatairesRoute = ConciergePrestatairesRouteImport.update({
-  id: '/prestataires',
-  path: '/prestataires',
-  getParentRoute: () => ConciergeRoute,
-} as any)
-const ConciergeRendezVousRoute = ConciergeRendezVousRouteImport.update({
-  id: '/rendez-vous',
-  path: '/rendez-vous',
-  getParentRoute: () => ConciergeRoute,
-} as any)
-const ConciergeSuiviCommercialRoute =
-  ConciergeSuiviCommercialRouteImport.update({
-    id: '/suivi-commercial',
-    path: '/suivi-commercial',
-    getParentRoute: () => ConciergeRoute,
+const AppIntelligenceIntegrationsRoute =
+  AppIntelligenceIntegrationsRouteImport.update({
+    id: '/intelligence/integrations',
+    path: '/intelligence/integrations',
+    getParentRoute: () => AppRoute,
   } as any)
-const PublicMissionsIndexRoute = PublicMissionsIndexRouteImport.update({
-  id: '/missions/',
-  path: '/missions/',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicMissionsCodeRoute = PublicMissionsCodeRouteImport.update({
-  id: '/missions/$code',
-  path: '/missions/$code',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicSecteursIndexRoute = PublicSecteursIndexRouteImport.update({
-  id: '/secteurs/',
-  path: '/secteurs/',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicSecteursSectorRoute = PublicSecteursSectorRouteImport.update({
-  id: '/secteurs/$sector',
-  path: '/secteurs/$sector',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicSecteursEnseignementRoute =
-  PublicSecteursEnseignementRouteImport.update({
-    id: '/secteurs/enseignement',
-    path: '/secteurs/enseignement',
-    getParentRoute: () => PublicRoute,
+const AppIntelligenceProductPerformanceRoute =
+  AppIntelligenceProductPerformanceRouteImport.update({
+    id: '/intelligence/product-performance',
+    path: '/intelligence/product-performance',
+    getParentRoute: () => AppRoute,
   } as any)
-const PublicSecteursSanteRoute = PublicSecteursSanteRouteImport.update({
-  id: '/secteurs/sante',
-  path: '/secteurs/sante',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicSecteursTourismeRoute = PublicSecteursTourismeRouteImport.update({
-  id: '/secteurs/tourisme',
-  path: '/secteurs/tourisme',
-  getParentRoute: () => PublicRoute,
-} as any)
-const AdminBesoinsIndexRoute = AdminBesoinsIndexRouteImport.update({
-  id: '/besoins/',
-  path: '/besoins/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminClientsIndexRoute = AdminClientsIndexRouteImport.update({
-  id: '/clients/',
-  path: '/clients/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminClientsIdRoute = AdminClientsIdRouteImport.update({
-  id: '/clients/$id',
-  path: '/clients/$id',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminDiagnosticsIndexRoute = AdminDiagnosticsIndexRouteImport.update({
-  id: '/diagnostics/',
-  path: '/diagnostics/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminMissionsIndexRoute = AdminMissionsIndexRouteImport.update({
-  id: '/missions/',
-  path: '/missions/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminPrestatairesIndexRoute = AdminPrestatairesIndexRouteImport.update({
-  id: '/prestataires/',
-  path: '/prestataires/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AppBesoinsIndexRoute = AppBesoinsIndexRouteImport.update({
-  id: '/besoins/',
-  path: '/besoins/',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppBesoinsIdRoute = AppBesoinsIdRouteImport.update({
-  id: '/besoins/$id',
-  path: '/besoins/$id',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppMissionsIndexRoute = AppMissionsIndexRouteImport.update({
-  id: '/missions/',
-  path: '/missions/',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppMissionsIdRoute = AppMissionsIdRouteImport.update({
-  id: '/missions/$id',
-  path: '/missions/$id',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppTourismeBranchRoute = AppTourismeBranchRouteImport.update({
-  id: '/tourisme/$branch',
-  path: '/tourisme/$branch',
-  getParentRoute: () => AppRoute,
-} as any)
-const ConciergeEntreprisesIndexRoute =
-  ConciergeEntreprisesIndexRouteImport.update({
-    id: '/entreprises/',
-    path: '/entreprises/',
-    getParentRoute: () => ConciergeRoute,
+const AppIntelligenceProfitabilityRoute =
+  AppIntelligenceProfitabilityRouteImport.update({
+    id: '/intelligence/profitability',
+    path: '/intelligence/profitability',
+    getParentRoute: () => AppRoute,
   } as any)
-const ConciergeEntreprisesIdRoute = ConciergeEntreprisesIdRouteImport.update({
-  id: '/entreprises/$id',
-  path: '/entreprises/$id',
-  getParentRoute: () => ConciergeRoute,
+const AppIntelligenceSalesReportsRoute =
+  AppIntelligenceSalesReportsRouteImport.update({
+    id: '/intelligence/sales-reports',
+    path: '/intelligence/sales-reports',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppIntelligenceWasteAnalysisRoute =
+  AppIntelligenceWasteAnalysisRouteImport.update({
+    id: '/intelligence/waste-analysis',
+    path: '/intelligence/waste-analysis',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppManagementCashRegisterRoute =
+  AppManagementCashRegisterRouteImport.update({
+    id: '/management/cash-register',
+    path: '/management/cash-register',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppManagementEmployeesRoute = AppManagementEmployeesRouteImport.update({
+  id: '/management/employees',
+  path: '/management/employees',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppManagementExpensesRoute = AppManagementExpensesRouteImport.update({
+  id: '/management/expenses',
+  path: '/management/expenses',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppManagementInventoryRoute = AppManagementInventoryRouteImport.update({
+  id: '/management/inventory',
+  path: '/management/inventory',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppManagementPurchasingRoute = AppManagementPurchasingRouteImport.update({
+  id: '/management/purchasing',
+  path: '/management/purchasing',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppManagementRecipesRoute = AppManagementRecipesRouteImport.update({
+  id: '/management/recipes',
+  path: '/management/recipes',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppManagementSuppliersRoute = AppManagementSuppliersRouteImport.update({
+  id: '/management/suppliers',
+  path: '/management/suppliers',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOperationsKitchenRoute = AppOperationsKitchenRouteImport.update({
+  id: '/operations/kitchen',
+  path: '/operations/kitchen',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOperationsMenuRoute = AppOperationsMenuRouteImport.update({
+  id: '/operations/menu',
+  path: '/operations/menu',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOperationsOrdersRoute = AppOperationsOrdersRouteImport.update({
+  id: '/operations/orders',
+  path: '/operations/orders',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOperationsPosRoute = AppOperationsPosRouteImport.update({
+  id: '/operations/pos',
+  path: '/operations/pos',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOperationsReservationsRoute =
+  AppOperationsReservationsRouteImport.update({
+    id: '/operations/reservations',
+    path: '/operations/reservations',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppOperationsTablesRoute = AppOperationsTablesRouteImport.update({
+  id: '/operations/tables',
+  path: '/operations/tables',
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof PublicIndexRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
-  '/concierge': typeof ConciergeRouteWithChildren
-  '/connexion': typeof ConnexionRoute
-  '/inscription': typeof InscriptionRoute
-  '/onboarding': typeof OnboardingRoute
-  '/a-propos': typeof PublicAProposRoute
-  '/acces': typeof PublicAccesRoute
-  '/conditions': typeof PublicConditionsRoute
-  '/contact': typeof PublicContactRoute
-  '/demande': typeof PublicDemandeRoute
-  '/diagnostic': typeof PublicDiagnosticRoute
-  '/faq': typeof PublicFaqRoute
-  '/tarifs': typeof PublicTarifsRoute
-  '/admin/concierges': typeof AdminConciergesRoute
-  '/admin/diagnostics-auto': typeof AdminDiagnosticsAutoRoute
-  '/admin/grille': typeof AdminGrilleRoute
-  '/admin/pipeline': typeof AdminPipelineRoute
-  '/admin/qualification': typeof AdminQualificationRoute
-  '/admin/quotas': typeof AdminQuotasRoute
-  '/admin/relances': typeof AdminRelancesRoute
-  '/app/abonnement': typeof AppAbonnementRoute
-  '/app/devis': typeof AppDevisRoute
-  '/app/diagnostic-auto': typeof AppDiagnosticAutoRoute
-  '/app/diagnostics': typeof AppDiagnosticsRoute
-  '/app/documents': typeof AppDocumentsRoute
-  '/app/espace-metier': typeof AppEspaceMetierRoute
-  '/app/livrables': typeof AppLivrablesRoute
-  '/app/messages': typeof AppMessagesRoute
-  '/app/prestataires': typeof AppPrestatairesRoute
-  '/app/rendez-vous': typeof AppRendezVousRoute
-  '/concierge/besoins': typeof ConciergeBesoinsRoute
-  '/concierge/diagnostics': typeof ConciergeDiagnosticsRoute
-  '/concierge/documents': typeof ConciergeDocumentsRoute
-  '/concierge/messages': typeof ConciergeMessagesRoute
-  '/concierge/missions': typeof ConciergeMissionsRoute
-  '/concierge/prestataires': typeof ConciergePrestatairesRoute
-  '/concierge/rendez-vous': typeof ConciergeRendezVousRoute
-  '/concierge/suivi-commercial': typeof ConciergeSuiviCommercialRoute
-  '/admin/': typeof AdminIndexRoute
-  '/app/': typeof AppIndexRoute
-  '/concierge/': typeof ConciergeIndexRoute
-  '/missions/$code': typeof PublicMissionsCodeRoute
-  '/secteurs/$sector': typeof PublicSecteursSectorRoute
-  '/secteurs/enseignement': typeof PublicSecteursEnseignementRoute
-  '/secteurs/sante': typeof PublicSecteursSanteRoute
-  '/secteurs/tourisme': typeof PublicSecteursTourismeRoute
-  '/admin/clients/$id': typeof AdminClientsIdRoute
-  '/app/besoins/$id': typeof AppBesoinsIdRoute
-  '/app/missions/$id': typeof AppMissionsIdRoute
-  '/app/tourisme/$branch': typeof AppTourismeBranchRoute
-  '/concierge/entreprises/$id': typeof ConciergeEntreprisesIdRoute
-  '/missions/': typeof PublicMissionsIndexRoute
-  '/secteurs/': typeof PublicSecteursIndexRoute
-  '/admin/besoins/': typeof AdminBesoinsIndexRoute
-  '/admin/clients/': typeof AdminClientsIndexRoute
-  '/admin/diagnostics/': typeof AdminDiagnosticsIndexRoute
-  '/admin/missions/': typeof AdminMissionsIndexRoute
-  '/admin/prestataires/': typeof AdminPrestatairesIndexRoute
-  '/app/besoins/': typeof AppBesoinsIndexRoute
-  '/app/missions/': typeof AppMissionsIndexRoute
-  '/concierge/entreprises/': typeof ConciergeEntreprisesIndexRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/insights': typeof AppInsightsRoute
+  '/app/notifications': typeof AppNotificationsRoute
+  '/app/admin/platform': typeof AppAdminPlatformRoute
+  '/app/admin/settings': typeof AppAdminSettingsRoute
+  '/app/admin/subscription': typeof AppAdminSubscriptionRoute
+  '/app/growth/customers': typeof AppGrowthCustomersRoute
+  '/app/growth/digital-menu': typeof AppGrowthDigitalMenuRoute
+  '/app/growth/loyalty': typeof AppGrowthLoyaltyRoute
+  '/app/growth/online-ordering': typeof AppGrowthOnlineOrderingRoute
+  '/app/intelligence/integrations': typeof AppIntelligenceIntegrationsRoute
+  '/app/intelligence/product-performance': typeof AppIntelligenceProductPerformanceRoute
+  '/app/intelligence/profitability': typeof AppIntelligenceProfitabilityRoute
+  '/app/intelligence/sales-reports': typeof AppIntelligenceSalesReportsRoute
+  '/app/intelligence/waste-analysis': typeof AppIntelligenceWasteAnalysisRoute
+  '/app/management/cash-register': typeof AppManagementCashRegisterRoute
+  '/app/management/employees': typeof AppManagementEmployeesRoute
+  '/app/management/expenses': typeof AppManagementExpensesRoute
+  '/app/management/inventory': typeof AppManagementInventoryRoute
+  '/app/management/purchasing': typeof AppManagementPurchasingRoute
+  '/app/management/recipes': typeof AppManagementRecipesRoute
+  '/app/management/suppliers': typeof AppManagementSuppliersRoute
+  '/app/operations/kitchen': typeof AppOperationsKitchenRoute
+  '/app/operations/menu': typeof AppOperationsMenuRoute
+  '/app/operations/orders': typeof AppOperationsOrdersRoute
+  '/app/operations/pos': typeof AppOperationsPosRoute
+  '/app/operations/reservations': typeof AppOperationsReservationsRoute
+  '/app/operations/tables': typeof AppOperationsTablesRoute
 }
 export interface FileRoutesByTo {
-  '/connexion': typeof ConnexionRoute
-  '/inscription': typeof InscriptionRoute
-  '/onboarding': typeof OnboardingRoute
-  '/a-propos': typeof PublicAProposRoute
-  '/acces': typeof PublicAccesRoute
-  '/conditions': typeof PublicConditionsRoute
-  '/contact': typeof PublicContactRoute
-  '/demande': typeof PublicDemandeRoute
-  '/diagnostic': typeof PublicDiagnosticRoute
-  '/faq': typeof PublicFaqRoute
-  '/tarifs': typeof PublicTarifsRoute
-  '/admin/concierges': typeof AdminConciergesRoute
-  '/admin/diagnostics-auto': typeof AdminDiagnosticsAutoRoute
-  '/admin/grille': typeof AdminGrilleRoute
-  '/admin/pipeline': typeof AdminPipelineRoute
-  '/admin/qualification': typeof AdminQualificationRoute
-  '/admin/quotas': typeof AdminQuotasRoute
-  '/admin/relances': typeof AdminRelancesRoute
-  '/app/abonnement': typeof AppAbonnementRoute
-  '/app/devis': typeof AppDevisRoute
-  '/app/diagnostic-auto': typeof AppDiagnosticAutoRoute
-  '/app/diagnostics': typeof AppDiagnosticsRoute
-  '/app/documents': typeof AppDocumentsRoute
-  '/app/espace-metier': typeof AppEspaceMetierRoute
-  '/app/livrables': typeof AppLivrablesRoute
-  '/app/messages': typeof AppMessagesRoute
-  '/app/prestataires': typeof AppPrestatairesRoute
-  '/app/rendez-vous': typeof AppRendezVousRoute
-  '/concierge/besoins': typeof ConciergeBesoinsRoute
-  '/concierge/diagnostics': typeof ConciergeDiagnosticsRoute
-  '/concierge/documents': typeof ConciergeDocumentsRoute
-  '/concierge/messages': typeof ConciergeMessagesRoute
-  '/concierge/missions': typeof ConciergeMissionsRoute
-  '/concierge/prestataires': typeof ConciergePrestatairesRoute
-  '/concierge/rendez-vous': typeof ConciergeRendezVousRoute
-  '/concierge/suivi-commercial': typeof ConciergeSuiviCommercialRoute
-  '/': typeof PublicIndexRoute
-  '/admin': typeof AdminIndexRoute
-  '/app': typeof AppIndexRoute
-  '/concierge': typeof ConciergeIndexRoute
-  '/missions/$code': typeof PublicMissionsCodeRoute
-  '/secteurs/$sector': typeof PublicSecteursSectorRoute
-  '/secteurs/enseignement': typeof PublicSecteursEnseignementRoute
-  '/secteurs/sante': typeof PublicSecteursSanteRoute
-  '/secteurs/tourisme': typeof PublicSecteursTourismeRoute
-  '/admin/clients/$id': typeof AdminClientsIdRoute
-  '/app/besoins/$id': typeof AppBesoinsIdRoute
-  '/app/missions/$id': typeof AppMissionsIdRoute
-  '/app/tourisme/$branch': typeof AppTourismeBranchRoute
-  '/concierge/entreprises/$id': typeof ConciergeEntreprisesIdRoute
-  '/missions': typeof PublicMissionsIndexRoute
-  '/secteurs': typeof PublicSecteursIndexRoute
-  '/admin/besoins': typeof AdminBesoinsIndexRoute
-  '/admin/clients': typeof AdminClientsIndexRoute
-  '/admin/diagnostics': typeof AdminDiagnosticsIndexRoute
-  '/admin/missions': typeof AdminMissionsIndexRoute
-  '/admin/prestataires': typeof AdminPrestatairesIndexRoute
-  '/app/besoins': typeof AppBesoinsIndexRoute
-  '/app/missions': typeof AppMissionsIndexRoute
-  '/concierge/entreprises': typeof ConciergeEntreprisesIndexRoute
+  '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/insights': typeof AppInsightsRoute
+  '/app/notifications': typeof AppNotificationsRoute
+  '/app/admin/platform': typeof AppAdminPlatformRoute
+  '/app/admin/settings': typeof AppAdminSettingsRoute
+  '/app/admin/subscription': typeof AppAdminSubscriptionRoute
+  '/app/growth/customers': typeof AppGrowthCustomersRoute
+  '/app/growth/digital-menu': typeof AppGrowthDigitalMenuRoute
+  '/app/growth/loyalty': typeof AppGrowthLoyaltyRoute
+  '/app/growth/online-ordering': typeof AppGrowthOnlineOrderingRoute
+  '/app/intelligence/integrations': typeof AppIntelligenceIntegrationsRoute
+  '/app/intelligence/product-performance': typeof AppIntelligenceProductPerformanceRoute
+  '/app/intelligence/profitability': typeof AppIntelligenceProfitabilityRoute
+  '/app/intelligence/sales-reports': typeof AppIntelligenceSalesReportsRoute
+  '/app/intelligence/waste-analysis': typeof AppIntelligenceWasteAnalysisRoute
+  '/app/management/cash-register': typeof AppManagementCashRegisterRoute
+  '/app/management/employees': typeof AppManagementEmployeesRoute
+  '/app/management/expenses': typeof AppManagementExpensesRoute
+  '/app/management/inventory': typeof AppManagementInventoryRoute
+  '/app/management/purchasing': typeof AppManagementPurchasingRoute
+  '/app/management/recipes': typeof AppManagementRecipesRoute
+  '/app/management/suppliers': typeof AppManagementSuppliersRoute
+  '/app/operations/kitchen': typeof AppOperationsKitchenRoute
+  '/app/operations/menu': typeof AppOperationsMenuRoute
+  '/app/operations/orders': typeof AppOperationsOrdersRoute
+  '/app/operations/pos': typeof AppOperationsPosRoute
+  '/app/operations/reservations': typeof AppOperationsReservationsRoute
+  '/app/operations/tables': typeof AppOperationsTablesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_public': typeof PublicRouteWithChildren
-  '/admin': typeof AdminRouteWithChildren
+  '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
-  '/concierge': typeof ConciergeRouteWithChildren
-  '/connexion': typeof ConnexionRoute
-  '/inscription': typeof InscriptionRoute
-  '/onboarding': typeof OnboardingRoute
-  '/_public/a-propos': typeof PublicAProposRoute
-  '/_public/acces': typeof PublicAccesRoute
-  '/_public/conditions': typeof PublicConditionsRoute
-  '/_public/contact': typeof PublicContactRoute
-  '/_public/demande': typeof PublicDemandeRoute
-  '/_public/diagnostic': typeof PublicDiagnosticRoute
-  '/_public/faq': typeof PublicFaqRoute
-  '/_public/tarifs': typeof PublicTarifsRoute
-  '/admin/concierges': typeof AdminConciergesRoute
-  '/admin/diagnostics-auto': typeof AdminDiagnosticsAutoRoute
-  '/admin/grille': typeof AdminGrilleRoute
-  '/admin/pipeline': typeof AdminPipelineRoute
-  '/admin/qualification': typeof AdminQualificationRoute
-  '/admin/quotas': typeof AdminQuotasRoute
-  '/admin/relances': typeof AdminRelancesRoute
-  '/app/abonnement': typeof AppAbonnementRoute
-  '/app/devis': typeof AppDevisRoute
-  '/app/diagnostic-auto': typeof AppDiagnosticAutoRoute
-  '/app/diagnostics': typeof AppDiagnosticsRoute
-  '/app/documents': typeof AppDocumentsRoute
-  '/app/espace-metier': typeof AppEspaceMetierRoute
-  '/app/livrables': typeof AppLivrablesRoute
-  '/app/messages': typeof AppMessagesRoute
-  '/app/prestataires': typeof AppPrestatairesRoute
-  '/app/rendez-vous': typeof AppRendezVousRoute
-  '/concierge/besoins': typeof ConciergeBesoinsRoute
-  '/concierge/diagnostics': typeof ConciergeDiagnosticsRoute
-  '/concierge/documents': typeof ConciergeDocumentsRoute
-  '/concierge/messages': typeof ConciergeMessagesRoute
-  '/concierge/missions': typeof ConciergeMissionsRoute
-  '/concierge/prestataires': typeof ConciergePrestatairesRoute
-  '/concierge/rendez-vous': typeof ConciergeRendezVousRoute
-  '/concierge/suivi-commercial': typeof ConciergeSuiviCommercialRoute
-  '/_public/': typeof PublicIndexRoute
-  '/admin/': typeof AdminIndexRoute
-  '/app/': typeof AppIndexRoute
-  '/concierge/': typeof ConciergeIndexRoute
-  '/_public/missions/$code': typeof PublicMissionsCodeRoute
-  '/_public/secteurs/$sector': typeof PublicSecteursSectorRoute
-  '/_public/secteurs/enseignement': typeof PublicSecteursEnseignementRoute
-  '/_public/secteurs/sante': typeof PublicSecteursSanteRoute
-  '/_public/secteurs/tourisme': typeof PublicSecteursTourismeRoute
-  '/admin/clients/$id': typeof AdminClientsIdRoute
-  '/app/besoins/$id': typeof AppBesoinsIdRoute
-  '/app/missions/$id': typeof AppMissionsIdRoute
-  '/app/tourisme/$branch': typeof AppTourismeBranchRoute
-  '/concierge/entreprises/$id': typeof ConciergeEntreprisesIdRoute
-  '/_public/missions/': typeof PublicMissionsIndexRoute
-  '/_public/secteurs/': typeof PublicSecteursIndexRoute
-  '/admin/besoins/': typeof AdminBesoinsIndexRoute
-  '/admin/clients/': typeof AdminClientsIndexRoute
-  '/admin/diagnostics/': typeof AdminDiagnosticsIndexRoute
-  '/admin/missions/': typeof AdminMissionsIndexRoute
-  '/admin/prestataires/': typeof AdminPrestatairesIndexRoute
-  '/app/besoins/': typeof AppBesoinsIndexRoute
-  '/app/missions/': typeof AppMissionsIndexRoute
-  '/concierge/entreprises/': typeof ConciergeEntreprisesIndexRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/insights': typeof AppInsightsRoute
+  '/app/notifications': typeof AppNotificationsRoute
+  '/app/admin/platform': typeof AppAdminPlatformRoute
+  '/app/admin/settings': typeof AppAdminSettingsRoute
+  '/app/admin/subscription': typeof AppAdminSubscriptionRoute
+  '/app/growth/customers': typeof AppGrowthCustomersRoute
+  '/app/growth/digital-menu': typeof AppGrowthDigitalMenuRoute
+  '/app/growth/loyalty': typeof AppGrowthLoyaltyRoute
+  '/app/growth/online-ordering': typeof AppGrowthOnlineOrderingRoute
+  '/app/intelligence/integrations': typeof AppIntelligenceIntegrationsRoute
+  '/app/intelligence/product-performance': typeof AppIntelligenceProductPerformanceRoute
+  '/app/intelligence/profitability': typeof AppIntelligenceProfitabilityRoute
+  '/app/intelligence/sales-reports': typeof AppIntelligenceSalesReportsRoute
+  '/app/intelligence/waste-analysis': typeof AppIntelligenceWasteAnalysisRoute
+  '/app/management/cash-register': typeof AppManagementCashRegisterRoute
+  '/app/management/employees': typeof AppManagementEmployeesRoute
+  '/app/management/expenses': typeof AppManagementExpensesRoute
+  '/app/management/inventory': typeof AppManagementInventoryRoute
+  '/app/management/purchasing': typeof AppManagementPurchasingRoute
+  '/app/management/recipes': typeof AppManagementRecipesRoute
+  '/app/management/suppliers': typeof AppManagementSuppliersRoute
+  '/app/operations/kitchen': typeof AppOperationsKitchenRoute
+  '/app/operations/menu': typeof AppOperationsMenuRoute
+  '/app/operations/orders': typeof AppOperationsOrdersRoute
+  '/app/operations/pos': typeof AppOperationsPosRoute
+  '/app/operations/reservations': typeof AppOperationsReservationsRoute
+  '/app/operations/tables': typeof AppOperationsTablesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
     | '/app'
-    | '/concierge'
-    | '/connexion'
-    | '/inscription'
-    | '/onboarding'
-    | '/a-propos'
-    | '/acces'
-    | '/conditions'
-    | '/contact'
-    | '/demande'
-    | '/diagnostic'
-    | '/faq'
-    | '/tarifs'
-    | '/admin/concierges'
-    | '/admin/diagnostics-auto'
-    | '/admin/grille'
-    | '/admin/pipeline'
-    | '/admin/qualification'
-    | '/admin/quotas'
-    | '/admin/relances'
-    | '/app/abonnement'
-    | '/app/devis'
-    | '/app/diagnostic-auto'
-    | '/app/diagnostics'
-    | '/app/documents'
-    | '/app/espace-metier'
-    | '/app/livrables'
-    | '/app/messages'
-    | '/app/prestataires'
-    | '/app/rendez-vous'
-    | '/concierge/besoins'
-    | '/concierge/diagnostics'
-    | '/concierge/documents'
-    | '/concierge/messages'
-    | '/concierge/missions'
-    | '/concierge/prestataires'
-    | '/concierge/rendez-vous'
-    | '/concierge/suivi-commercial'
-    | '/admin/'
-    | '/app/'
-    | '/concierge/'
-    | '/missions/$code'
-    | '/secteurs/$sector'
-    | '/secteurs/enseignement'
-    | '/secteurs/sante'
-    | '/secteurs/tourisme'
-    | '/admin/clients/$id'
-    | '/app/besoins/$id'
-    | '/app/missions/$id'
-    | '/app/tourisme/$branch'
-    | '/concierge/entreprises/$id'
-    | '/missions/'
-    | '/secteurs/'
-    | '/admin/besoins/'
-    | '/admin/clients/'
-    | '/admin/diagnostics/'
-    | '/admin/missions/'
-    | '/admin/prestataires/'
-    | '/app/besoins/'
-    | '/app/missions/'
-    | '/concierge/entreprises/'
+    | '/app/dashboard'
+    | '/app/insights'
+    | '/app/notifications'
+    | '/app/admin/platform'
+    | '/app/admin/settings'
+    | '/app/admin/subscription'
+    | '/app/growth/customers'
+    | '/app/growth/digital-menu'
+    | '/app/growth/loyalty'
+    | '/app/growth/online-ordering'
+    | '/app/intelligence/integrations'
+    | '/app/intelligence/product-performance'
+    | '/app/intelligence/profitability'
+    | '/app/intelligence/sales-reports'
+    | '/app/intelligence/waste-analysis'
+    | '/app/management/cash-register'
+    | '/app/management/employees'
+    | '/app/management/expenses'
+    | '/app/management/inventory'
+    | '/app/management/purchasing'
+    | '/app/management/recipes'
+    | '/app/management/suppliers'
+    | '/app/operations/kitchen'
+    | '/app/operations/menu'
+    | '/app/operations/orders'
+    | '/app/operations/pos'
+    | '/app/operations/reservations'
+    | '/app/operations/tables'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/connexion'
-    | '/inscription'
-    | '/onboarding'
-    | '/a-propos'
-    | '/acces'
-    | '/conditions'
-    | '/contact'
-    | '/demande'
-    | '/diagnostic'
-    | '/faq'
-    | '/tarifs'
-    | '/admin/concierges'
-    | '/admin/diagnostics-auto'
-    | '/admin/grille'
-    | '/admin/pipeline'
-    | '/admin/qualification'
-    | '/admin/quotas'
-    | '/admin/relances'
-    | '/app/abonnement'
-    | '/app/devis'
-    | '/app/diagnostic-auto'
-    | '/app/diagnostics'
-    | '/app/documents'
-    | '/app/espace-metier'
-    | '/app/livrables'
-    | '/app/messages'
-    | '/app/prestataires'
-    | '/app/rendez-vous'
-    | '/concierge/besoins'
-    | '/concierge/diagnostics'
-    | '/concierge/documents'
-    | '/concierge/messages'
-    | '/concierge/missions'
-    | '/concierge/prestataires'
-    | '/concierge/rendez-vous'
-    | '/concierge/suivi-commercial'
     | '/'
-    | '/admin'
     | '/app'
-    | '/concierge'
-    | '/missions/$code'
-    | '/secteurs/$sector'
-    | '/secteurs/enseignement'
-    | '/secteurs/sante'
-    | '/secteurs/tourisme'
-    | '/admin/clients/$id'
-    | '/app/besoins/$id'
-    | '/app/missions/$id'
-    | '/app/tourisme/$branch'
-    | '/concierge/entreprises/$id'
-    | '/missions'
-    | '/secteurs'
-    | '/admin/besoins'
-    | '/admin/clients'
-    | '/admin/diagnostics'
-    | '/admin/missions'
-    | '/admin/prestataires'
-    | '/app/besoins'
-    | '/app/missions'
-    | '/concierge/entreprises'
+    | '/app/dashboard'
+    | '/app/insights'
+    | '/app/notifications'
+    | '/app/admin/platform'
+    | '/app/admin/settings'
+    | '/app/admin/subscription'
+    | '/app/growth/customers'
+    | '/app/growth/digital-menu'
+    | '/app/growth/loyalty'
+    | '/app/growth/online-ordering'
+    | '/app/intelligence/integrations'
+    | '/app/intelligence/product-performance'
+    | '/app/intelligence/profitability'
+    | '/app/intelligence/sales-reports'
+    | '/app/intelligence/waste-analysis'
+    | '/app/management/cash-register'
+    | '/app/management/employees'
+    | '/app/management/expenses'
+    | '/app/management/inventory'
+    | '/app/management/purchasing'
+    | '/app/management/recipes'
+    | '/app/management/suppliers'
+    | '/app/operations/kitchen'
+    | '/app/operations/menu'
+    | '/app/operations/orders'
+    | '/app/operations/pos'
+    | '/app/operations/reservations'
+    | '/app/operations/tables'
   id:
     | '__root__'
-    | '/_public'
-    | '/admin'
+    | '/'
     | '/app'
-    | '/concierge'
-    | '/connexion'
-    | '/inscription'
-    | '/onboarding'
-    | '/_public/a-propos'
-    | '/_public/acces'
-    | '/_public/conditions'
-    | '/_public/contact'
-    | '/_public/demande'
-    | '/_public/diagnostic'
-    | '/_public/faq'
-    | '/_public/tarifs'
-    | '/admin/concierges'
-    | '/admin/diagnostics-auto'
-    | '/admin/grille'
-    | '/admin/pipeline'
-    | '/admin/qualification'
-    | '/admin/quotas'
-    | '/admin/relances'
-    | '/app/abonnement'
-    | '/app/devis'
-    | '/app/diagnostic-auto'
-    | '/app/diagnostics'
-    | '/app/documents'
-    | '/app/espace-metier'
-    | '/app/livrables'
-    | '/app/messages'
-    | '/app/prestataires'
-    | '/app/rendez-vous'
-    | '/concierge/besoins'
-    | '/concierge/diagnostics'
-    | '/concierge/documents'
-    | '/concierge/messages'
-    | '/concierge/missions'
-    | '/concierge/prestataires'
-    | '/concierge/rendez-vous'
-    | '/concierge/suivi-commercial'
-    | '/_public/'
-    | '/admin/'
-    | '/app/'
-    | '/concierge/'
-    | '/_public/missions/$code'
-    | '/_public/secteurs/$sector'
-    | '/_public/secteurs/enseignement'
-    | '/_public/secteurs/sante'
-    | '/_public/secteurs/tourisme'
-    | '/admin/clients/$id'
-    | '/app/besoins/$id'
-    | '/app/missions/$id'
-    | '/app/tourisme/$branch'
-    | '/concierge/entreprises/$id'
-    | '/_public/missions/'
-    | '/_public/secteurs/'
-    | '/admin/besoins/'
-    | '/admin/clients/'
-    | '/admin/diagnostics/'
-    | '/admin/missions/'
-    | '/admin/prestataires/'
-    | '/app/besoins/'
-    | '/app/missions/'
-    | '/concierge/entreprises/'
+    | '/app/dashboard'
+    | '/app/insights'
+    | '/app/notifications'
+    | '/app/admin/platform'
+    | '/app/admin/settings'
+    | '/app/admin/subscription'
+    | '/app/growth/customers'
+    | '/app/growth/digital-menu'
+    | '/app/growth/loyalty'
+    | '/app/growth/online-ordering'
+    | '/app/intelligence/integrations'
+    | '/app/intelligence/product-performance'
+    | '/app/intelligence/profitability'
+    | '/app/intelligence/sales-reports'
+    | '/app/intelligence/waste-analysis'
+    | '/app/management/cash-register'
+    | '/app/management/employees'
+    | '/app/management/expenses'
+    | '/app/management/inventory'
+    | '/app/management/purchasing'
+    | '/app/management/recipes'
+    | '/app/management/suppliers'
+    | '/app/operations/kitchen'
+    | '/app/operations/menu'
+    | '/app/operations/orders'
+    | '/app/operations/pos'
+    | '/app/operations/reservations'
+    | '/app/operations/tables'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  PublicRoute: typeof PublicRouteWithChildren
-  AdminRoute: typeof AdminRouteWithChildren
+  IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
-  ConciergeRoute: typeof ConciergeRouteWithChildren
-  ConnexionRoute: typeof ConnexionRoute
-  InscriptionRoute: typeof InscriptionRoute
-  OnboardingRoute: typeof OnboardingRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_public': {
-      id: '/_public'
-      path: ''
+    '/': {
+      id: '/'
+      path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof PublicRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app': {
@@ -820,593 +415,273 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/concierge': {
-      id: '/concierge'
-      path: '/concierge'
-      fullPath: '/concierge'
-      preLoaderRoute: typeof ConciergeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/connexion': {
-      id: '/connexion'
-      path: '/connexion'
-      fullPath: '/connexion'
-      preLoaderRoute: typeof ConnexionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/inscription': {
-      id: '/inscription'
-      path: '/inscription'
-      fullPath: '/inscription'
-      preLoaderRoute: typeof InscriptionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/onboarding': {
-      id: '/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof OnboardingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_public/': {
-      id: '/_public/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof PublicIndexRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/a-propos': {
-      id: '/_public/a-propos'
-      path: '/a-propos'
-      fullPath: '/a-propos'
-      preLoaderRoute: typeof PublicAProposRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/acces': {
-      id: '/_public/acces'
-      path: '/acces'
-      fullPath: '/acces'
-      preLoaderRoute: typeof PublicAccesRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/conditions': {
-      id: '/_public/conditions'
-      path: '/conditions'
-      fullPath: '/conditions'
-      preLoaderRoute: typeof PublicConditionsRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/contact': {
-      id: '/_public/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof PublicContactRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/demande': {
-      id: '/_public/demande'
-      path: '/demande'
-      fullPath: '/demande'
-      preLoaderRoute: typeof PublicDemandeRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/diagnostic': {
-      id: '/_public/diagnostic'
-      path: '/diagnostic'
-      fullPath: '/diagnostic'
-      preLoaderRoute: typeof PublicDiagnosticRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/faq': {
-      id: '/_public/faq'
-      path: '/faq'
-      fullPath: '/faq'
-      preLoaderRoute: typeof PublicFaqRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/tarifs': {
-      id: '/_public/tarifs'
-      path: '/tarifs'
-      fullPath: '/tarifs'
-      preLoaderRoute: typeof PublicTarifsRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/admin/': {
-      id: '/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/concierges': {
-      id: '/admin/concierges'
-      path: '/concierges'
-      fullPath: '/admin/concierges'
-      preLoaderRoute: typeof AdminConciergesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/diagnostics-auto': {
-      id: '/admin/diagnostics-auto'
-      path: '/diagnostics-auto'
-      fullPath: '/admin/diagnostics-auto'
-      preLoaderRoute: typeof AdminDiagnosticsAutoRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/grille': {
-      id: '/admin/grille'
-      path: '/grille'
-      fullPath: '/admin/grille'
-      preLoaderRoute: typeof AdminGrilleRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/pipeline': {
-      id: '/admin/pipeline'
-      path: '/pipeline'
-      fullPath: '/admin/pipeline'
-      preLoaderRoute: typeof AdminPipelineRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/qualification': {
-      id: '/admin/qualification'
-      path: '/qualification'
-      fullPath: '/admin/qualification'
-      preLoaderRoute: typeof AdminQualificationRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/quotas': {
-      id: '/admin/quotas'
-      path: '/quotas'
-      fullPath: '/admin/quotas'
-      preLoaderRoute: typeof AdminQuotasRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/relances': {
-      id: '/admin/relances'
-      path: '/relances'
-      fullPath: '/admin/relances'
-      preLoaderRoute: typeof AdminRelancesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/app/': {
-      id: '/app/'
-      path: '/'
-      fullPath: '/app/'
-      preLoaderRoute: typeof AppIndexRouteImport
+    '/app/dashboard': {
+      id: '/app/dashboard'
+      path: '/dashboard'
+      fullPath: '/app/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/abonnement': {
-      id: '/app/abonnement'
-      path: '/abonnement'
-      fullPath: '/app/abonnement'
-      preLoaderRoute: typeof AppAbonnementRouteImport
+    '/app/insights': {
+      id: '/app/insights'
+      path: '/insights'
+      fullPath: '/app/insights'
+      preLoaderRoute: typeof AppInsightsRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/devis': {
-      id: '/app/devis'
-      path: '/devis'
-      fullPath: '/app/devis'
-      preLoaderRoute: typeof AppDevisRouteImport
+    '/app/notifications': {
+      id: '/app/notifications'
+      path: '/notifications'
+      fullPath: '/app/notifications'
+      preLoaderRoute: typeof AppNotificationsRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/diagnostic-auto': {
-      id: '/app/diagnostic-auto'
-      path: '/diagnostic-auto'
-      fullPath: '/app/diagnostic-auto'
-      preLoaderRoute: typeof AppDiagnosticAutoRouteImport
+    '/app/admin/platform': {
+      id: '/app/admin/platform'
+      path: '/admin/platform'
+      fullPath: '/app/admin/platform'
+      preLoaderRoute: typeof AppAdminPlatformRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/diagnostics': {
-      id: '/app/diagnostics'
-      path: '/diagnostics'
-      fullPath: '/app/diagnostics'
-      preLoaderRoute: typeof AppDiagnosticsRouteImport
+    '/app/admin/settings': {
+      id: '/app/admin/settings'
+      path: '/admin/settings'
+      fullPath: '/app/admin/settings'
+      preLoaderRoute: typeof AppAdminSettingsRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/documents': {
-      id: '/app/documents'
-      path: '/documents'
-      fullPath: '/app/documents'
-      preLoaderRoute: typeof AppDocumentsRouteImport
+    '/app/admin/subscription': {
+      id: '/app/admin/subscription'
+      path: '/admin/subscription'
+      fullPath: '/app/admin/subscription'
+      preLoaderRoute: typeof AppAdminSubscriptionRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/espace-metier': {
-      id: '/app/espace-metier'
-      path: '/espace-metier'
-      fullPath: '/app/espace-metier'
-      preLoaderRoute: typeof AppEspaceMetierRouteImport
+    '/app/growth/customers': {
+      id: '/app/growth/customers'
+      path: '/growth/customers'
+      fullPath: '/app/growth/customers'
+      preLoaderRoute: typeof AppGrowthCustomersRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/livrables': {
-      id: '/app/livrables'
-      path: '/livrables'
-      fullPath: '/app/livrables'
-      preLoaderRoute: typeof AppLivrablesRouteImport
+    '/app/growth/digital-menu': {
+      id: '/app/growth/digital-menu'
+      path: '/growth/digital-menu'
+      fullPath: '/app/growth/digital-menu'
+      preLoaderRoute: typeof AppGrowthDigitalMenuRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/messages': {
-      id: '/app/messages'
-      path: '/messages'
-      fullPath: '/app/messages'
-      preLoaderRoute: typeof AppMessagesRouteImport
+    '/app/growth/loyalty': {
+      id: '/app/growth/loyalty'
+      path: '/growth/loyalty'
+      fullPath: '/app/growth/loyalty'
+      preLoaderRoute: typeof AppGrowthLoyaltyRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/prestataires': {
-      id: '/app/prestataires'
-      path: '/prestataires'
-      fullPath: '/app/prestataires'
-      preLoaderRoute: typeof AppPrestatairesRouteImport
+    '/app/growth/online-ordering': {
+      id: '/app/growth/online-ordering'
+      path: '/growth/online-ordering'
+      fullPath: '/app/growth/online-ordering'
+      preLoaderRoute: typeof AppGrowthOnlineOrderingRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/rendez-vous': {
-      id: '/app/rendez-vous'
-      path: '/rendez-vous'
-      fullPath: '/app/rendez-vous'
-      preLoaderRoute: typeof AppRendezVousRouteImport
+    '/app/intelligence/integrations': {
+      id: '/app/intelligence/integrations'
+      path: '/intelligence/integrations'
+      fullPath: '/app/intelligence/integrations'
+      preLoaderRoute: typeof AppIntelligenceIntegrationsRouteImport
       parentRoute: typeof AppRoute
     }
-    '/concierge/': {
-      id: '/concierge/'
-      path: '/'
-      fullPath: '/concierge/'
-      preLoaderRoute: typeof ConciergeIndexRouteImport
-      parentRoute: typeof ConciergeRoute
-    }
-    '/concierge/besoins': {
-      id: '/concierge/besoins'
-      path: '/besoins'
-      fullPath: '/concierge/besoins'
-      preLoaderRoute: typeof ConciergeBesoinsRouteImport
-      parentRoute: typeof ConciergeRoute
-    }
-    '/concierge/diagnostics': {
-      id: '/concierge/diagnostics'
-      path: '/diagnostics'
-      fullPath: '/concierge/diagnostics'
-      preLoaderRoute: typeof ConciergeDiagnosticsRouteImport
-      parentRoute: typeof ConciergeRoute
-    }
-    '/concierge/documents': {
-      id: '/concierge/documents'
-      path: '/documents'
-      fullPath: '/concierge/documents'
-      preLoaderRoute: typeof ConciergeDocumentsRouteImport
-      parentRoute: typeof ConciergeRoute
-    }
-    '/concierge/messages': {
-      id: '/concierge/messages'
-      path: '/messages'
-      fullPath: '/concierge/messages'
-      preLoaderRoute: typeof ConciergeMessagesRouteImport
-      parentRoute: typeof ConciergeRoute
-    }
-    '/concierge/missions': {
-      id: '/concierge/missions'
-      path: '/missions'
-      fullPath: '/concierge/missions'
-      preLoaderRoute: typeof ConciergeMissionsRouteImport
-      parentRoute: typeof ConciergeRoute
-    }
-    '/concierge/prestataires': {
-      id: '/concierge/prestataires'
-      path: '/prestataires'
-      fullPath: '/concierge/prestataires'
-      preLoaderRoute: typeof ConciergePrestatairesRouteImport
-      parentRoute: typeof ConciergeRoute
-    }
-    '/concierge/rendez-vous': {
-      id: '/concierge/rendez-vous'
-      path: '/rendez-vous'
-      fullPath: '/concierge/rendez-vous'
-      preLoaderRoute: typeof ConciergeRendezVousRouteImport
-      parentRoute: typeof ConciergeRoute
-    }
-    '/concierge/suivi-commercial': {
-      id: '/concierge/suivi-commercial'
-      path: '/suivi-commercial'
-      fullPath: '/concierge/suivi-commercial'
-      preLoaderRoute: typeof ConciergeSuiviCommercialRouteImport
-      parentRoute: typeof ConciergeRoute
-    }
-    '/_public/missions/': {
-      id: '/_public/missions/'
-      path: '/missions'
-      fullPath: '/missions/'
-      preLoaderRoute: typeof PublicMissionsIndexRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/missions/$code': {
-      id: '/_public/missions/$code'
-      path: '/missions/$code'
-      fullPath: '/missions/$code'
-      preLoaderRoute: typeof PublicMissionsCodeRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/secteurs/': {
-      id: '/_public/secteurs/'
-      path: '/secteurs'
-      fullPath: '/secteurs/'
-      preLoaderRoute: typeof PublicSecteursIndexRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/secteurs/$sector': {
-      id: '/_public/secteurs/$sector'
-      path: '/secteurs/$sector'
-      fullPath: '/secteurs/$sector'
-      preLoaderRoute: typeof PublicSecteursSectorRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/secteurs/enseignement': {
-      id: '/_public/secteurs/enseignement'
-      path: '/secteurs/enseignement'
-      fullPath: '/secteurs/enseignement'
-      preLoaderRoute: typeof PublicSecteursEnseignementRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/secteurs/sante': {
-      id: '/_public/secteurs/sante'
-      path: '/secteurs/sante'
-      fullPath: '/secteurs/sante'
-      preLoaderRoute: typeof PublicSecteursSanteRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/secteurs/tourisme': {
-      id: '/_public/secteurs/tourisme'
-      path: '/secteurs/tourisme'
-      fullPath: '/secteurs/tourisme'
-      preLoaderRoute: typeof PublicSecteursTourismeRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/admin/besoins/': {
-      id: '/admin/besoins/'
-      path: '/besoins'
-      fullPath: '/admin/besoins/'
-      preLoaderRoute: typeof AdminBesoinsIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/clients/': {
-      id: '/admin/clients/'
-      path: '/clients'
-      fullPath: '/admin/clients/'
-      preLoaderRoute: typeof AdminClientsIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/clients/$id': {
-      id: '/admin/clients/$id'
-      path: '/clients/$id'
-      fullPath: '/admin/clients/$id'
-      preLoaderRoute: typeof AdminClientsIdRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/diagnostics/': {
-      id: '/admin/diagnostics/'
-      path: '/diagnostics'
-      fullPath: '/admin/diagnostics/'
-      preLoaderRoute: typeof AdminDiagnosticsIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/missions/': {
-      id: '/admin/missions/'
-      path: '/missions'
-      fullPath: '/admin/missions/'
-      preLoaderRoute: typeof AdminMissionsIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/prestataires/': {
-      id: '/admin/prestataires/'
-      path: '/prestataires'
-      fullPath: '/admin/prestataires/'
-      preLoaderRoute: typeof AdminPrestatairesIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/app/besoins/': {
-      id: '/app/besoins/'
-      path: '/besoins'
-      fullPath: '/app/besoins/'
-      preLoaderRoute: typeof AppBesoinsIndexRouteImport
+    '/app/intelligence/product-performance': {
+      id: '/app/intelligence/product-performance'
+      path: '/intelligence/product-performance'
+      fullPath: '/app/intelligence/product-performance'
+      preLoaderRoute: typeof AppIntelligenceProductPerformanceRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/besoins/$id': {
-      id: '/app/besoins/$id'
-      path: '/besoins/$id'
-      fullPath: '/app/besoins/$id'
-      preLoaderRoute: typeof AppBesoinsIdRouteImport
+    '/app/intelligence/profitability': {
+      id: '/app/intelligence/profitability'
+      path: '/intelligence/profitability'
+      fullPath: '/app/intelligence/profitability'
+      preLoaderRoute: typeof AppIntelligenceProfitabilityRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/missions/': {
-      id: '/app/missions/'
-      path: '/missions'
-      fullPath: '/app/missions/'
-      preLoaderRoute: typeof AppMissionsIndexRouteImport
+    '/app/intelligence/sales-reports': {
+      id: '/app/intelligence/sales-reports'
+      path: '/intelligence/sales-reports'
+      fullPath: '/app/intelligence/sales-reports'
+      preLoaderRoute: typeof AppIntelligenceSalesReportsRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/missions/$id': {
-      id: '/app/missions/$id'
-      path: '/missions/$id'
-      fullPath: '/app/missions/$id'
-      preLoaderRoute: typeof AppMissionsIdRouteImport
+    '/app/intelligence/waste-analysis': {
+      id: '/app/intelligence/waste-analysis'
+      path: '/intelligence/waste-analysis'
+      fullPath: '/app/intelligence/waste-analysis'
+      preLoaderRoute: typeof AppIntelligenceWasteAnalysisRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/tourisme/$branch': {
-      id: '/app/tourisme/$branch'
-      path: '/tourisme/$branch'
-      fullPath: '/app/tourisme/$branch'
-      preLoaderRoute: typeof AppTourismeBranchRouteImport
+    '/app/management/cash-register': {
+      id: '/app/management/cash-register'
+      path: '/management/cash-register'
+      fullPath: '/app/management/cash-register'
+      preLoaderRoute: typeof AppManagementCashRegisterRouteImport
       parentRoute: typeof AppRoute
     }
-    '/concierge/entreprises/': {
-      id: '/concierge/entreprises/'
-      path: '/entreprises'
-      fullPath: '/concierge/entreprises/'
-      preLoaderRoute: typeof ConciergeEntreprisesIndexRouteImport
-      parentRoute: typeof ConciergeRoute
+    '/app/management/employees': {
+      id: '/app/management/employees'
+      path: '/management/employees'
+      fullPath: '/app/management/employees'
+      preLoaderRoute: typeof AppManagementEmployeesRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/concierge/entreprises/$id': {
-      id: '/concierge/entreprises/$id'
-      path: '/entreprises/$id'
-      fullPath: '/concierge/entreprises/$id'
-      preLoaderRoute: typeof ConciergeEntreprisesIdRouteImport
-      parentRoute: typeof ConciergeRoute
+    '/app/management/expenses': {
+      id: '/app/management/expenses'
+      path: '/management/expenses'
+      fullPath: '/app/management/expenses'
+      preLoaderRoute: typeof AppManagementExpensesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/management/inventory': {
+      id: '/app/management/inventory'
+      path: '/management/inventory'
+      fullPath: '/app/management/inventory'
+      preLoaderRoute: typeof AppManagementInventoryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/management/purchasing': {
+      id: '/app/management/purchasing'
+      path: '/management/purchasing'
+      fullPath: '/app/management/purchasing'
+      preLoaderRoute: typeof AppManagementPurchasingRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/management/recipes': {
+      id: '/app/management/recipes'
+      path: '/management/recipes'
+      fullPath: '/app/management/recipes'
+      preLoaderRoute: typeof AppManagementRecipesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/management/suppliers': {
+      id: '/app/management/suppliers'
+      path: '/management/suppliers'
+      fullPath: '/app/management/suppliers'
+      preLoaderRoute: typeof AppManagementSuppliersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/operations/kitchen': {
+      id: '/app/operations/kitchen'
+      path: '/operations/kitchen'
+      fullPath: '/app/operations/kitchen'
+      preLoaderRoute: typeof AppOperationsKitchenRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/operations/menu': {
+      id: '/app/operations/menu'
+      path: '/operations/menu'
+      fullPath: '/app/operations/menu'
+      preLoaderRoute: typeof AppOperationsMenuRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/operations/orders': {
+      id: '/app/operations/orders'
+      path: '/operations/orders'
+      fullPath: '/app/operations/orders'
+      preLoaderRoute: typeof AppOperationsOrdersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/operations/pos': {
+      id: '/app/operations/pos'
+      path: '/operations/pos'
+      fullPath: '/app/operations/pos'
+      preLoaderRoute: typeof AppOperationsPosRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/operations/reservations': {
+      id: '/app/operations/reservations'
+      path: '/operations/reservations'
+      fullPath: '/app/operations/reservations'
+      preLoaderRoute: typeof AppOperationsReservationsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/operations/tables': {
+      id: '/app/operations/tables'
+      path: '/operations/tables'
+      fullPath: '/app/operations/tables'
+      preLoaderRoute: typeof AppOperationsTablesRouteImport
+      parentRoute: typeof AppRoute
     }
   }
 }
 
-interface PublicRouteChildren {
-  PublicAProposRoute: typeof PublicAProposRoute
-  PublicAccesRoute: typeof PublicAccesRoute
-  PublicConditionsRoute: typeof PublicConditionsRoute
-  PublicContactRoute: typeof PublicContactRoute
-  PublicDemandeRoute: typeof PublicDemandeRoute
-  PublicDiagnosticRoute: typeof PublicDiagnosticRoute
-  PublicFaqRoute: typeof PublicFaqRoute
-  PublicTarifsRoute: typeof PublicTarifsRoute
-  PublicIndexRoute: typeof PublicIndexRoute
-  PublicMissionsCodeRoute: typeof PublicMissionsCodeRoute
-  PublicSecteursSectorRoute: typeof PublicSecteursSectorRoute
-  PublicSecteursEnseignementRoute: typeof PublicSecteursEnseignementRoute
-  PublicSecteursSanteRoute: typeof PublicSecteursSanteRoute
-  PublicSecteursTourismeRoute: typeof PublicSecteursTourismeRoute
-  PublicMissionsIndexRoute: typeof PublicMissionsIndexRoute
-  PublicSecteursIndexRoute: typeof PublicSecteursIndexRoute
-}
-
-const PublicRouteChildren: PublicRouteChildren = {
-  PublicAProposRoute: PublicAProposRoute,
-  PublicAccesRoute: PublicAccesRoute,
-  PublicConditionsRoute: PublicConditionsRoute,
-  PublicContactRoute: PublicContactRoute,
-  PublicDemandeRoute: PublicDemandeRoute,
-  PublicDiagnosticRoute: PublicDiagnosticRoute,
-  PublicFaqRoute: PublicFaqRoute,
-  PublicTarifsRoute: PublicTarifsRoute,
-  PublicIndexRoute: PublicIndexRoute,
-  PublicMissionsCodeRoute: PublicMissionsCodeRoute,
-  PublicSecteursSectorRoute: PublicSecteursSectorRoute,
-  PublicSecteursEnseignementRoute: PublicSecteursEnseignementRoute,
-  PublicSecteursSanteRoute: PublicSecteursSanteRoute,
-  PublicSecteursTourismeRoute: PublicSecteursTourismeRoute,
-  PublicMissionsIndexRoute: PublicMissionsIndexRoute,
-  PublicSecteursIndexRoute: PublicSecteursIndexRoute,
-}
-
-const PublicRouteWithChildren =
-  PublicRoute._addFileChildren(PublicRouteChildren)
-
-interface AdminRouteChildren {
-  AdminConciergesRoute: typeof AdminConciergesRoute
-  AdminDiagnosticsAutoRoute: typeof AdminDiagnosticsAutoRoute
-  AdminGrilleRoute: typeof AdminGrilleRoute
-  AdminPipelineRoute: typeof AdminPipelineRoute
-  AdminQualificationRoute: typeof AdminQualificationRoute
-  AdminQuotasRoute: typeof AdminQuotasRoute
-  AdminRelancesRoute: typeof AdminRelancesRoute
-  AdminIndexRoute: typeof AdminIndexRoute
-  AdminClientsIdRoute: typeof AdminClientsIdRoute
-  AdminBesoinsIndexRoute: typeof AdminBesoinsIndexRoute
-  AdminClientsIndexRoute: typeof AdminClientsIndexRoute
-  AdminDiagnosticsIndexRoute: typeof AdminDiagnosticsIndexRoute
-  AdminMissionsIndexRoute: typeof AdminMissionsIndexRoute
-  AdminPrestatairesIndexRoute: typeof AdminPrestatairesIndexRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminConciergesRoute: AdminConciergesRoute,
-  AdminDiagnosticsAutoRoute: AdminDiagnosticsAutoRoute,
-  AdminGrilleRoute: AdminGrilleRoute,
-  AdminPipelineRoute: AdminPipelineRoute,
-  AdminQualificationRoute: AdminQualificationRoute,
-  AdminQuotasRoute: AdminQuotasRoute,
-  AdminRelancesRoute: AdminRelancesRoute,
-  AdminIndexRoute: AdminIndexRoute,
-  AdminClientsIdRoute: AdminClientsIdRoute,
-  AdminBesoinsIndexRoute: AdminBesoinsIndexRoute,
-  AdminClientsIndexRoute: AdminClientsIndexRoute,
-  AdminDiagnosticsIndexRoute: AdminDiagnosticsIndexRoute,
-  AdminMissionsIndexRoute: AdminMissionsIndexRoute,
-  AdminPrestatairesIndexRoute: AdminPrestatairesIndexRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
-
 interface AppRouteChildren {
-  AppAbonnementRoute: typeof AppAbonnementRoute
-  AppDevisRoute: typeof AppDevisRoute
-  AppDiagnosticAutoRoute: typeof AppDiagnosticAutoRoute
-  AppDiagnosticsRoute: typeof AppDiagnosticsRoute
-  AppDocumentsRoute: typeof AppDocumentsRoute
-  AppEspaceMetierRoute: typeof AppEspaceMetierRoute
-  AppLivrablesRoute: typeof AppLivrablesRoute
-  AppMessagesRoute: typeof AppMessagesRoute
-  AppPrestatairesRoute: typeof AppPrestatairesRoute
-  AppRendezVousRoute: typeof AppRendezVousRoute
-  AppIndexRoute: typeof AppIndexRoute
-  AppBesoinsIdRoute: typeof AppBesoinsIdRoute
-  AppMissionsIdRoute: typeof AppMissionsIdRoute
-  AppTourismeBranchRoute: typeof AppTourismeBranchRoute
-  AppBesoinsIndexRoute: typeof AppBesoinsIndexRoute
-  AppMissionsIndexRoute: typeof AppMissionsIndexRoute
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppInsightsRoute: typeof AppInsightsRoute
+  AppNotificationsRoute: typeof AppNotificationsRoute
+  AppAdminPlatformRoute: typeof AppAdminPlatformRoute
+  AppAdminSettingsRoute: typeof AppAdminSettingsRoute
+  AppAdminSubscriptionRoute: typeof AppAdminSubscriptionRoute
+  AppGrowthCustomersRoute: typeof AppGrowthCustomersRoute
+  AppGrowthDigitalMenuRoute: typeof AppGrowthDigitalMenuRoute
+  AppGrowthLoyaltyRoute: typeof AppGrowthLoyaltyRoute
+  AppGrowthOnlineOrderingRoute: typeof AppGrowthOnlineOrderingRoute
+  AppIntelligenceIntegrationsRoute: typeof AppIntelligenceIntegrationsRoute
+  AppIntelligenceProductPerformanceRoute: typeof AppIntelligenceProductPerformanceRoute
+  AppIntelligenceProfitabilityRoute: typeof AppIntelligenceProfitabilityRoute
+  AppIntelligenceSalesReportsRoute: typeof AppIntelligenceSalesReportsRoute
+  AppIntelligenceWasteAnalysisRoute: typeof AppIntelligenceWasteAnalysisRoute
+  AppManagementCashRegisterRoute: typeof AppManagementCashRegisterRoute
+  AppManagementEmployeesRoute: typeof AppManagementEmployeesRoute
+  AppManagementExpensesRoute: typeof AppManagementExpensesRoute
+  AppManagementInventoryRoute: typeof AppManagementInventoryRoute
+  AppManagementPurchasingRoute: typeof AppManagementPurchasingRoute
+  AppManagementRecipesRoute: typeof AppManagementRecipesRoute
+  AppManagementSuppliersRoute: typeof AppManagementSuppliersRoute
+  AppOperationsKitchenRoute: typeof AppOperationsKitchenRoute
+  AppOperationsMenuRoute: typeof AppOperationsMenuRoute
+  AppOperationsOrdersRoute: typeof AppOperationsOrdersRoute
+  AppOperationsPosRoute: typeof AppOperationsPosRoute
+  AppOperationsReservationsRoute: typeof AppOperationsReservationsRoute
+  AppOperationsTablesRoute: typeof AppOperationsTablesRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppAbonnementRoute: AppAbonnementRoute,
-  AppDevisRoute: AppDevisRoute,
-  AppDiagnosticAutoRoute: AppDiagnosticAutoRoute,
-  AppDiagnosticsRoute: AppDiagnosticsRoute,
-  AppDocumentsRoute: AppDocumentsRoute,
-  AppEspaceMetierRoute: AppEspaceMetierRoute,
-  AppLivrablesRoute: AppLivrablesRoute,
-  AppMessagesRoute: AppMessagesRoute,
-  AppPrestatairesRoute: AppPrestatairesRoute,
-  AppRendezVousRoute: AppRendezVousRoute,
-  AppIndexRoute: AppIndexRoute,
-  AppBesoinsIdRoute: AppBesoinsIdRoute,
-  AppMissionsIdRoute: AppMissionsIdRoute,
-  AppTourismeBranchRoute: AppTourismeBranchRoute,
-  AppBesoinsIndexRoute: AppBesoinsIndexRoute,
-  AppMissionsIndexRoute: AppMissionsIndexRoute,
+  AppDashboardRoute: AppDashboardRoute,
+  AppInsightsRoute: AppInsightsRoute,
+  AppNotificationsRoute: AppNotificationsRoute,
+  AppAdminPlatformRoute: AppAdminPlatformRoute,
+  AppAdminSettingsRoute: AppAdminSettingsRoute,
+  AppAdminSubscriptionRoute: AppAdminSubscriptionRoute,
+  AppGrowthCustomersRoute: AppGrowthCustomersRoute,
+  AppGrowthDigitalMenuRoute: AppGrowthDigitalMenuRoute,
+  AppGrowthLoyaltyRoute: AppGrowthLoyaltyRoute,
+  AppGrowthOnlineOrderingRoute: AppGrowthOnlineOrderingRoute,
+  AppIntelligenceIntegrationsRoute: AppIntelligenceIntegrationsRoute,
+  AppIntelligenceProductPerformanceRoute:
+    AppIntelligenceProductPerformanceRoute,
+  AppIntelligenceProfitabilityRoute: AppIntelligenceProfitabilityRoute,
+  AppIntelligenceSalesReportsRoute: AppIntelligenceSalesReportsRoute,
+  AppIntelligenceWasteAnalysisRoute: AppIntelligenceWasteAnalysisRoute,
+  AppManagementCashRegisterRoute: AppManagementCashRegisterRoute,
+  AppManagementEmployeesRoute: AppManagementEmployeesRoute,
+  AppManagementExpensesRoute: AppManagementExpensesRoute,
+  AppManagementInventoryRoute: AppManagementInventoryRoute,
+  AppManagementPurchasingRoute: AppManagementPurchasingRoute,
+  AppManagementRecipesRoute: AppManagementRecipesRoute,
+  AppManagementSuppliersRoute: AppManagementSuppliersRoute,
+  AppOperationsKitchenRoute: AppOperationsKitchenRoute,
+  AppOperationsMenuRoute: AppOperationsMenuRoute,
+  AppOperationsOrdersRoute: AppOperationsOrdersRoute,
+  AppOperationsPosRoute: AppOperationsPosRoute,
+  AppOperationsReservationsRoute: AppOperationsReservationsRoute,
+  AppOperationsTablesRoute: AppOperationsTablesRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
-interface ConciergeRouteChildren {
-  ConciergeBesoinsRoute: typeof ConciergeBesoinsRoute
-  ConciergeDiagnosticsRoute: typeof ConciergeDiagnosticsRoute
-  ConciergeDocumentsRoute: typeof ConciergeDocumentsRoute
-  ConciergeMessagesRoute: typeof ConciergeMessagesRoute
-  ConciergeMissionsRoute: typeof ConciergeMissionsRoute
-  ConciergePrestatairesRoute: typeof ConciergePrestatairesRoute
-  ConciergeRendezVousRoute: typeof ConciergeRendezVousRoute
-  ConciergeSuiviCommercialRoute: typeof ConciergeSuiviCommercialRoute
-  ConciergeIndexRoute: typeof ConciergeIndexRoute
-  ConciergeEntreprisesIdRoute: typeof ConciergeEntreprisesIdRoute
-  ConciergeEntreprisesIndexRoute: typeof ConciergeEntreprisesIndexRoute
-}
-
-const ConciergeRouteChildren: ConciergeRouteChildren = {
-  ConciergeBesoinsRoute: ConciergeBesoinsRoute,
-  ConciergeDiagnosticsRoute: ConciergeDiagnosticsRoute,
-  ConciergeDocumentsRoute: ConciergeDocumentsRoute,
-  ConciergeMessagesRoute: ConciergeMessagesRoute,
-  ConciergeMissionsRoute: ConciergeMissionsRoute,
-  ConciergePrestatairesRoute: ConciergePrestatairesRoute,
-  ConciergeRendezVousRoute: ConciergeRendezVousRoute,
-  ConciergeSuiviCommercialRoute: ConciergeSuiviCommercialRoute,
-  ConciergeIndexRoute: ConciergeIndexRoute,
-  ConciergeEntreprisesIdRoute: ConciergeEntreprisesIdRoute,
-  ConciergeEntreprisesIndexRoute: ConciergeEntreprisesIndexRoute,
-}
-
-const ConciergeRouteWithChildren = ConciergeRoute._addFileChildren(
-  ConciergeRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
-  PublicRoute: PublicRouteWithChildren,
-  AdminRoute: AdminRouteWithChildren,
+  IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
-  ConciergeRoute: ConciergeRouteWithChildren,
-  ConnexionRoute: ConnexionRoute,
-  InscriptionRoute: InscriptionRoute,
-  OnboardingRoute: OnboardingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
