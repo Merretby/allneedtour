@@ -13,61 +13,61 @@ const navigation = [
   {
     title: 'Overview',
     items: [
-      { label: 'Dashboard', to: '/app/dashboard', icon: <LayoutDashboard size={16} /> },
-      { label: 'Business Insights', to: '/app/insights', icon: <LineChart size={16} /> },
-      { label: 'Notifications', to: '/app/notifications', icon: <Bell size={16} /> },
+      { label: 'Dashboard', to: '/business/restaurant/dashboard', icon: <LayoutDashboard size={16} /> },
+      { label: 'Business Insights', to: '/business/restaurant/insights', icon: <LineChart size={16} /> },
+      { label: 'Notifications', to: '/business/restaurant/notifications', icon: <Bell size={16} /> },
     ]
   },
   {
     title: 'Operations',
     mode: 'A', // Only relevant for Mode A (Complete Management)
     items: [
-      { label: 'POS and Sales', to: '/app/operations/pos', icon: <ShoppingCart size={16} /> },
-      { label: 'Orders', to: '/app/operations/orders', icon: <ListOrdered size={16} /> },
-      { label: 'Tables & Floor', to: '/app/operations/tables', icon: <Utensils size={16} /> },
-      { label: 'Reservations', to: '/app/operations/reservations', icon: <CalendarDays size={16} /> },
-      { label: 'Kitchen Display', to: '/app/operations/kitchen', icon: <ChefHat size={16} /> },
-      { label: 'Menu & Products', to: '/app/operations/menu', icon: <MenuIcon size={16} /> },
+      { label: 'POS and Sales', to: '/business/restaurant/operations/pos', icon: <ShoppingCart size={16} /> },
+      { label: 'Orders', to: '/business/restaurant/operations/orders', icon: <ListOrdered size={16} /> },
+      { label: 'Tables & Floor', to: '/business/restaurant/operations/tables', icon: <Utensils size={16} /> },
+      { label: 'Reservations', to: '/business/restaurant/operations/reservations', icon: <CalendarDays size={16} /> },
+      { label: 'Kitchen Display', to: '/business/restaurant/operations/kitchen', icon: <ChefHat size={16} /> },
+      { label: 'Menu & Products', to: '/business/restaurant/operations/menu', icon: <MenuIcon size={16} /> },
     ]
   },
   {
     title: 'Management',
     mode: 'A', // Mostly Mode A
     items: [
-      { label: 'Inventory', to: '/app/management/inventory', icon: <Package size={16} /> },
-      { label: 'Recipes & Costing', to: '/app/management/recipes', icon: <Receipt size={16} /> },
-      { label: 'Suppliers', to: '/app/management/suppliers', icon: <Truck size={16} /> },
-      { label: 'Purchasing', to: '/app/management/purchasing', icon: <ShoppingBag size={16} /> },
-      { label: 'Expenses', to: '/app/management/expenses', icon: <CreditCard size={16} /> },
-      { label: 'Cash Register', to: '/app/management/cash-register', icon: <Wallet size={16} /> },
-      { label: 'Employees', to: '/app/management/employees', icon: <Users size={16} /> },
+      { label: 'Inventory', to: '/business/restaurant/management/inventory', icon: <Package size={16} /> },
+      { label: 'Recipes & Costing', to: '/business/restaurant/management/recipes', icon: <Receipt size={16} /> },
+      { label: 'Suppliers', to: '/business/restaurant/management/suppliers', icon: <Truck size={16} /> },
+      { label: 'Purchasing', to: '/business/restaurant/management/purchasing', icon: <ShoppingBag size={16} /> },
+      { label: 'Expenses', to: '/business/restaurant/management/expenses', icon: <CreditCard size={16} /> },
+      { label: 'Cash Register', to: '/business/restaurant/management/cash-register', icon: <Wallet size={16} /> },
+      { label: 'Employees', to: '/business/restaurant/management/employees', icon: <Users size={16} /> },
     ]
   },
   {
     title: 'Growth',
     items: [
-      { label: 'Customers', to: '/app/growth/customers', icon: <UserCircle size={16} /> },
-      { label: 'Loyalty Program', to: '/app/growth/loyalty', icon: <Star size={16} /> },
-      { label: 'Digital Menu', to: '/app/growth/digital-menu', icon: <Smartphone size={16} /> },
-      { label: 'Online Ordering', to: '/app/growth/online-ordering', icon: <Globe size={16} /> },
+      { label: 'Customers', to: '/business/restaurant/growth/customers', icon: <UserCircle size={16} /> },
+      { label: 'Loyalty Program', to: '/business/restaurant/growth/loyalty', icon: <Star size={16} /> },
+      { label: 'Digital Menu', to: '/business/restaurant/growth/digital-menu', icon: <Smartphone size={16} /> },
+      { label: 'Online Ordering', to: '/business/restaurant/growth/online-ordering', icon: <Globe size={16} /> },
     ]
   },
   {
     title: 'Intelligence',
     items: [
-      { label: 'Profitability', to: '/app/intelligence/profitability', icon: <TrendingUp size={16} /> },
-      { label: 'Sales Reports', to: '/app/intelligence/sales-reports', icon: <BarChart3 size={16} /> },
-      { label: 'Product Performance', to: '/app/intelligence/product-performance', icon: <TrendingDown size={16} /> },
-      { label: 'Waste Analysis', to: '/app/intelligence/waste-analysis', icon: <Trash2 size={16} /> },
-      { label: 'Integrations', to: '/app/intelligence/integrations', icon: <LinkIcon size={16} /> },
+      { label: 'Profitability', to: '/business/restaurant/intelligence/profitability', icon: <TrendingUp size={16} /> },
+      { label: 'Sales Reports', to: '/business/restaurant/intelligence/sales-reports', icon: <BarChart3 size={16} /> },
+      { label: 'Product Performance', to: '/business/restaurant/intelligence/product-performance', icon: <TrendingDown size={16} /> },
+      { label: 'Waste Analysis', to: '/business/restaurant/intelligence/waste-analysis', icon: <Trash2 size={16} /> },
+      { label: 'Integrations', to: '/business/restaurant/intelligence/integrations', icon: <LinkIcon size={16} /> },
     ]
   },
   {
     title: 'Administration',
     items: [
-      { label: 'Settings', to: '/app/admin/settings', icon: <Settings size={16} /> },
-      { label: 'Subscription', to: '/app/admin/subscription', icon: <SubIcon size={16} /> },
-      { label: 'Platform Admin', to: '/app/admin/platform', icon: <Settings2 size={16} /> },
+      { label: 'Settings', to: '/business/restaurant/admin/settings', icon: <Settings size={16} /> },
+      { label: 'Subscription', to: '/business/restaurant/admin/subscription', icon: <SubIcon size={16} /> },
+      { label: 'Platform Admin', to: '/business/restaurant/admin/platform', icon: <Settings2 size={16} /> },
     ]
   }
 ]
@@ -152,7 +152,7 @@ export function AppLayout() {
             {showModeDropdown && (
               <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-slate-200 rounded-xl shadow-lg py-1 z-50">
                 <button 
-                  onClick={() => { setMode('A'); setShowModeDropdown(false); navigate({ to: '/app/dashboard' }); }}
+                  onClick={() => { setMode('A'); setShowModeDropdown(false); navigate({ to: '/business/restaurant/dashboard' }); }}
                   className="w-full flex items-center justify-between px-4 py-2 text-left text-sm hover:bg-slate-50"
                 >
                   <div>
@@ -163,7 +163,7 @@ export function AppLayout() {
                 </button>
                 <div className="h-px bg-slate-100 my-1"></div>
                 <button 
-                  onClick={() => { setMode('B'); setShowModeDropdown(false); navigate({ to: '/app/dashboard' }); }}
+                  onClick={() => { setMode('B'); setShowModeDropdown(false); navigate({ to: '/business/restaurant/dashboard' }); }}
                   className="w-full flex items-center justify-between px-4 py-2 text-left text-sm hover:bg-slate-50"
                 >
                   <div>

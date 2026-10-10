@@ -10,393 +10,414 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AppRouteImport } from './routes/app'
-import { Route as AppDashboardRouteImport } from './routes/app/dashboard'
-import { Route as AppInsightsRouteImport } from './routes/app/insights'
-import { Route as AppNotificationsRouteImport } from './routes/app/notifications'
-import { Route as AppAdminPlatformRouteImport } from './routes/app/admin/platform'
-import { Route as AppAdminSettingsRouteImport } from './routes/app/admin/settings'
-import { Route as AppAdminSubscriptionRouteImport } from './routes/app/admin/subscription'
-import { Route as AppGrowthCustomersRouteImport } from './routes/app/growth/customers'
-import { Route as AppGrowthDigitalMenuRouteImport } from './routes/app/growth/digital-menu'
-import { Route as AppGrowthLoyaltyRouteImport } from './routes/app/growth/loyalty'
-import { Route as AppGrowthOnlineOrderingRouteImport } from './routes/app/growth/online-ordering'
-import { Route as AppIntelligenceIntegrationsRouteImport } from './routes/app/intelligence/integrations'
-import { Route as AppIntelligenceProductPerformanceRouteImport } from './routes/app/intelligence/product-performance'
-import { Route as AppIntelligenceProfitabilityRouteImport } from './routes/app/intelligence/profitability'
-import { Route as AppIntelligenceSalesReportsRouteImport } from './routes/app/intelligence/sales-reports'
-import { Route as AppIntelligenceWasteAnalysisRouteImport } from './routes/app/intelligence/waste-analysis'
-import { Route as AppManagementCashRegisterRouteImport } from './routes/app/management/cash-register'
-import { Route as AppManagementEmployeesRouteImport } from './routes/app/management/employees'
-import { Route as AppManagementExpensesRouteImport } from './routes/app/management/expenses'
-import { Route as AppManagementInventoryRouteImport } from './routes/app/management/inventory'
-import { Route as AppManagementPurchasingRouteImport } from './routes/app/management/purchasing'
-import { Route as AppManagementRecipesRouteImport } from './routes/app/management/recipes'
-import { Route as AppManagementSuppliersRouteImport } from './routes/app/management/suppliers'
-import { Route as AppOperationsKitchenRouteImport } from './routes/app/operations/kitchen'
-import { Route as AppOperationsMenuRouteImport } from './routes/app/operations/menu'
-import { Route as AppOperationsOrdersRouteImport } from './routes/app/operations/orders'
-import { Route as AppOperationsPosRouteImport } from './routes/app/operations/pos'
-import { Route as AppOperationsReservationsRouteImport } from './routes/app/operations/reservations'
-import { Route as AppOperationsTablesRouteImport } from './routes/app/operations/tables'
+import { Route as BusinessRestaurantRouteImport } from './routes/business/restaurant'
+import { Route as BusinessRestaurantDashboardRouteImport } from './routes/business/restaurant/dashboard'
+import { Route as BusinessRestaurantInsightsRouteImport } from './routes/business/restaurant/insights'
+import { Route as BusinessRestaurantNotificationsRouteImport } from './routes/business/restaurant/notifications'
+import { Route as BusinessRestaurantAdminPlatformRouteImport } from './routes/business/restaurant/admin/platform'
+import { Route as BusinessRestaurantAdminSettingsRouteImport } from './routes/business/restaurant/admin/settings'
+import { Route as BusinessRestaurantAdminSubscriptionRouteImport } from './routes/business/restaurant/admin/subscription'
+import { Route as BusinessRestaurantGrowthCustomersRouteImport } from './routes/business/restaurant/growth/customers'
+import { Route as BusinessRestaurantGrowthDigitalMenuRouteImport } from './routes/business/restaurant/growth/digital-menu'
+import { Route as BusinessRestaurantGrowthLoyaltyRouteImport } from './routes/business/restaurant/growth/loyalty'
+import { Route as BusinessRestaurantGrowthOnlineOrderingRouteImport } from './routes/business/restaurant/growth/online-ordering'
+import { Route as BusinessRestaurantIntelligenceIntegrationsRouteImport } from './routes/business/restaurant/intelligence/integrations'
+import { Route as BusinessRestaurantIntelligenceProductPerformanceRouteImport } from './routes/business/restaurant/intelligence/product-performance'
+import { Route as BusinessRestaurantIntelligenceProfitabilityRouteImport } from './routes/business/restaurant/intelligence/profitability'
+import { Route as BusinessRestaurantIntelligenceSalesReportsRouteImport } from './routes/business/restaurant/intelligence/sales-reports'
+import { Route as BusinessRestaurantIntelligenceWasteAnalysisRouteImport } from './routes/business/restaurant/intelligence/waste-analysis'
+import { Route as BusinessRestaurantManagementCashRegisterRouteImport } from './routes/business/restaurant/management/cash-register'
+import { Route as BusinessRestaurantManagementEmployeesRouteImport } from './routes/business/restaurant/management/employees'
+import { Route as BusinessRestaurantManagementExpensesRouteImport } from './routes/business/restaurant/management/expenses'
+import { Route as BusinessRestaurantManagementInventoryRouteImport } from './routes/business/restaurant/management/inventory'
+import { Route as BusinessRestaurantManagementPurchasingRouteImport } from './routes/business/restaurant/management/purchasing'
+import { Route as BusinessRestaurantManagementRecipesRouteImport } from './routes/business/restaurant/management/recipes'
+import { Route as BusinessRestaurantManagementSuppliersRouteImport } from './routes/business/restaurant/management/suppliers'
+import { Route as BusinessRestaurantOperationsKitchenRouteImport } from './routes/business/restaurant/operations/kitchen'
+import { Route as BusinessRestaurantOperationsMenuRouteImport } from './routes/business/restaurant/operations/menu'
+import { Route as BusinessRestaurantOperationsOrdersRouteImport } from './routes/business/restaurant/operations/orders'
+import { Route as BusinessRestaurantOperationsPosRouteImport } from './routes/business/restaurant/operations/pos'
+import { Route as BusinessRestaurantOperationsReservationsRouteImport } from './routes/business/restaurant/operations/reservations'
+import { Route as BusinessRestaurantOperationsTablesRouteImport } from './routes/business/restaurant/operations/tables'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppRoute = AppRouteImport.update({
-  id: '/app',
-  path: '/app',
+const BusinessRestaurantRoute = BusinessRestaurantRouteImport.update({
+  id: '/business/restaurant',
+  path: '/business/restaurant',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppDashboardRoute = AppDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppInsightsRoute = AppInsightsRouteImport.update({
-  id: '/insights',
-  path: '/insights',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppNotificationsRoute = AppNotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminPlatformRoute = AppAdminPlatformRouteImport.update({
-  id: '/admin/platform',
-  path: '/admin/platform',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminSettingsRoute = AppAdminSettingsRouteImport.update({
-  id: '/admin/settings',
-  path: '/admin/settings',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminSubscriptionRoute = AppAdminSubscriptionRouteImport.update({
-  id: '/admin/subscription',
-  path: '/admin/subscription',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppGrowthCustomersRoute = AppGrowthCustomersRouteImport.update({
-  id: '/growth/customers',
-  path: '/growth/customers',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppGrowthDigitalMenuRoute = AppGrowthDigitalMenuRouteImport.update({
-  id: '/growth/digital-menu',
-  path: '/growth/digital-menu',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppGrowthLoyaltyRoute = AppGrowthLoyaltyRouteImport.update({
-  id: '/growth/loyalty',
-  path: '/growth/loyalty',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppGrowthOnlineOrderingRoute = AppGrowthOnlineOrderingRouteImport.update({
-  id: '/growth/online-ordering',
-  path: '/growth/online-ordering',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppIntelligenceIntegrationsRoute =
-  AppIntelligenceIntegrationsRouteImport.update({
+const BusinessRestaurantDashboardRoute =
+  BusinessRestaurantDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantInsightsRoute =
+  BusinessRestaurantInsightsRouteImport.update({
+    id: '/insights',
+    path: '/insights',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantNotificationsRoute =
+  BusinessRestaurantNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantAdminPlatformRoute =
+  BusinessRestaurantAdminPlatformRouteImport.update({
+    id: '/admin/platform',
+    path: '/admin/platform',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantAdminSettingsRoute =
+  BusinessRestaurantAdminSettingsRouteImport.update({
+    id: '/admin/settings',
+    path: '/admin/settings',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantAdminSubscriptionRoute =
+  BusinessRestaurantAdminSubscriptionRouteImport.update({
+    id: '/admin/subscription',
+    path: '/admin/subscription',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantGrowthCustomersRoute =
+  BusinessRestaurantGrowthCustomersRouteImport.update({
+    id: '/growth/customers',
+    path: '/growth/customers',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantGrowthDigitalMenuRoute =
+  BusinessRestaurantGrowthDigitalMenuRouteImport.update({
+    id: '/growth/digital-menu',
+    path: '/growth/digital-menu',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantGrowthLoyaltyRoute =
+  BusinessRestaurantGrowthLoyaltyRouteImport.update({
+    id: '/growth/loyalty',
+    path: '/growth/loyalty',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantGrowthOnlineOrderingRoute =
+  BusinessRestaurantGrowthOnlineOrderingRouteImport.update({
+    id: '/growth/online-ordering',
+    path: '/growth/online-ordering',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantIntelligenceIntegrationsRoute =
+  BusinessRestaurantIntelligenceIntegrationsRouteImport.update({
     id: '/intelligence/integrations',
     path: '/intelligence/integrations',
-    getParentRoute: () => AppRoute,
+    getParentRoute: () => BusinessRestaurantRoute,
   } as any)
-const AppIntelligenceProductPerformanceRoute =
-  AppIntelligenceProductPerformanceRouteImport.update({
+const BusinessRestaurantIntelligenceProductPerformanceRoute =
+  BusinessRestaurantIntelligenceProductPerformanceRouteImport.update({
     id: '/intelligence/product-performance',
     path: '/intelligence/product-performance',
-    getParentRoute: () => AppRoute,
+    getParentRoute: () => BusinessRestaurantRoute,
   } as any)
-const AppIntelligenceProfitabilityRoute =
-  AppIntelligenceProfitabilityRouteImport.update({
+const BusinessRestaurantIntelligenceProfitabilityRoute =
+  BusinessRestaurantIntelligenceProfitabilityRouteImport.update({
     id: '/intelligence/profitability',
     path: '/intelligence/profitability',
-    getParentRoute: () => AppRoute,
+    getParentRoute: () => BusinessRestaurantRoute,
   } as any)
-const AppIntelligenceSalesReportsRoute =
-  AppIntelligenceSalesReportsRouteImport.update({
+const BusinessRestaurantIntelligenceSalesReportsRoute =
+  BusinessRestaurantIntelligenceSalesReportsRouteImport.update({
     id: '/intelligence/sales-reports',
     path: '/intelligence/sales-reports',
-    getParentRoute: () => AppRoute,
+    getParentRoute: () => BusinessRestaurantRoute,
   } as any)
-const AppIntelligenceWasteAnalysisRoute =
-  AppIntelligenceWasteAnalysisRouteImport.update({
+const BusinessRestaurantIntelligenceWasteAnalysisRoute =
+  BusinessRestaurantIntelligenceWasteAnalysisRouteImport.update({
     id: '/intelligence/waste-analysis',
     path: '/intelligence/waste-analysis',
-    getParentRoute: () => AppRoute,
+    getParentRoute: () => BusinessRestaurantRoute,
   } as any)
-const AppManagementCashRegisterRoute =
-  AppManagementCashRegisterRouteImport.update({
+const BusinessRestaurantManagementCashRegisterRoute =
+  BusinessRestaurantManagementCashRegisterRouteImport.update({
     id: '/management/cash-register',
     path: '/management/cash-register',
-    getParentRoute: () => AppRoute,
+    getParentRoute: () => BusinessRestaurantRoute,
   } as any)
-const AppManagementEmployeesRoute = AppManagementEmployeesRouteImport.update({
-  id: '/management/employees',
-  path: '/management/employees',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppManagementExpensesRoute = AppManagementExpensesRouteImport.update({
-  id: '/management/expenses',
-  path: '/management/expenses',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppManagementInventoryRoute = AppManagementInventoryRouteImport.update({
-  id: '/management/inventory',
-  path: '/management/inventory',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppManagementPurchasingRoute = AppManagementPurchasingRouteImport.update({
-  id: '/management/purchasing',
-  path: '/management/purchasing',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppManagementRecipesRoute = AppManagementRecipesRouteImport.update({
-  id: '/management/recipes',
-  path: '/management/recipes',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppManagementSuppliersRoute = AppManagementSuppliersRouteImport.update({
-  id: '/management/suppliers',
-  path: '/management/suppliers',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppOperationsKitchenRoute = AppOperationsKitchenRouteImport.update({
-  id: '/operations/kitchen',
-  path: '/operations/kitchen',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppOperationsMenuRoute = AppOperationsMenuRouteImport.update({
-  id: '/operations/menu',
-  path: '/operations/menu',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppOperationsOrdersRoute = AppOperationsOrdersRouteImport.update({
-  id: '/operations/orders',
-  path: '/operations/orders',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppOperationsPosRoute = AppOperationsPosRouteImport.update({
-  id: '/operations/pos',
-  path: '/operations/pos',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppOperationsReservationsRoute =
-  AppOperationsReservationsRouteImport.update({
+const BusinessRestaurantManagementEmployeesRoute =
+  BusinessRestaurantManagementEmployeesRouteImport.update({
+    id: '/management/employees',
+    path: '/management/employees',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantManagementExpensesRoute =
+  BusinessRestaurantManagementExpensesRouteImport.update({
+    id: '/management/expenses',
+    path: '/management/expenses',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantManagementInventoryRoute =
+  BusinessRestaurantManagementInventoryRouteImport.update({
+    id: '/management/inventory',
+    path: '/management/inventory',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantManagementPurchasingRoute =
+  BusinessRestaurantManagementPurchasingRouteImport.update({
+    id: '/management/purchasing',
+    path: '/management/purchasing',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantManagementRecipesRoute =
+  BusinessRestaurantManagementRecipesRouteImport.update({
+    id: '/management/recipes',
+    path: '/management/recipes',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantManagementSuppliersRoute =
+  BusinessRestaurantManagementSuppliersRouteImport.update({
+    id: '/management/suppliers',
+    path: '/management/suppliers',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantOperationsKitchenRoute =
+  BusinessRestaurantOperationsKitchenRouteImport.update({
+    id: '/operations/kitchen',
+    path: '/operations/kitchen',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantOperationsMenuRoute =
+  BusinessRestaurantOperationsMenuRouteImport.update({
+    id: '/operations/menu',
+    path: '/operations/menu',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantOperationsOrdersRoute =
+  BusinessRestaurantOperationsOrdersRouteImport.update({
+    id: '/operations/orders',
+    path: '/operations/orders',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantOperationsPosRoute =
+  BusinessRestaurantOperationsPosRouteImport.update({
+    id: '/operations/pos',
+    path: '/operations/pos',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
+const BusinessRestaurantOperationsReservationsRoute =
+  BusinessRestaurantOperationsReservationsRouteImport.update({
     id: '/operations/reservations',
     path: '/operations/reservations',
-    getParentRoute: () => AppRoute,
+    getParentRoute: () => BusinessRestaurantRoute,
   } as any)
-const AppOperationsTablesRoute = AppOperationsTablesRouteImport.update({
-  id: '/operations/tables',
-  path: '/operations/tables',
-  getParentRoute: () => AppRoute,
-} as any)
+const BusinessRestaurantOperationsTablesRoute =
+  BusinessRestaurantOperationsTablesRouteImport.update({
+    id: '/operations/tables',
+    path: '/operations/tables',
+    getParentRoute: () => BusinessRestaurantRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/app': typeof AppRouteWithChildren
-  '/app/dashboard': typeof AppDashboardRoute
-  '/app/insights': typeof AppInsightsRoute
-  '/app/notifications': typeof AppNotificationsRoute
-  '/app/admin/platform': typeof AppAdminPlatformRoute
-  '/app/admin/settings': typeof AppAdminSettingsRoute
-  '/app/admin/subscription': typeof AppAdminSubscriptionRoute
-  '/app/growth/customers': typeof AppGrowthCustomersRoute
-  '/app/growth/digital-menu': typeof AppGrowthDigitalMenuRoute
-  '/app/growth/loyalty': typeof AppGrowthLoyaltyRoute
-  '/app/growth/online-ordering': typeof AppGrowthOnlineOrderingRoute
-  '/app/intelligence/integrations': typeof AppIntelligenceIntegrationsRoute
-  '/app/intelligence/product-performance': typeof AppIntelligenceProductPerformanceRoute
-  '/app/intelligence/profitability': typeof AppIntelligenceProfitabilityRoute
-  '/app/intelligence/sales-reports': typeof AppIntelligenceSalesReportsRoute
-  '/app/intelligence/waste-analysis': typeof AppIntelligenceWasteAnalysisRoute
-  '/app/management/cash-register': typeof AppManagementCashRegisterRoute
-  '/app/management/employees': typeof AppManagementEmployeesRoute
-  '/app/management/expenses': typeof AppManagementExpensesRoute
-  '/app/management/inventory': typeof AppManagementInventoryRoute
-  '/app/management/purchasing': typeof AppManagementPurchasingRoute
-  '/app/management/recipes': typeof AppManagementRecipesRoute
-  '/app/management/suppliers': typeof AppManagementSuppliersRoute
-  '/app/operations/kitchen': typeof AppOperationsKitchenRoute
-  '/app/operations/menu': typeof AppOperationsMenuRoute
-  '/app/operations/orders': typeof AppOperationsOrdersRoute
-  '/app/operations/pos': typeof AppOperationsPosRoute
-  '/app/operations/reservations': typeof AppOperationsReservationsRoute
-  '/app/operations/tables': typeof AppOperationsTablesRoute
+  '/business/restaurant': typeof BusinessRestaurantRouteWithChildren
+  '/business/restaurant/dashboard': typeof BusinessRestaurantDashboardRoute
+  '/business/restaurant/insights': typeof BusinessRestaurantInsightsRoute
+  '/business/restaurant/notifications': typeof BusinessRestaurantNotificationsRoute
+  '/business/restaurant/admin/platform': typeof BusinessRestaurantAdminPlatformRoute
+  '/business/restaurant/admin/settings': typeof BusinessRestaurantAdminSettingsRoute
+  '/business/restaurant/admin/subscription': typeof BusinessRestaurantAdminSubscriptionRoute
+  '/business/restaurant/growth/customers': typeof BusinessRestaurantGrowthCustomersRoute
+  '/business/restaurant/growth/digital-menu': typeof BusinessRestaurantGrowthDigitalMenuRoute
+  '/business/restaurant/growth/loyalty': typeof BusinessRestaurantGrowthLoyaltyRoute
+  '/business/restaurant/growth/online-ordering': typeof BusinessRestaurantGrowthOnlineOrderingRoute
+  '/business/restaurant/intelligence/integrations': typeof BusinessRestaurantIntelligenceIntegrationsRoute
+  '/business/restaurant/intelligence/product-performance': typeof BusinessRestaurantIntelligenceProductPerformanceRoute
+  '/business/restaurant/intelligence/profitability': typeof BusinessRestaurantIntelligenceProfitabilityRoute
+  '/business/restaurant/intelligence/sales-reports': typeof BusinessRestaurantIntelligenceSalesReportsRoute
+  '/business/restaurant/intelligence/waste-analysis': typeof BusinessRestaurantIntelligenceWasteAnalysisRoute
+  '/business/restaurant/management/cash-register': typeof BusinessRestaurantManagementCashRegisterRoute
+  '/business/restaurant/management/employees': typeof BusinessRestaurantManagementEmployeesRoute
+  '/business/restaurant/management/expenses': typeof BusinessRestaurantManagementExpensesRoute
+  '/business/restaurant/management/inventory': typeof BusinessRestaurantManagementInventoryRoute
+  '/business/restaurant/management/purchasing': typeof BusinessRestaurantManagementPurchasingRoute
+  '/business/restaurant/management/recipes': typeof BusinessRestaurantManagementRecipesRoute
+  '/business/restaurant/management/suppliers': typeof BusinessRestaurantManagementSuppliersRoute
+  '/business/restaurant/operations/kitchen': typeof BusinessRestaurantOperationsKitchenRoute
+  '/business/restaurant/operations/menu': typeof BusinessRestaurantOperationsMenuRoute
+  '/business/restaurant/operations/orders': typeof BusinessRestaurantOperationsOrdersRoute
+  '/business/restaurant/operations/pos': typeof BusinessRestaurantOperationsPosRoute
+  '/business/restaurant/operations/reservations': typeof BusinessRestaurantOperationsReservationsRoute
+  '/business/restaurant/operations/tables': typeof BusinessRestaurantOperationsTablesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/app': typeof AppRouteWithChildren
-  '/app/dashboard': typeof AppDashboardRoute
-  '/app/insights': typeof AppInsightsRoute
-  '/app/notifications': typeof AppNotificationsRoute
-  '/app/admin/platform': typeof AppAdminPlatformRoute
-  '/app/admin/settings': typeof AppAdminSettingsRoute
-  '/app/admin/subscription': typeof AppAdminSubscriptionRoute
-  '/app/growth/customers': typeof AppGrowthCustomersRoute
-  '/app/growth/digital-menu': typeof AppGrowthDigitalMenuRoute
-  '/app/growth/loyalty': typeof AppGrowthLoyaltyRoute
-  '/app/growth/online-ordering': typeof AppGrowthOnlineOrderingRoute
-  '/app/intelligence/integrations': typeof AppIntelligenceIntegrationsRoute
-  '/app/intelligence/product-performance': typeof AppIntelligenceProductPerformanceRoute
-  '/app/intelligence/profitability': typeof AppIntelligenceProfitabilityRoute
-  '/app/intelligence/sales-reports': typeof AppIntelligenceSalesReportsRoute
-  '/app/intelligence/waste-analysis': typeof AppIntelligenceWasteAnalysisRoute
-  '/app/management/cash-register': typeof AppManagementCashRegisterRoute
-  '/app/management/employees': typeof AppManagementEmployeesRoute
-  '/app/management/expenses': typeof AppManagementExpensesRoute
-  '/app/management/inventory': typeof AppManagementInventoryRoute
-  '/app/management/purchasing': typeof AppManagementPurchasingRoute
-  '/app/management/recipes': typeof AppManagementRecipesRoute
-  '/app/management/suppliers': typeof AppManagementSuppliersRoute
-  '/app/operations/kitchen': typeof AppOperationsKitchenRoute
-  '/app/operations/menu': typeof AppOperationsMenuRoute
-  '/app/operations/orders': typeof AppOperationsOrdersRoute
-  '/app/operations/pos': typeof AppOperationsPosRoute
-  '/app/operations/reservations': typeof AppOperationsReservationsRoute
-  '/app/operations/tables': typeof AppOperationsTablesRoute
+  '/business/restaurant': typeof BusinessRestaurantRouteWithChildren
+  '/business/restaurant/dashboard': typeof BusinessRestaurantDashboardRoute
+  '/business/restaurant/insights': typeof BusinessRestaurantInsightsRoute
+  '/business/restaurant/notifications': typeof BusinessRestaurantNotificationsRoute
+  '/business/restaurant/admin/platform': typeof BusinessRestaurantAdminPlatformRoute
+  '/business/restaurant/admin/settings': typeof BusinessRestaurantAdminSettingsRoute
+  '/business/restaurant/admin/subscription': typeof BusinessRestaurantAdminSubscriptionRoute
+  '/business/restaurant/growth/customers': typeof BusinessRestaurantGrowthCustomersRoute
+  '/business/restaurant/growth/digital-menu': typeof BusinessRestaurantGrowthDigitalMenuRoute
+  '/business/restaurant/growth/loyalty': typeof BusinessRestaurantGrowthLoyaltyRoute
+  '/business/restaurant/growth/online-ordering': typeof BusinessRestaurantGrowthOnlineOrderingRoute
+  '/business/restaurant/intelligence/integrations': typeof BusinessRestaurantIntelligenceIntegrationsRoute
+  '/business/restaurant/intelligence/product-performance': typeof BusinessRestaurantIntelligenceProductPerformanceRoute
+  '/business/restaurant/intelligence/profitability': typeof BusinessRestaurantIntelligenceProfitabilityRoute
+  '/business/restaurant/intelligence/sales-reports': typeof BusinessRestaurantIntelligenceSalesReportsRoute
+  '/business/restaurant/intelligence/waste-analysis': typeof BusinessRestaurantIntelligenceWasteAnalysisRoute
+  '/business/restaurant/management/cash-register': typeof BusinessRestaurantManagementCashRegisterRoute
+  '/business/restaurant/management/employees': typeof BusinessRestaurantManagementEmployeesRoute
+  '/business/restaurant/management/expenses': typeof BusinessRestaurantManagementExpensesRoute
+  '/business/restaurant/management/inventory': typeof BusinessRestaurantManagementInventoryRoute
+  '/business/restaurant/management/purchasing': typeof BusinessRestaurantManagementPurchasingRoute
+  '/business/restaurant/management/recipes': typeof BusinessRestaurantManagementRecipesRoute
+  '/business/restaurant/management/suppliers': typeof BusinessRestaurantManagementSuppliersRoute
+  '/business/restaurant/operations/kitchen': typeof BusinessRestaurantOperationsKitchenRoute
+  '/business/restaurant/operations/menu': typeof BusinessRestaurantOperationsMenuRoute
+  '/business/restaurant/operations/orders': typeof BusinessRestaurantOperationsOrdersRoute
+  '/business/restaurant/operations/pos': typeof BusinessRestaurantOperationsPosRoute
+  '/business/restaurant/operations/reservations': typeof BusinessRestaurantOperationsReservationsRoute
+  '/business/restaurant/operations/tables': typeof BusinessRestaurantOperationsTablesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/app': typeof AppRouteWithChildren
-  '/app/dashboard': typeof AppDashboardRoute
-  '/app/insights': typeof AppInsightsRoute
-  '/app/notifications': typeof AppNotificationsRoute
-  '/app/admin/platform': typeof AppAdminPlatformRoute
-  '/app/admin/settings': typeof AppAdminSettingsRoute
-  '/app/admin/subscription': typeof AppAdminSubscriptionRoute
-  '/app/growth/customers': typeof AppGrowthCustomersRoute
-  '/app/growth/digital-menu': typeof AppGrowthDigitalMenuRoute
-  '/app/growth/loyalty': typeof AppGrowthLoyaltyRoute
-  '/app/growth/online-ordering': typeof AppGrowthOnlineOrderingRoute
-  '/app/intelligence/integrations': typeof AppIntelligenceIntegrationsRoute
-  '/app/intelligence/product-performance': typeof AppIntelligenceProductPerformanceRoute
-  '/app/intelligence/profitability': typeof AppIntelligenceProfitabilityRoute
-  '/app/intelligence/sales-reports': typeof AppIntelligenceSalesReportsRoute
-  '/app/intelligence/waste-analysis': typeof AppIntelligenceWasteAnalysisRoute
-  '/app/management/cash-register': typeof AppManagementCashRegisterRoute
-  '/app/management/employees': typeof AppManagementEmployeesRoute
-  '/app/management/expenses': typeof AppManagementExpensesRoute
-  '/app/management/inventory': typeof AppManagementInventoryRoute
-  '/app/management/purchasing': typeof AppManagementPurchasingRoute
-  '/app/management/recipes': typeof AppManagementRecipesRoute
-  '/app/management/suppliers': typeof AppManagementSuppliersRoute
-  '/app/operations/kitchen': typeof AppOperationsKitchenRoute
-  '/app/operations/menu': typeof AppOperationsMenuRoute
-  '/app/operations/orders': typeof AppOperationsOrdersRoute
-  '/app/operations/pos': typeof AppOperationsPosRoute
-  '/app/operations/reservations': typeof AppOperationsReservationsRoute
-  '/app/operations/tables': typeof AppOperationsTablesRoute
+  '/business/restaurant': typeof BusinessRestaurantRouteWithChildren
+  '/business/restaurant/dashboard': typeof BusinessRestaurantDashboardRoute
+  '/business/restaurant/insights': typeof BusinessRestaurantInsightsRoute
+  '/business/restaurant/notifications': typeof BusinessRestaurantNotificationsRoute
+  '/business/restaurant/admin/platform': typeof BusinessRestaurantAdminPlatformRoute
+  '/business/restaurant/admin/settings': typeof BusinessRestaurantAdminSettingsRoute
+  '/business/restaurant/admin/subscription': typeof BusinessRestaurantAdminSubscriptionRoute
+  '/business/restaurant/growth/customers': typeof BusinessRestaurantGrowthCustomersRoute
+  '/business/restaurant/growth/digital-menu': typeof BusinessRestaurantGrowthDigitalMenuRoute
+  '/business/restaurant/growth/loyalty': typeof BusinessRestaurantGrowthLoyaltyRoute
+  '/business/restaurant/growth/online-ordering': typeof BusinessRestaurantGrowthOnlineOrderingRoute
+  '/business/restaurant/intelligence/integrations': typeof BusinessRestaurantIntelligenceIntegrationsRoute
+  '/business/restaurant/intelligence/product-performance': typeof BusinessRestaurantIntelligenceProductPerformanceRoute
+  '/business/restaurant/intelligence/profitability': typeof BusinessRestaurantIntelligenceProfitabilityRoute
+  '/business/restaurant/intelligence/sales-reports': typeof BusinessRestaurantIntelligenceSalesReportsRoute
+  '/business/restaurant/intelligence/waste-analysis': typeof BusinessRestaurantIntelligenceWasteAnalysisRoute
+  '/business/restaurant/management/cash-register': typeof BusinessRestaurantManagementCashRegisterRoute
+  '/business/restaurant/management/employees': typeof BusinessRestaurantManagementEmployeesRoute
+  '/business/restaurant/management/expenses': typeof BusinessRestaurantManagementExpensesRoute
+  '/business/restaurant/management/inventory': typeof BusinessRestaurantManagementInventoryRoute
+  '/business/restaurant/management/purchasing': typeof BusinessRestaurantManagementPurchasingRoute
+  '/business/restaurant/management/recipes': typeof BusinessRestaurantManagementRecipesRoute
+  '/business/restaurant/management/suppliers': typeof BusinessRestaurantManagementSuppliersRoute
+  '/business/restaurant/operations/kitchen': typeof BusinessRestaurantOperationsKitchenRoute
+  '/business/restaurant/operations/menu': typeof BusinessRestaurantOperationsMenuRoute
+  '/business/restaurant/operations/orders': typeof BusinessRestaurantOperationsOrdersRoute
+  '/business/restaurant/operations/pos': typeof BusinessRestaurantOperationsPosRoute
+  '/business/restaurant/operations/reservations': typeof BusinessRestaurantOperationsReservationsRoute
+  '/business/restaurant/operations/tables': typeof BusinessRestaurantOperationsTablesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/app'
-    | '/app/dashboard'
-    | '/app/insights'
-    | '/app/notifications'
-    | '/app/admin/platform'
-    | '/app/admin/settings'
-    | '/app/admin/subscription'
-    | '/app/growth/customers'
-    | '/app/growth/digital-menu'
-    | '/app/growth/loyalty'
-    | '/app/growth/online-ordering'
-    | '/app/intelligence/integrations'
-    | '/app/intelligence/product-performance'
-    | '/app/intelligence/profitability'
-    | '/app/intelligence/sales-reports'
-    | '/app/intelligence/waste-analysis'
-    | '/app/management/cash-register'
-    | '/app/management/employees'
-    | '/app/management/expenses'
-    | '/app/management/inventory'
-    | '/app/management/purchasing'
-    | '/app/management/recipes'
-    | '/app/management/suppliers'
-    | '/app/operations/kitchen'
-    | '/app/operations/menu'
-    | '/app/operations/orders'
-    | '/app/operations/pos'
-    | '/app/operations/reservations'
-    | '/app/operations/tables'
+    | '/business/restaurant'
+    | '/business/restaurant/dashboard'
+    | '/business/restaurant/insights'
+    | '/business/restaurant/notifications'
+    | '/business/restaurant/admin/platform'
+    | '/business/restaurant/admin/settings'
+    | '/business/restaurant/admin/subscription'
+    | '/business/restaurant/growth/customers'
+    | '/business/restaurant/growth/digital-menu'
+    | '/business/restaurant/growth/loyalty'
+    | '/business/restaurant/growth/online-ordering'
+    | '/business/restaurant/intelligence/integrations'
+    | '/business/restaurant/intelligence/product-performance'
+    | '/business/restaurant/intelligence/profitability'
+    | '/business/restaurant/intelligence/sales-reports'
+    | '/business/restaurant/intelligence/waste-analysis'
+    | '/business/restaurant/management/cash-register'
+    | '/business/restaurant/management/employees'
+    | '/business/restaurant/management/expenses'
+    | '/business/restaurant/management/inventory'
+    | '/business/restaurant/management/purchasing'
+    | '/business/restaurant/management/recipes'
+    | '/business/restaurant/management/suppliers'
+    | '/business/restaurant/operations/kitchen'
+    | '/business/restaurant/operations/menu'
+    | '/business/restaurant/operations/orders'
+    | '/business/restaurant/operations/pos'
+    | '/business/restaurant/operations/reservations'
+    | '/business/restaurant/operations/tables'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/app'
-    | '/app/dashboard'
-    | '/app/insights'
-    | '/app/notifications'
-    | '/app/admin/platform'
-    | '/app/admin/settings'
-    | '/app/admin/subscription'
-    | '/app/growth/customers'
-    | '/app/growth/digital-menu'
-    | '/app/growth/loyalty'
-    | '/app/growth/online-ordering'
-    | '/app/intelligence/integrations'
-    | '/app/intelligence/product-performance'
-    | '/app/intelligence/profitability'
-    | '/app/intelligence/sales-reports'
-    | '/app/intelligence/waste-analysis'
-    | '/app/management/cash-register'
-    | '/app/management/employees'
-    | '/app/management/expenses'
-    | '/app/management/inventory'
-    | '/app/management/purchasing'
-    | '/app/management/recipes'
-    | '/app/management/suppliers'
-    | '/app/operations/kitchen'
-    | '/app/operations/menu'
-    | '/app/operations/orders'
-    | '/app/operations/pos'
-    | '/app/operations/reservations'
-    | '/app/operations/tables'
+    | '/business/restaurant'
+    | '/business/restaurant/dashboard'
+    | '/business/restaurant/insights'
+    | '/business/restaurant/notifications'
+    | '/business/restaurant/admin/platform'
+    | '/business/restaurant/admin/settings'
+    | '/business/restaurant/admin/subscription'
+    | '/business/restaurant/growth/customers'
+    | '/business/restaurant/growth/digital-menu'
+    | '/business/restaurant/growth/loyalty'
+    | '/business/restaurant/growth/online-ordering'
+    | '/business/restaurant/intelligence/integrations'
+    | '/business/restaurant/intelligence/product-performance'
+    | '/business/restaurant/intelligence/profitability'
+    | '/business/restaurant/intelligence/sales-reports'
+    | '/business/restaurant/intelligence/waste-analysis'
+    | '/business/restaurant/management/cash-register'
+    | '/business/restaurant/management/employees'
+    | '/business/restaurant/management/expenses'
+    | '/business/restaurant/management/inventory'
+    | '/business/restaurant/management/purchasing'
+    | '/business/restaurant/management/recipes'
+    | '/business/restaurant/management/suppliers'
+    | '/business/restaurant/operations/kitchen'
+    | '/business/restaurant/operations/menu'
+    | '/business/restaurant/operations/orders'
+    | '/business/restaurant/operations/pos'
+    | '/business/restaurant/operations/reservations'
+    | '/business/restaurant/operations/tables'
   id:
     | '__root__'
     | '/'
-    | '/app'
-    | '/app/dashboard'
-    | '/app/insights'
-    | '/app/notifications'
-    | '/app/admin/platform'
-    | '/app/admin/settings'
-    | '/app/admin/subscription'
-    | '/app/growth/customers'
-    | '/app/growth/digital-menu'
-    | '/app/growth/loyalty'
-    | '/app/growth/online-ordering'
-    | '/app/intelligence/integrations'
-    | '/app/intelligence/product-performance'
-    | '/app/intelligence/profitability'
-    | '/app/intelligence/sales-reports'
-    | '/app/intelligence/waste-analysis'
-    | '/app/management/cash-register'
-    | '/app/management/employees'
-    | '/app/management/expenses'
-    | '/app/management/inventory'
-    | '/app/management/purchasing'
-    | '/app/management/recipes'
-    | '/app/management/suppliers'
-    | '/app/operations/kitchen'
-    | '/app/operations/menu'
-    | '/app/operations/orders'
-    | '/app/operations/pos'
-    | '/app/operations/reservations'
-    | '/app/operations/tables'
+    | '/business/restaurant'
+    | '/business/restaurant/dashboard'
+    | '/business/restaurant/insights'
+    | '/business/restaurant/notifications'
+    | '/business/restaurant/admin/platform'
+    | '/business/restaurant/admin/settings'
+    | '/business/restaurant/admin/subscription'
+    | '/business/restaurant/growth/customers'
+    | '/business/restaurant/growth/digital-menu'
+    | '/business/restaurant/growth/loyalty'
+    | '/business/restaurant/growth/online-ordering'
+    | '/business/restaurant/intelligence/integrations'
+    | '/business/restaurant/intelligence/product-performance'
+    | '/business/restaurant/intelligence/profitability'
+    | '/business/restaurant/intelligence/sales-reports'
+    | '/business/restaurant/intelligence/waste-analysis'
+    | '/business/restaurant/management/cash-register'
+    | '/business/restaurant/management/employees'
+    | '/business/restaurant/management/expenses'
+    | '/business/restaurant/management/inventory'
+    | '/business/restaurant/management/purchasing'
+    | '/business/restaurant/management/recipes'
+    | '/business/restaurant/management/suppliers'
+    | '/business/restaurant/operations/kitchen'
+    | '/business/restaurant/operations/menu'
+    | '/business/restaurant/operations/orders'
+    | '/business/restaurant/operations/pos'
+    | '/business/restaurant/operations/reservations'
+    | '/business/restaurant/operations/tables'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppRoute: typeof AppRouteWithChildren
+  BusinessRestaurantRoute: typeof BusinessRestaurantRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -408,280 +429,300 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppRouteImport
+    '/business/restaurant': {
+      id: '/business/restaurant'
+      path: '/business/restaurant'
+      fullPath: '/business/restaurant'
+      preLoaderRoute: typeof BusinessRestaurantRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app/dashboard': {
-      id: '/app/dashboard'
+    '/business/restaurant/dashboard': {
+      id: '/business/restaurant/dashboard'
       path: '/dashboard'
-      fullPath: '/app/dashboard'
-      preLoaderRoute: typeof AppDashboardRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/dashboard'
+      preLoaderRoute: typeof BusinessRestaurantDashboardRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/insights': {
-      id: '/app/insights'
+    '/business/restaurant/insights': {
+      id: '/business/restaurant/insights'
       path: '/insights'
-      fullPath: '/app/insights'
-      preLoaderRoute: typeof AppInsightsRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/insights'
+      preLoaderRoute: typeof BusinessRestaurantInsightsRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/notifications': {
-      id: '/app/notifications'
+    '/business/restaurant/notifications': {
+      id: '/business/restaurant/notifications'
       path: '/notifications'
-      fullPath: '/app/notifications'
-      preLoaderRoute: typeof AppNotificationsRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/notifications'
+      preLoaderRoute: typeof BusinessRestaurantNotificationsRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/admin/platform': {
-      id: '/app/admin/platform'
+    '/business/restaurant/admin/platform': {
+      id: '/business/restaurant/admin/platform'
       path: '/admin/platform'
-      fullPath: '/app/admin/platform'
-      preLoaderRoute: typeof AppAdminPlatformRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/admin/platform'
+      preLoaderRoute: typeof BusinessRestaurantAdminPlatformRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/admin/settings': {
-      id: '/app/admin/settings'
+    '/business/restaurant/admin/settings': {
+      id: '/business/restaurant/admin/settings'
       path: '/admin/settings'
-      fullPath: '/app/admin/settings'
-      preLoaderRoute: typeof AppAdminSettingsRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/admin/settings'
+      preLoaderRoute: typeof BusinessRestaurantAdminSettingsRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/admin/subscription': {
-      id: '/app/admin/subscription'
+    '/business/restaurant/admin/subscription': {
+      id: '/business/restaurant/admin/subscription'
       path: '/admin/subscription'
-      fullPath: '/app/admin/subscription'
-      preLoaderRoute: typeof AppAdminSubscriptionRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/admin/subscription'
+      preLoaderRoute: typeof BusinessRestaurantAdminSubscriptionRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/growth/customers': {
-      id: '/app/growth/customers'
+    '/business/restaurant/growth/customers': {
+      id: '/business/restaurant/growth/customers'
       path: '/growth/customers'
-      fullPath: '/app/growth/customers'
-      preLoaderRoute: typeof AppGrowthCustomersRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/growth/customers'
+      preLoaderRoute: typeof BusinessRestaurantGrowthCustomersRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/growth/digital-menu': {
-      id: '/app/growth/digital-menu'
+    '/business/restaurant/growth/digital-menu': {
+      id: '/business/restaurant/growth/digital-menu'
       path: '/growth/digital-menu'
-      fullPath: '/app/growth/digital-menu'
-      preLoaderRoute: typeof AppGrowthDigitalMenuRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/growth/digital-menu'
+      preLoaderRoute: typeof BusinessRestaurantGrowthDigitalMenuRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/growth/loyalty': {
-      id: '/app/growth/loyalty'
+    '/business/restaurant/growth/loyalty': {
+      id: '/business/restaurant/growth/loyalty'
       path: '/growth/loyalty'
-      fullPath: '/app/growth/loyalty'
-      preLoaderRoute: typeof AppGrowthLoyaltyRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/growth/loyalty'
+      preLoaderRoute: typeof BusinessRestaurantGrowthLoyaltyRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/growth/online-ordering': {
-      id: '/app/growth/online-ordering'
+    '/business/restaurant/growth/online-ordering': {
+      id: '/business/restaurant/growth/online-ordering'
       path: '/growth/online-ordering'
-      fullPath: '/app/growth/online-ordering'
-      preLoaderRoute: typeof AppGrowthOnlineOrderingRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/growth/online-ordering'
+      preLoaderRoute: typeof BusinessRestaurantGrowthOnlineOrderingRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/intelligence/integrations': {
-      id: '/app/intelligence/integrations'
+    '/business/restaurant/intelligence/integrations': {
+      id: '/business/restaurant/intelligence/integrations'
       path: '/intelligence/integrations'
-      fullPath: '/app/intelligence/integrations'
-      preLoaderRoute: typeof AppIntelligenceIntegrationsRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/intelligence/integrations'
+      preLoaderRoute: typeof BusinessRestaurantIntelligenceIntegrationsRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/intelligence/product-performance': {
-      id: '/app/intelligence/product-performance'
+    '/business/restaurant/intelligence/product-performance': {
+      id: '/business/restaurant/intelligence/product-performance'
       path: '/intelligence/product-performance'
-      fullPath: '/app/intelligence/product-performance'
-      preLoaderRoute: typeof AppIntelligenceProductPerformanceRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/intelligence/product-performance'
+      preLoaderRoute: typeof BusinessRestaurantIntelligenceProductPerformanceRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/intelligence/profitability': {
-      id: '/app/intelligence/profitability'
+    '/business/restaurant/intelligence/profitability': {
+      id: '/business/restaurant/intelligence/profitability'
       path: '/intelligence/profitability'
-      fullPath: '/app/intelligence/profitability'
-      preLoaderRoute: typeof AppIntelligenceProfitabilityRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/intelligence/profitability'
+      preLoaderRoute: typeof BusinessRestaurantIntelligenceProfitabilityRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/intelligence/sales-reports': {
-      id: '/app/intelligence/sales-reports'
+    '/business/restaurant/intelligence/sales-reports': {
+      id: '/business/restaurant/intelligence/sales-reports'
       path: '/intelligence/sales-reports'
-      fullPath: '/app/intelligence/sales-reports'
-      preLoaderRoute: typeof AppIntelligenceSalesReportsRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/intelligence/sales-reports'
+      preLoaderRoute: typeof BusinessRestaurantIntelligenceSalesReportsRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/intelligence/waste-analysis': {
-      id: '/app/intelligence/waste-analysis'
+    '/business/restaurant/intelligence/waste-analysis': {
+      id: '/business/restaurant/intelligence/waste-analysis'
       path: '/intelligence/waste-analysis'
-      fullPath: '/app/intelligence/waste-analysis'
-      preLoaderRoute: typeof AppIntelligenceWasteAnalysisRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/intelligence/waste-analysis'
+      preLoaderRoute: typeof BusinessRestaurantIntelligenceWasteAnalysisRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/management/cash-register': {
-      id: '/app/management/cash-register'
+    '/business/restaurant/management/cash-register': {
+      id: '/business/restaurant/management/cash-register'
       path: '/management/cash-register'
-      fullPath: '/app/management/cash-register'
-      preLoaderRoute: typeof AppManagementCashRegisterRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/management/cash-register'
+      preLoaderRoute: typeof BusinessRestaurantManagementCashRegisterRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/management/employees': {
-      id: '/app/management/employees'
+    '/business/restaurant/management/employees': {
+      id: '/business/restaurant/management/employees'
       path: '/management/employees'
-      fullPath: '/app/management/employees'
-      preLoaderRoute: typeof AppManagementEmployeesRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/management/employees'
+      preLoaderRoute: typeof BusinessRestaurantManagementEmployeesRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/management/expenses': {
-      id: '/app/management/expenses'
+    '/business/restaurant/management/expenses': {
+      id: '/business/restaurant/management/expenses'
       path: '/management/expenses'
-      fullPath: '/app/management/expenses'
-      preLoaderRoute: typeof AppManagementExpensesRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/management/expenses'
+      preLoaderRoute: typeof BusinessRestaurantManagementExpensesRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/management/inventory': {
-      id: '/app/management/inventory'
+    '/business/restaurant/management/inventory': {
+      id: '/business/restaurant/management/inventory'
       path: '/management/inventory'
-      fullPath: '/app/management/inventory'
-      preLoaderRoute: typeof AppManagementInventoryRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/management/inventory'
+      preLoaderRoute: typeof BusinessRestaurantManagementInventoryRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/management/purchasing': {
-      id: '/app/management/purchasing'
+    '/business/restaurant/management/purchasing': {
+      id: '/business/restaurant/management/purchasing'
       path: '/management/purchasing'
-      fullPath: '/app/management/purchasing'
-      preLoaderRoute: typeof AppManagementPurchasingRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/management/purchasing'
+      preLoaderRoute: typeof BusinessRestaurantManagementPurchasingRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/management/recipes': {
-      id: '/app/management/recipes'
+    '/business/restaurant/management/recipes': {
+      id: '/business/restaurant/management/recipes'
       path: '/management/recipes'
-      fullPath: '/app/management/recipes'
-      preLoaderRoute: typeof AppManagementRecipesRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/management/recipes'
+      preLoaderRoute: typeof BusinessRestaurantManagementRecipesRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/management/suppliers': {
-      id: '/app/management/suppliers'
+    '/business/restaurant/management/suppliers': {
+      id: '/business/restaurant/management/suppliers'
       path: '/management/suppliers'
-      fullPath: '/app/management/suppliers'
-      preLoaderRoute: typeof AppManagementSuppliersRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/management/suppliers'
+      preLoaderRoute: typeof BusinessRestaurantManagementSuppliersRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/operations/kitchen': {
-      id: '/app/operations/kitchen'
+    '/business/restaurant/operations/kitchen': {
+      id: '/business/restaurant/operations/kitchen'
       path: '/operations/kitchen'
-      fullPath: '/app/operations/kitchen'
-      preLoaderRoute: typeof AppOperationsKitchenRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/operations/kitchen'
+      preLoaderRoute: typeof BusinessRestaurantOperationsKitchenRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/operations/menu': {
-      id: '/app/operations/menu'
+    '/business/restaurant/operations/menu': {
+      id: '/business/restaurant/operations/menu'
       path: '/operations/menu'
-      fullPath: '/app/operations/menu'
-      preLoaderRoute: typeof AppOperationsMenuRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/operations/menu'
+      preLoaderRoute: typeof BusinessRestaurantOperationsMenuRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/operations/orders': {
-      id: '/app/operations/orders'
+    '/business/restaurant/operations/orders': {
+      id: '/business/restaurant/operations/orders'
       path: '/operations/orders'
-      fullPath: '/app/operations/orders'
-      preLoaderRoute: typeof AppOperationsOrdersRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/operations/orders'
+      preLoaderRoute: typeof BusinessRestaurantOperationsOrdersRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/operations/pos': {
-      id: '/app/operations/pos'
+    '/business/restaurant/operations/pos': {
+      id: '/business/restaurant/operations/pos'
       path: '/operations/pos'
-      fullPath: '/app/operations/pos'
-      preLoaderRoute: typeof AppOperationsPosRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/operations/pos'
+      preLoaderRoute: typeof BusinessRestaurantOperationsPosRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/operations/reservations': {
-      id: '/app/operations/reservations'
+    '/business/restaurant/operations/reservations': {
+      id: '/business/restaurant/operations/reservations'
       path: '/operations/reservations'
-      fullPath: '/app/operations/reservations'
-      preLoaderRoute: typeof AppOperationsReservationsRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/operations/reservations'
+      preLoaderRoute: typeof BusinessRestaurantOperationsReservationsRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
-    '/app/operations/tables': {
-      id: '/app/operations/tables'
+    '/business/restaurant/operations/tables': {
+      id: '/business/restaurant/operations/tables'
       path: '/operations/tables'
-      fullPath: '/app/operations/tables'
-      preLoaderRoute: typeof AppOperationsTablesRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/business/restaurant/operations/tables'
+      preLoaderRoute: typeof BusinessRestaurantOperationsTablesRouteImport
+      parentRoute: typeof BusinessRestaurantRoute
     }
   }
 }
 
-interface AppRouteChildren {
-  AppDashboardRoute: typeof AppDashboardRoute
-  AppInsightsRoute: typeof AppInsightsRoute
-  AppNotificationsRoute: typeof AppNotificationsRoute
-  AppAdminPlatformRoute: typeof AppAdminPlatformRoute
-  AppAdminSettingsRoute: typeof AppAdminSettingsRoute
-  AppAdminSubscriptionRoute: typeof AppAdminSubscriptionRoute
-  AppGrowthCustomersRoute: typeof AppGrowthCustomersRoute
-  AppGrowthDigitalMenuRoute: typeof AppGrowthDigitalMenuRoute
-  AppGrowthLoyaltyRoute: typeof AppGrowthLoyaltyRoute
-  AppGrowthOnlineOrderingRoute: typeof AppGrowthOnlineOrderingRoute
-  AppIntelligenceIntegrationsRoute: typeof AppIntelligenceIntegrationsRoute
-  AppIntelligenceProductPerformanceRoute: typeof AppIntelligenceProductPerformanceRoute
-  AppIntelligenceProfitabilityRoute: typeof AppIntelligenceProfitabilityRoute
-  AppIntelligenceSalesReportsRoute: typeof AppIntelligenceSalesReportsRoute
-  AppIntelligenceWasteAnalysisRoute: typeof AppIntelligenceWasteAnalysisRoute
-  AppManagementCashRegisterRoute: typeof AppManagementCashRegisterRoute
-  AppManagementEmployeesRoute: typeof AppManagementEmployeesRoute
-  AppManagementExpensesRoute: typeof AppManagementExpensesRoute
-  AppManagementInventoryRoute: typeof AppManagementInventoryRoute
-  AppManagementPurchasingRoute: typeof AppManagementPurchasingRoute
-  AppManagementRecipesRoute: typeof AppManagementRecipesRoute
-  AppManagementSuppliersRoute: typeof AppManagementSuppliersRoute
-  AppOperationsKitchenRoute: typeof AppOperationsKitchenRoute
-  AppOperationsMenuRoute: typeof AppOperationsMenuRoute
-  AppOperationsOrdersRoute: typeof AppOperationsOrdersRoute
-  AppOperationsPosRoute: typeof AppOperationsPosRoute
-  AppOperationsReservationsRoute: typeof AppOperationsReservationsRoute
-  AppOperationsTablesRoute: typeof AppOperationsTablesRoute
+interface BusinessRestaurantRouteChildren {
+  BusinessRestaurantDashboardRoute: typeof BusinessRestaurantDashboardRoute
+  BusinessRestaurantInsightsRoute: typeof BusinessRestaurantInsightsRoute
+  BusinessRestaurantNotificationsRoute: typeof BusinessRestaurantNotificationsRoute
+  BusinessRestaurantAdminPlatformRoute: typeof BusinessRestaurantAdminPlatformRoute
+  BusinessRestaurantAdminSettingsRoute: typeof BusinessRestaurantAdminSettingsRoute
+  BusinessRestaurantAdminSubscriptionRoute: typeof BusinessRestaurantAdminSubscriptionRoute
+  BusinessRestaurantGrowthCustomersRoute: typeof BusinessRestaurantGrowthCustomersRoute
+  BusinessRestaurantGrowthDigitalMenuRoute: typeof BusinessRestaurantGrowthDigitalMenuRoute
+  BusinessRestaurantGrowthLoyaltyRoute: typeof BusinessRestaurantGrowthLoyaltyRoute
+  BusinessRestaurantGrowthOnlineOrderingRoute: typeof BusinessRestaurantGrowthOnlineOrderingRoute
+  BusinessRestaurantIntelligenceIntegrationsRoute: typeof BusinessRestaurantIntelligenceIntegrationsRoute
+  BusinessRestaurantIntelligenceProductPerformanceRoute: typeof BusinessRestaurantIntelligenceProductPerformanceRoute
+  BusinessRestaurantIntelligenceProfitabilityRoute: typeof BusinessRestaurantIntelligenceProfitabilityRoute
+  BusinessRestaurantIntelligenceSalesReportsRoute: typeof BusinessRestaurantIntelligenceSalesReportsRoute
+  BusinessRestaurantIntelligenceWasteAnalysisRoute: typeof BusinessRestaurantIntelligenceWasteAnalysisRoute
+  BusinessRestaurantManagementCashRegisterRoute: typeof BusinessRestaurantManagementCashRegisterRoute
+  BusinessRestaurantManagementEmployeesRoute: typeof BusinessRestaurantManagementEmployeesRoute
+  BusinessRestaurantManagementExpensesRoute: typeof BusinessRestaurantManagementExpensesRoute
+  BusinessRestaurantManagementInventoryRoute: typeof BusinessRestaurantManagementInventoryRoute
+  BusinessRestaurantManagementPurchasingRoute: typeof BusinessRestaurantManagementPurchasingRoute
+  BusinessRestaurantManagementRecipesRoute: typeof BusinessRestaurantManagementRecipesRoute
+  BusinessRestaurantManagementSuppliersRoute: typeof BusinessRestaurantManagementSuppliersRoute
+  BusinessRestaurantOperationsKitchenRoute: typeof BusinessRestaurantOperationsKitchenRoute
+  BusinessRestaurantOperationsMenuRoute: typeof BusinessRestaurantOperationsMenuRoute
+  BusinessRestaurantOperationsOrdersRoute: typeof BusinessRestaurantOperationsOrdersRoute
+  BusinessRestaurantOperationsPosRoute: typeof BusinessRestaurantOperationsPosRoute
+  BusinessRestaurantOperationsReservationsRoute: typeof BusinessRestaurantOperationsReservationsRoute
+  BusinessRestaurantOperationsTablesRoute: typeof BusinessRestaurantOperationsTablesRoute
 }
 
-const AppRouteChildren: AppRouteChildren = {
-  AppDashboardRoute: AppDashboardRoute,
-  AppInsightsRoute: AppInsightsRoute,
-  AppNotificationsRoute: AppNotificationsRoute,
-  AppAdminPlatformRoute: AppAdminPlatformRoute,
-  AppAdminSettingsRoute: AppAdminSettingsRoute,
-  AppAdminSubscriptionRoute: AppAdminSubscriptionRoute,
-  AppGrowthCustomersRoute: AppGrowthCustomersRoute,
-  AppGrowthDigitalMenuRoute: AppGrowthDigitalMenuRoute,
-  AppGrowthLoyaltyRoute: AppGrowthLoyaltyRoute,
-  AppGrowthOnlineOrderingRoute: AppGrowthOnlineOrderingRoute,
-  AppIntelligenceIntegrationsRoute: AppIntelligenceIntegrationsRoute,
-  AppIntelligenceProductPerformanceRoute:
-    AppIntelligenceProductPerformanceRoute,
-  AppIntelligenceProfitabilityRoute: AppIntelligenceProfitabilityRoute,
-  AppIntelligenceSalesReportsRoute: AppIntelligenceSalesReportsRoute,
-  AppIntelligenceWasteAnalysisRoute: AppIntelligenceWasteAnalysisRoute,
-  AppManagementCashRegisterRoute: AppManagementCashRegisterRoute,
-  AppManagementEmployeesRoute: AppManagementEmployeesRoute,
-  AppManagementExpensesRoute: AppManagementExpensesRoute,
-  AppManagementInventoryRoute: AppManagementInventoryRoute,
-  AppManagementPurchasingRoute: AppManagementPurchasingRoute,
-  AppManagementRecipesRoute: AppManagementRecipesRoute,
-  AppManagementSuppliersRoute: AppManagementSuppliersRoute,
-  AppOperationsKitchenRoute: AppOperationsKitchenRoute,
-  AppOperationsMenuRoute: AppOperationsMenuRoute,
-  AppOperationsOrdersRoute: AppOperationsOrdersRoute,
-  AppOperationsPosRoute: AppOperationsPosRoute,
-  AppOperationsReservationsRoute: AppOperationsReservationsRoute,
-  AppOperationsTablesRoute: AppOperationsTablesRoute,
+const BusinessRestaurantRouteChildren: BusinessRestaurantRouteChildren = {
+  BusinessRestaurantDashboardRoute: BusinessRestaurantDashboardRoute,
+  BusinessRestaurantInsightsRoute: BusinessRestaurantInsightsRoute,
+  BusinessRestaurantNotificationsRoute: BusinessRestaurantNotificationsRoute,
+  BusinessRestaurantAdminPlatformRoute: BusinessRestaurantAdminPlatformRoute,
+  BusinessRestaurantAdminSettingsRoute: BusinessRestaurantAdminSettingsRoute,
+  BusinessRestaurantAdminSubscriptionRoute:
+    BusinessRestaurantAdminSubscriptionRoute,
+  BusinessRestaurantGrowthCustomersRoute:
+    BusinessRestaurantGrowthCustomersRoute,
+  BusinessRestaurantGrowthDigitalMenuRoute:
+    BusinessRestaurantGrowthDigitalMenuRoute,
+  BusinessRestaurantGrowthLoyaltyRoute: BusinessRestaurantGrowthLoyaltyRoute,
+  BusinessRestaurantGrowthOnlineOrderingRoute:
+    BusinessRestaurantGrowthOnlineOrderingRoute,
+  BusinessRestaurantIntelligenceIntegrationsRoute:
+    BusinessRestaurantIntelligenceIntegrationsRoute,
+  BusinessRestaurantIntelligenceProductPerformanceRoute:
+    BusinessRestaurantIntelligenceProductPerformanceRoute,
+  BusinessRestaurantIntelligenceProfitabilityRoute:
+    BusinessRestaurantIntelligenceProfitabilityRoute,
+  BusinessRestaurantIntelligenceSalesReportsRoute:
+    BusinessRestaurantIntelligenceSalesReportsRoute,
+  BusinessRestaurantIntelligenceWasteAnalysisRoute:
+    BusinessRestaurantIntelligenceWasteAnalysisRoute,
+  BusinessRestaurantManagementCashRegisterRoute:
+    BusinessRestaurantManagementCashRegisterRoute,
+  BusinessRestaurantManagementEmployeesRoute:
+    BusinessRestaurantManagementEmployeesRoute,
+  BusinessRestaurantManagementExpensesRoute:
+    BusinessRestaurantManagementExpensesRoute,
+  BusinessRestaurantManagementInventoryRoute:
+    BusinessRestaurantManagementInventoryRoute,
+  BusinessRestaurantManagementPurchasingRoute:
+    BusinessRestaurantManagementPurchasingRoute,
+  BusinessRestaurantManagementRecipesRoute:
+    BusinessRestaurantManagementRecipesRoute,
+  BusinessRestaurantManagementSuppliersRoute:
+    BusinessRestaurantManagementSuppliersRoute,
+  BusinessRestaurantOperationsKitchenRoute:
+    BusinessRestaurantOperationsKitchenRoute,
+  BusinessRestaurantOperationsMenuRoute: BusinessRestaurantOperationsMenuRoute,
+  BusinessRestaurantOperationsOrdersRoute:
+    BusinessRestaurantOperationsOrdersRoute,
+  BusinessRestaurantOperationsPosRoute: BusinessRestaurantOperationsPosRoute,
+  BusinessRestaurantOperationsReservationsRoute:
+    BusinessRestaurantOperationsReservationsRoute,
+  BusinessRestaurantOperationsTablesRoute:
+    BusinessRestaurantOperationsTablesRoute,
 }
 
-const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+const BusinessRestaurantRouteWithChildren =
+  BusinessRestaurantRoute._addFileChildren(BusinessRestaurantRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppRoute: AppRouteWithChildren,
+  BusinessRestaurantRoute: BusinessRestaurantRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
