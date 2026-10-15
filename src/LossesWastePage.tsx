@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Search, Plus, Trash2 } from "lucide-react";
+import { useToast } from "./components/ToastProvider";
 
 export interface WasteLog {
   id: string;
@@ -45,6 +47,7 @@ const INITIAL_WASTE: WasteLog[] = [
 ];
 
 export const LossesWastePage: React.FC = () => {
+  const { showToast } = useToast();
   const [wasteLogs, setWasteLogs] = useState<WasteLog[]>(INITIAL_WASTE);
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,6 +73,10 @@ export const LossesWastePage: React.FC = () => {
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formItem.trim()) {
+      showToast({ type: "error", title: "Item name is required" });
+      return;
+    }
     const newLog: WasteLog = {
       id: `WST-${Math.floor(200 + Math.random() * 800)}`,
       date: new Date().toISOString(),
@@ -82,169 +89,89 @@ export const LossesWastePage: React.FC = () => {
     };
     setWasteLogs([newLog, ...wasteLogs]);
     setIsModalOpen(false);
+    setFormItem("");
+    setFormQuantity(0);
+    setFormUnit("kg");
+    setFormCost(0);
+    setFormReason("Prep Waste");
+    showToast({
+      type: "warning",
+      title: "Waste logged",
+      message: `${formItem} — ${formCost} MAD`,
+    });
+  };
+
+  const handleDelete = (id: string) => {
+    if (!confirm("Delete this waste log?")) return;
+    setWasteLogs((prev) => prev.filter((w) => w.id !== id));
+    showToast({ type: "success", title: "Waste log deleted" });
   };
 
   return (
-    <div
-      style={{ padding: "1.5rem", fontFamily: "Inter, system-ui, sans-serif" }}
-    >
-      <div style={{ marginBottom: "2rem" }}>
-        <p
-          style={{
-            fontSize: "0.75rem",
-            fontWeight: 700,
-            color: "#64748b",
-            letterSpacing: "0.05em",
-            textTransform: "uppercase",
-            marginBottom: "0.5rem",
-          }}
-        >
-          Cost Control
-        </p>
-        <h1
-          style={{
-            margin: "0 0 0.5rem 0",
-            fontSize: "1.75rem",
-            color: "#0f172a",
-            fontWeight: 700,
-          }}
-        >
-          Losses & Waste
-        </h1>
-        <p style={{ margin: 0, color: "#475569", fontSize: "0.875rem" }}>
+    <div className="an-card">
+      <div className="an-page-header">
+        <span className="an-page-eyebrow">Cost Control</span>
+        <h2 className="an-page-title">Losses & Waste</h2>
+        <p className="an-page-desc">
           Track food waste, spoilage, and service errors to protect margins.
         </p>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: "1rem",
-          marginBottom: "2rem",
-        }}
-      >
-        <div
-          style={{
-            background: "#fff",
-            padding: "1.25rem",
-            borderRadius: "12px",
-            border: "1px solid #e2e8f0",
-          }}
-        >
-          <p
-            style={{
-              margin: "0 0 0.5rem 0",
-              fontSize: "0.75rem",
-              color: "#64748b",
-              fontWeight: 600,
-            }}
-          >
-            LOGS TODAY
-          </p>
-          <strong
-            style={{
-              fontSize: "1.5rem",
-              color: todayCount > 0 ? "#ef4444" : "#0f172a",
-            }}
+      <div className="an-page-actions">
+        <div className="an-metric" style={{ flex: 1, minWidth: 200 }}>
+          <span className="an-metric-label">Logs Today</span>
+          <span
+            className="an-metric-value"
+            style={{ color: todayCount > 0 ? "#EF4444" : "#0B1739" }}
           >
             {todayCount}
-          </strong>
+          </span>
+          <span className="an-metric-sub">waste entries today</span>
         </div>
-        <div
-          style={{
-            background: "#fff",
-            padding: "1.25rem",
-            borderRadius: "12px",
-            border: "1px solid #e2e8f0",
-          }}
-        >
-          <p
-            style={{
-              margin: "0 0 0.5rem 0",
-              fontSize: "0.75rem",
-              color: "#64748b",
-              fontWeight: 600,
-            }}
-          >
-            TOTAL INCIDENTS
-          </p>
-          <strong style={{ fontSize: "1.5rem", color: "#0f172a" }}>
-            {wasteLogs.length}
-          </strong>
+        <div className="an-metric" style={{ flex: 1, minWidth: 200 }}>
+          <span className="an-metric-label">Total Incidents</span>
+          <span className="an-metric-value">{wasteLogs.length}</span>
+          <span className="an-metric-sub">all waste records</span>
         </div>
-        <div
-          style={{
-            background: "#fff",
-            padding: "1.25rem",
-            borderRadius: "12px",
-            border: "1px solid #e2e8f0",
-          }}
-        >
-          <p
-            style={{
-              margin: "0 0 0.5rem 0",
-              fontSize: "0.75rem",
-              color: "#64748b",
-              fontWeight: 600,
-            }}
-          >
-            TOTAL WASTE COST
-          </p>
-          <strong style={{ fontSize: "1.5rem", color: "#ef4444" }}>
+        <div className="an-metric" style={{ flex: 1, minWidth: 200 }}>
+          <span className="an-metric-label">Total Waste Cost</span>
+          <span className="an-metric-value" style={{ color: "#EF4444" }}>
             {totalCost.toLocaleString()} MAD
-          </strong>
+          </span>
+          <span className="an-metric-sub">total waste value</span>
         </div>
+        <button
+          className="an-btn an-btn-primary"
+          onClick={() => setIsModalOpen(true)}
+          style={{ background: "#EF4444" }}
+        >
+          <Plus size={16} /> Log Waste
+        </button>
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "1.5rem",
-          gap: "1rem",
-        }}
-      >
-        <input
-          type="text"
-          placeholder="Search by item or reason..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          style={{
-            padding: "0.6rem 1rem",
-            borderRadius: "8px",
-            border: "1px solid #cbd5e1",
-            width: "300px",
-          }}
-        />
-        <button
-          onClick={() => setIsModalOpen(true)}
-          style={{
-            padding: "0.6rem 1.25rem",
-            borderRadius: "8px",
-            border: "none",
-            background: "#ef4444",
-            color: "#fff",
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
-        >
-          + Log Waste
-        </button>
+      <div className="an-table-toolbar">
+        <div className="an-search">
+          <Search size={14} />
+          <input
+            type="text"
+            placeholder="Search by item or reason..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1rem" }}>
         {filtered.map((item) => (
           <div
             key={item.id}
+            className="an-card"
             style={{
-              background: "#fff",
-              border: "1px solid #e2e8f0",
-              borderRadius: "12px",
               padding: "1.25rem",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
+              gap: "1rem",
             }}
           >
             <div>
@@ -259,7 +186,7 @@ export const LossesWastePage: React.FC = () => {
                 <h4
                   style={{
                     margin: 0,
-                    color: "#0f172a",
+                    color: "#0B1739",
                     fontSize: "1rem",
                     fontWeight: 600,
                   }}
@@ -272,8 +199,8 @@ export const LossesWastePage: React.FC = () => {
                     borderRadius: "20px",
                     fontSize: "0.75rem",
                     fontWeight: 600,
-                    color: "#ef4444",
-                    background: "#fef2f2",
+                    color: "#B91C1C",
+                    background: "#FEF2F2",
                   }}
                 >
                   {item.reason}
@@ -283,7 +210,7 @@ export const LossesWastePage: React.FC = () => {
                 style={{
                   margin: "0 0 0.5rem 0",
                   fontSize: "0.75rem",
-                  color: "#64748b",
+                  color: "#64748B",
                 }}
               >
                 {new Date(item.date).toLocaleString()} • Logged by:{" "}
@@ -292,19 +219,36 @@ export const LossesWastePage: React.FC = () => {
             </div>
             <div style={{ textAlign: "right" }}>
               <div
-                style={{ fontSize: "1rem", fontWeight: 700, color: "#0f172a" }}
+                style={{ fontSize: "1rem", fontWeight: 700, color: "#0B1739" }}
               >
                 {item.quantity} {item.unit}
               </div>
               <div
                 style={{
                   fontSize: "0.875rem",
-                  color: "#ef4444",
+                  color: "#EF4444",
                   fontWeight: 600,
                 }}
               >
                 - {item.cost} MAD
               </div>
+            </div>
+            <div style={{ display: "flex", gap: "0.5rem" }}>
+              <button
+                onClick={() => handleDelete(item.id)}
+                style={{
+                  padding: "0.4rem 0.75rem",
+                  borderRadius: "6px",
+                  border: "1px solid var(--error-bg)",
+                  background: "var(--error-bg)",
+                  color: "var(--error)",
+                  fontSize: "0.75rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                <Trash2 size={12} />
+              </button>
             </div>
           </div>
         ))}
@@ -338,7 +282,7 @@ export const LossesWastePage: React.FC = () => {
               style={{
                 margin: "0 0 1.5rem 0",
                 fontSize: "1.25rem",
-                color: "#ef4444",
+                color: "#EF4444",
               }}
             >
               Log New Waste
@@ -518,7 +462,7 @@ export const LossesWastePage: React.FC = () => {
                     padding: "0.6rem 1.25rem",
                     borderRadius: "8px",
                     border: "none",
-                    background: "#ef4444",
+                    background: "#EF4444",
                     color: "#fff",
                     cursor: "pointer",
                     fontWeight: 600,

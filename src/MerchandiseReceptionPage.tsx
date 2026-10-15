@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Search, Plus, Trash2, Edit3, X } from "lucide-react";
+import { useToast } from "./components/ToastProvider";
 
 export interface Reception {
   id: string;
@@ -8,6 +10,8 @@ export interface Reception {
   date: string;
   amount: number;
 }
+
+const STORAGE_KEY = "allneeds.receptions";
 
 const INITIAL_RECEPTIONS: Reception[] = [
   {
@@ -45,6 +49,7 @@ const INITIAL_RECEPTIONS: Reception[] = [
 ];
 
 export const MerchandiseReceptionPage: React.FC = () => {
+  const { showToast } = useToast();
   const [receptions, setReceptions] = useState<Reception[]>(INITIAL_RECEPTIONS);
   const [activeTab, setActiveTab] = useState<
     "All" | "Pending" | "Discrepancies"
@@ -56,6 +61,23 @@ export const MerchandiseReceptionPage: React.FC = () => {
   // Validation Form State
   const [formStatus, setFormStatus] = useState<Reception["status"]>("Pending");
   const [notes, setNotes] = useState("");
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        setReceptions(JSON.parse(stored));
+      }
+    } catch {}
+  }, []);
+
+  // Persist to localStorage on change
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(receptions));
+    } catch {}
+  }, [receptions]);
 
   const filtered = receptions.filter((item) => {
     const matchesSearch =
@@ -76,11 +98,20 @@ export const MerchandiseReceptionPage: React.FC = () => {
     .filter((r) => r.status === "Validated")
     .reduce((acc, r) => acc + r.amount, 0);
 
+  const receptionTabs: readonly ("All" | "Pending" | "Discrepancies")[] = [
+    "All",
+    "Pending",
+    "Discrepancies",
+  ];
+
   const getStatusColor = (status: string) => {
-    if (status === "Validated") return { bg: "#ecfdf5", color: "#10b981" };
-    if (status === "Pending") return { bg: "#fffbeb", color: "#f59e0b" };
-    if (status === "Discrepancy") return { bg: "#fef2f2", color: "#ef4444" };
-    return { bg: "#f1f5f9", color: "#64748b" };
+    if (status === "Validated")
+      return { bg: "var(--success-bg)", color: "var(--success)" };
+    if (status === "Pending")
+      return { bg: "var(--warning-bg)", color: "var(--warning)" };
+    if (status === "Discrepancy")
+      return { bg: "var(--error-bg)", color: "var(--error)" };
+    return { bg: "#F3F4F6", color: "#6B7280" };
   };
 
   const openValidateModal = (reception: Reception) => {
@@ -102,173 +133,81 @@ export const MerchandiseReceptionPage: React.FC = () => {
     setReceptions(
       receptions.map((r) => (r.id === selectedItem.id ? updated : r))
     );
+
+    if (formStatus === "Validated") {
+      showToast({
+        type: "success",
+        title: "Reception validated",
+        message: `${selectedItem.id} — stock updated in Inventory`,
+      });
+    } else if (formStatus === "Discrepancy") {
+      showToast({
+        type: "warning",
+        title: "Discrepancy recorded",
+        message: notes || "No notes provided",
+      });
+    } else {
+      showToast({ type: "info", title: "Reception status updated" });
+    }
+
     setIsModalOpen(false);
   };
 
   return (
-    <div
-      style={{ padding: "1.5rem", fontFamily: "Inter, system-ui, sans-serif" }}
-    >
-      <div style={{ marginBottom: "2rem" }}>
-        <p
-          style={{
-            fontSize: "0.75rem",
-            fontWeight: 700,
-            color: "#64748b",
-            letterSpacing: "0.05em",
-            textTransform: "uppercase",
-            marginBottom: "0.5rem",
-          }}
-        >
-          Goods In
-        </p>
-        <h1
-          style={{
-            margin: "0 0 0.5rem 0",
-            fontSize: "1.75rem",
-            color: "#0f172a",
-            fontWeight: 700,
-          }}
-        >
-          Merchandise Reception
-        </h1>
-        <p style={{ margin: 0, color: "#475569", fontSize: "0.875rem" }}>
+    <div className="an-card">
+      <div className="an-page-header">
+        <span className="an-page-eyebrow">Goods In</span>
+        <h2 className="an-page-title">Merchandise Reception</h2>
+        <p className="an-page-desc">
           Receive deliveries, verify quantities and validate discrepancies.
         </p>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: "1rem",
-          marginBottom: "2rem",
-        }}
-      >
-        <div
-          style={{
-            background: "#fff",
-            padding: "1.25rem",
-            borderRadius: "12px",
-            border: "1px solid #e2e8f0",
-          }}
-        >
-          <p
-            style={{
-              margin: "0 0 0.5rem 0",
-              fontSize: "0.75rem",
-              color: "#64748b",
-              fontWeight: 600,
-            }}
-          >
-            PENDING RECEPTIONS
-          </p>
-          <strong
-            style={{
-              fontSize: "1.5rem",
-              color: pendingCount > 0 ? "#f59e0b" : "#0f172a",
-            }}
-          >
+      <div className="an-page-actions">
+        <div className="an-metric" style={{ flex: 1, minWidth: 200 }}>
+          <span className="an-metric-label">Pending Receptions</span>
+          <span className="an-metric-value" style={{ color: "var(--warning)" }}>
             {pendingCount}
-          </strong>
+          </span>
+          <span className="an-metric-sub">awaiting validation</span>
         </div>
-        <div
-          style={{
-            background: "#fff",
-            padding: "1.25rem",
-            borderRadius: "12px",
-            border: "1px solid #e2e8f0",
-          }}
-        >
-          <p
-            style={{
-              margin: "0 0 0.5rem 0",
-              fontSize: "0.75rem",
-              color: "#64748b",
-              fontWeight: 600,
-            }}
-          >
-            VALIDATED TODAY
-          </p>
-          <strong style={{ fontSize: "1.5rem", color: "#10b981" }}>
+        <div className="an-metric" style={{ flex: 1, minWidth: 200 }}>
+          <span className="an-metric-label">Validated Today</span>
+          <span className="an-metric-value" style={{ color: "var(--success)" }}>
             {validatedCount}
-          </strong>
+          </span>
+          <span className="an-metric-sub">receptions validated</span>
         </div>
-        <div
-          style={{
-            background: "#fff",
-            padding: "1.25rem",
-            borderRadius: "12px",
-            border: "1px solid #e2e8f0",
-          }}
-        >
-          <p
-            style={{
-              margin: "0 0 0.5rem 0",
-              fontSize: "0.75rem",
-              color: "#64748b",
-              fontWeight: 600,
-            }}
-          >
-            MAD RECEIVED
-          </p>
-          <strong style={{ fontSize: "1.5rem", color: "#0f172a" }}>
+        <div className="an-metric" style={{ flex: 1, minWidth: 200 }}>
+          <span className="an-metric-label">MAD Received</span>
+          <span className="an-metric-value">
             {totalAmountReceived.toLocaleString()}
-          </strong>
+          </span>
+          <span className="an-metric-sub">total validated value</span>
         </div>
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          borderBottom: "1px solid #e2e8f0",
-          marginBottom: "1.5rem",
-          gap: "2rem",
-        }}
-      >
-        {(["All", "Pending", "Discrepancies"] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            style={{
-              background: "none",
-              border: "none",
-              padding: "0.75rem 0",
-              fontSize: "0.875rem",
-              fontWeight: 600,
-              color: activeTab === tab ? "#0f172a" : "#64748b",
-              borderBottom:
-                activeTab === tab
-                  ? "2px solid #0f172a"
-                  : "2px solid transparent",
-              cursor: "pointer",
-            }}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "1.5rem",
-          gap: "1rem",
-        }}
-      >
-        <input
-          type="text"
-          placeholder="Search by PO or Supplier..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          style={{
-            padding: "0.6rem 1rem",
-            borderRadius: "8px",
-            border: "1px solid #cbd5e1",
-            width: "300px",
-          }}
-        />
+      <div className="an-table-toolbar">
+        <div className="an-tabs">
+          {receptionTabs.map((tab) => (
+            <button
+              key={tab}
+              className={`an-tab ${activeTab === tab ? "an-tab-active" : ""}`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+        <div className="an-search">
+          <Search size={14} />
+          <input
+            type="text"
+            placeholder="Search by PO or Supplier..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
       </div>
 
       <div
@@ -279,21 +218,20 @@ export const MerchandiseReceptionPage: React.FC = () => {
           return (
             <div
               key={item.id}
+              className="an-card"
               style={{
-                background: "#fff",
-                border: "1px solid #e2e8f0",
-                borderRadius: "12px",
                 padding: "1.25rem",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
+                gap: "1rem",
               }}
             >
               <div>
                 <h4
                   style={{
                     margin: "0 0 0.25rem 0",
-                    color: "#0f172a",
+                    color: "var(--brand-navy)",
                     fontSize: "1rem",
                     fontWeight: 600,
                   }}
@@ -304,7 +242,7 @@ export const MerchandiseReceptionPage: React.FC = () => {
                   style={{
                     margin: "0 0 0.5rem 0",
                     fontSize: "0.75rem",
-                    color: "#64748b",
+                    color: "var(--brand-text-muted)",
                   }}
                 >
                   PO Ref: {item.poRef} • Date:{" "}
@@ -314,7 +252,7 @@ export const MerchandiseReceptionPage: React.FC = () => {
                   style={{
                     fontSize: "1rem",
                     fontWeight: 700,
-                    color: "#0f172a",
+                    color: "var(--brand-navy)",
                   }}
                 >
                   {item.amount.toLocaleString()} MAD Expected
@@ -344,10 +282,10 @@ export const MerchandiseReceptionPage: React.FC = () => {
                   onClick={() => openValidateModal(item)}
                   style={{
                     padding: "0.4rem 0.75rem",
-                    borderRadius: "6px",
-                    border: "1px solid #cbd5e1",
-                    background: "#f8fafc",
-                    color: "#0f172a",
+                    borderRadius: "var(--radius)",
+                    border: "1px solid var(--brand-border)",
+                    background: "var(--brand-white)",
+                    color: "var(--brand-navy)",
                     fontSize: "0.75rem",
                     fontWeight: 600,
                     cursor: "pointer",
@@ -365,83 +303,68 @@ export const MerchandiseReceptionPage: React.FC = () => {
       </div>
 
       {isModalOpen && selectedItem && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(15,23,42,0.6)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-          }}
-        >
+        <div className="modal-backdrop" onClick={() => setIsModalOpen(false)}>
           <div
             style={{
-              background: "#fff",
-              borderRadius: "16px",
-              width: "100%",
-              maxWidth: "500px",
-              padding: "2rem",
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: "rgba(15,23,42,0.6)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 1000,
             }}
           >
-            <h2 style={{ margin: "0 0 1.5rem 0", fontSize: "1.25rem" }}>
-              Process Reception: {selectedItem.id}
-            </h2>
-            <p
+            <div
               style={{
-                fontSize: "0.875rem",
-                color: "#475569",
-                marginBottom: "1.5rem",
+                background: "#fff",
+                borderRadius: "16px",
+                width: "100%",
+                maxWidth: "500px",
+                padding: "2rem",
               }}
             >
-              Verify quantities received for PO:{" "}
-              <strong>{selectedItem.poRef}</strong> from{" "}
-              <strong>{selectedItem.supplier}</strong>.
-            </p>
-
-            <form onSubmit={handleValidate}>
-              <div
+              <button
+                className="close"
+                onClick={() => setIsModalOpen(false)}
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "1rem",
+                  position: "absolute",
+                  right: 16,
+                  top: 16,
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                <X size={17} />
+              </button>
+              <h2 style={{ margin: "0 0 1rem 0", fontSize: "1.25rem" }}>
+                Process Reception: {selectedItem.id}
+              </h2>
+              <p
+                style={{
+                  fontSize: "0.875rem",
+                  color: "#475569",
                   marginBottom: "1.5rem",
                 }}
               >
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: "0.75rem",
-                      fontWeight: 600,
-                      marginBottom: "0.25rem",
-                    }}
-                  >
-                    Reception Status
-                  </label>
-                  <select
-                    value={formStatus}
-                    onChange={(e) => setFormStatus(e.target.value as any)}
-                    style={{
-                      width: "100%",
-                      padding: "0.6rem",
-                      borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
-                      boxSizing: "border-box",
-                    }}
-                  >
-                    <option value="Pending">Pending Validation</option>
-                    <option value="Validated">Fully Validated</option>
-                    <option value="Discrepancy">
-                      Has Discrepancy (Missing/Damaged)
-                    </option>
-                  </select>
-                </div>
-                {formStatus === "Discrepancy" && (
+                Verify quantities received for PO:{" "}
+                <strong>{selectedItem.poRef}</strong> from{" "}
+                <strong>{selectedItem.supplier}</strong>.
+              </p>
+
+              <form onSubmit={handleValidate}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "1rem",
+                    marginBottom: "1.5rem",
+                  }}
+                >
                   <div>
                     <label
                       style={{
@@ -451,62 +374,93 @@ export const MerchandiseReceptionPage: React.FC = () => {
                         marginBottom: "0.25rem",
                       }}
                     >
-                      Discrepancy Notes
+                      Reception Status
                     </label>
-                    <textarea
-                      required
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Explain the missing items or damages..."
+                    <select
+                      value={formStatus}
+                      onChange={(e) => setFormStatus(e.target.value as any)}
                       style={{
                         width: "100%",
                         padding: "0.6rem",
                         borderRadius: "6px",
                         border: "1px solid #cbd5e1",
                         boxSizing: "border-box",
-                        minHeight: "80px",
                       }}
-                    />
+                    >
+                      <option value="Pending">Pending Validation</option>
+                      <option value="Validated">Fully Validated</option>
+                      <option value="Discrepancy">
+                        Has Discrepancy (Missing/Damaged)
+                      </option>
+                    </select>
                   </div>
-                )}
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "0.75rem",
-                }}
-              >
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  {formStatus === "Discrepancy" && (
+                    <div>
+                      <label
+                        style={{
+                          display: "block",
+                          fontSize: "0.75rem",
+                          fontWeight: 600,
+                          marginBottom: "0.25rem",
+                        }}
+                      >
+                        Discrepancy Notes
+                      </label>
+                      <textarea
+                        required
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        placeholder="Explain the missing items or damages..."
+                        style={{
+                          width: "100%",
+                          padding: "0.6rem",
+                          borderRadius: "6px",
+                          border: "1px solid #cbd5e1",
+                          boxSizing: "border-box",
+                          minHeight: "80px",
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+                <div
                   style={{
-                    padding: "0.6rem 1.25rem",
-                    borderRadius: "8px",
-                    border: "1px solid #cbd5e1",
-                    background: "#fff",
-                    cursor: "pointer",
-                    fontWeight: 600,
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    gap: "0.75rem",
                   }}
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  style={{
-                    padding: "0.6rem 1.25rem",
-                    borderRadius: "8px",
-                    border: "none",
-                    background: "#0f172a",
-                    color: "#fff",
-                    cursor: "pointer",
-                    fontWeight: 600,
-                  }}
-                >
-                  Save Record
-                </button>
-              </div>
-            </form>
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    style={{
+                      padding: "0.6rem 1.25rem",
+                      borderRadius: "8px",
+                      border: "1px solid #cbd5e1",
+                      background: "#fff",
+                      cursor: "pointer",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    style={{
+                      padding: "0.6rem 1.25rem",
+                      borderRadius: "8px",
+                      border: "none",
+                      background: "#0f172a",
+                      color: "#fff",
+                      cursor: "pointer",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Save Record
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}

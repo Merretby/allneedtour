@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Search, Plus, Trash2, Edit3, X } from "lucide-react";
+import { useToast } from "./components/ToastProvider";
 
 export interface PurchaseOrder {
   id: string;
@@ -7,6 +9,8 @@ export interface PurchaseOrder {
   status: "Draft" | "Approval" | "Sent" | "Received" | "Cancelled";
   date: string;
 }
+
+const STORAGE_KEY = "allneeds.purchase_orders";
 
 const INITIAL_POS: PurchaseOrder[] = [
   {
@@ -40,6 +44,7 @@ const INITIAL_POS: PurchaseOrder[] = [
 ];
 
 export const PurchasesPage: React.FC = () => {
+  const { showToast } = useToast();
   const [orders, setOrders] = useState<PurchaseOrder[]>(INITIAL_POS);
   const [activeTab, setActiveTab] = useState<"Orders" | "Drafts" | "Approvals">(
     "Orders"
@@ -50,9 +55,26 @@ export const PurchasesPage: React.FC = () => {
 
   // Form State
   const [formSupplier, setFormSupplier] = useState("");
-  const [formAmount, setFormAmount] = useState(0);
+  const [formAmount, setFormAmount] = useState("");
   const [formStatus, setFormStatus] =
     useState<PurchaseOrder["status"]>("Draft");
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        setOrders(JSON.parse(stored));
+      }
+    } catch {}
+  }, []);
+
+  // Persist to localStorage on change
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+    } catch {}
+  }, [orders]);
 
   const filtered = orders.filter((item) => {
     const matchesSearch =
@@ -64,6 +86,12 @@ export const PurchasesPage: React.FC = () => {
     return matchesSearch;
   });
 
+  const purchaseTabs: readonly ("Orders" | "Drafts" | "Approvals")[] = [
+    "Orders",
+    "Drafts",
+    "Approvals",
+  ];
+
   const openCount = orders.filter((o) =>
     ["Draft", "Approval", "Sent"].includes(o.status)
   ).length;
@@ -71,23 +99,27 @@ export const PurchasesPage: React.FC = () => {
   const totalAmount = orders.reduce((acc, o) => acc + o.amount, 0);
 
   const getStatusColor = (status: string) => {
-    if (status === "Received") return { bg: "#ecfdf5", color: "#10b981" };
-    if (status === "Sent") return { bg: "#eff6ff", color: "#3b82f6" };
-    if (status === "Approval") return { bg: "#fffbeb", color: "#f59e0b" };
-    if (status === "Cancelled") return { bg: "#fef2f2", color: "#ef4444" };
-    return { bg: "#f1f5f9", color: "#64748b" };
+    if (status === "Received")
+      return { bg: "var(--success-bg)", color: "var(--success)" };
+    if (status === "Sent")
+      return { bg: "var(--brand-surface)", color: "var(--brand-blue)" };
+    if (status === "Approval")
+      return { bg: "var(--warning-bg)", color: "var(--warning)" };
+    if (status === "Cancelled")
+      return { bg: "var(--error-bg)", color: "var(--error)" };
+    return { bg: "#F3F4F6", color: "#6B7280" };
   };
 
   const openModal = (order?: PurchaseOrder) => {
     if (order) {
       setSelectedItem(order);
       setFormSupplier(order.supplier);
-      setFormAmount(order.amount);
+      setFormAmount(order.amount.toString());
       setFormStatus(order.status);
     } else {
       setSelectedItem(null);
       setFormSupplier("");
-      setFormAmount(0);
+      setFormAmount("");
       setFormStatus("Draft");
     }
     setIsModalOpen(true);
@@ -95,201 +127,95 @@ export const PurchasesPage: React.FC = () => {
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formSupplier || !formAmount) {
+      showToast({ type: "error", title: "Missing required fields" });
+      return;
+    }
     const newItem: PurchaseOrder = {
       id: selectedItem
         ? selectedItem.id
         : `PO-${Math.floor(1000 + Math.random() * 9000)}`,
       supplier: formSupplier,
-      amount: formAmount,
+      amount: parseFloat(formAmount) || 0,
       status: formStatus,
       date: selectedItem ? selectedItem.date : new Date().toISOString(),
     };
     if (selectedItem) {
       setOrders(orders.map((o) => (o.id === selectedItem.id ? newItem : o)));
+      showToast({ type: "success", title: "Purchase order updated" });
     } else {
       setOrders([newItem, ...orders]);
+      showToast({
+        type: "success",
+        title: "Purchase order created",
+        message: `${newItem.id} is now available in Merchandise Reception`,
+      });
     }
     setIsModalOpen(false);
   };
 
+  const handleDelete = (id: string) => {
+    if (!confirm("Delete this purchase order?")) return;
+    setOrders(orders.filter((o) => o.id !== id));
+    showToast({ type: "success", title: "Purchase order deleted" });
+  };
+
   return (
-    <div
-      style={{ padding: "1.5rem", fontFamily: "Inter, system-ui, sans-serif" }}
-    >
-      <div style={{ marginBottom: "2rem" }}>
-        <p
-          style={{
-            fontSize: "0.75rem",
-            fontWeight: 700,
-            color: "#64748b",
-            letterSpacing: "0.05em",
-            textTransform: "uppercase",
-            marginBottom: "0.5rem",
-          }}
-        >
-          Procurement
-        </p>
-        <h1
-          style={{
-            margin: "0 0 0.5rem 0",
-            fontSize: "1.75rem",
-            color: "#0f172a",
-            fontWeight: 700,
-          }}
-        >
-          Purchases
-        </h1>
-        <p style={{ margin: 0, color: "#475569", fontSize: "0.875rem" }}>
+    <div className="an-card">
+      <div className="an-page-header">
+        <span className="an-page-eyebrow">Procurement</span>
+        <h2 className="an-page-title">Purchases</h2>
+        <p className="an-page-desc">
           Create purchase orders, compare suppliers and track approvals.
         </p>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: "1rem",
-          marginBottom: "2rem",
-        }}
-      >
-        <div
-          style={{
-            background: "#fff",
-            padding: "1.25rem",
-            borderRadius: "12px",
-            border: "1px solid #e2e8f0",
-          }}
-        >
-          <p
-            style={{
-              margin: "0 0 0.5rem 0",
-              fontSize: "0.75rem",
-              color: "#64748b",
-              fontWeight: 600,
-            }}
-          >
-            OPEN ORDERS
-          </p>
-          <strong style={{ fontSize: "1.5rem", color: "#0f172a" }}>
-            {openCount}
-          </strong>
+      <div className="an-page-actions">
+        <div className="an-metric" style={{ flex: 1, minWidth: 200 }}>
+          <span className="an-metric-label">Open Orders</span>
+          <span className="an-metric-value">{openCount}</span>
+          <span className="an-metric-sub">draft, approval, sent</span>
         </div>
-        <div
-          style={{
-            background: "#fff",
-            padding: "1.25rem",
-            borderRadius: "12px",
-            border: "1px solid #e2e8f0",
-          }}
-        >
-          <p
-            style={{
-              margin: "0 0 0.5rem 0",
-              fontSize: "0.75rem",
-              color: "#64748b",
-              fontWeight: 600,
-            }}
-          >
-            AWAITING APPROVAL
-          </p>
-          <strong
-            style={{
-              fontSize: "1.5rem",
-              color: approvalCount > 0 ? "#f59e0b" : "#0f172a",
-            }}
-          >
+        <div className="an-metric" style={{ flex: 1, minWidth: 200 }}>
+          <span className="an-metric-label">Awaiting Approval</span>
+          <span className="an-metric-value" style={{ color: "var(--warning)" }}>
             {approvalCount}
-          </strong>
+          </span>
+          <span className="an-metric-sub">orders pending review</span>
         </div>
-        <div
-          style={{
-            background: "#fff",
-            padding: "1.25rem",
-            borderRadius: "12px",
-            border: "1px solid #e2e8f0",
-          }}
-        >
-          <p
-            style={{
-              margin: "0 0 0.5rem 0",
-              fontSize: "0.75rem",
-              color: "#64748b",
-              fontWeight: 600,
-            }}
-          >
-            MAD THIS WEEK
-          </p>
-          <strong style={{ fontSize: "1.5rem", color: "#0f172a" }}>
+        <div className="an-metric" style={{ flex: 1, minWidth: 200 }}>
+          <span className="an-metric-label">MAD This Week</span>
+          <span className="an-metric-value">
             {totalAmount.toLocaleString()}
-          </strong>
+          </span>
+          <span className="an-metric-sub">total order value</span>
         </div>
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          borderBottom: "1px solid #e2e8f0",
-          marginBottom: "1.5rem",
-          gap: "2rem",
-        }}
-      >
-        {(["Orders", "Drafts", "Approvals"] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            style={{
-              background: "none",
-              border: "none",
-              padding: "0.75rem 0",
-              fontSize: "0.875rem",
-              fontWeight: 600,
-              color: activeTab === tab ? "#0f172a" : "#64748b",
-              borderBottom:
-                activeTab === tab
-                  ? "2px solid #0f172a"
-                  : "2px solid transparent",
-              cursor: "pointer",
-            }}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "1.5rem",
-          gap: "1rem",
-        }}
-      >
-        <input
-          type="text"
-          placeholder="Search purchases..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          style={{
-            padding: "0.6rem 1rem",
-            borderRadius: "8px",
-            border: "1px solid #cbd5e1",
-            width: "300px",
-          }}
-        />
-        <button
-          onClick={() => openModal()}
-          style={{
-            padding: "0.6rem 1.25rem",
-            borderRadius: "8px",
-            border: "none",
-            background: "#0f172a",
-            color: "#fff",
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
-        >
-          + Create PO
+        <button className="an-btn an-btn-primary" onClick={() => openModal()}>
+          <Plus size={16} /> Create PO
         </button>
+      </div>
+
+      <div className="an-table-toolbar">
+        <div className="an-tabs">
+          {purchaseTabs.map((tab) => (
+            <button
+              key={tab}
+              className={`an-tab ${activeTab === tab ? "an-tab-active" : ""}`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+        <div className="an-search">
+          <Search size={14} />
+          <input
+            type="text"
+            placeholder="Search purchases..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
       </div>
 
       <div
@@ -300,21 +226,20 @@ export const PurchasesPage: React.FC = () => {
           return (
             <div
               key={item.id}
+              className="an-card"
               style={{
-                background: "#fff",
-                border: "1px solid #e2e8f0",
-                borderRadius: "12px",
                 padding: "1.25rem",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
+                gap: "1rem",
               }}
             >
               <div>
                 <h4
                   style={{
                     margin: "0 0 0.25rem 0",
-                    color: "#0f172a",
+                    color: "var(--brand-navy)",
                     fontSize: "1rem",
                     fontWeight: 600,
                   }}
@@ -325,7 +250,7 @@ export const PurchasesPage: React.FC = () => {
                   style={{
                     margin: "0 0 0.5rem 0",
                     fontSize: "0.75rem",
-                    color: "#64748b",
+                    color: "var(--brand-text-muted)",
                   }}
                 >
                   Date: {new Date(item.date).toLocaleDateString()}
@@ -334,7 +259,7 @@ export const PurchasesPage: React.FC = () => {
                   style={{
                     fontSize: "1rem",
                     fontWeight: 700,
-                    color: "#0f172a",
+                    color: "var(--brand-navy)",
                   }}
                 >
                   {item.amount.toLocaleString()} MAD
@@ -360,190 +285,109 @@ export const PurchasesPage: React.FC = () => {
                 >
                   {item.status}
                 </span>
-                <button
-                  onClick={() => openModal(item)}
-                  style={{
-                    padding: "0.4rem 0.75rem",
-                    borderRadius: "6px",
-                    border: "1px solid #cbd5e1",
-                    background: "#f8fafc",
-                    color: "#0f172a",
-                    fontSize: "0.75rem",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    marginTop: "auto",
-                  }}
-                >
-                  Edit
-                </button>
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <button
+                    onClick={() => openModal(item)}
+                    style={{
+                      padding: "0.4rem 0.75rem",
+                      borderRadius: "var(--radius)",
+                      border: "1px solid var(--brand-border)",
+                      background: "var(--brand-white)",
+                      color: "var(--brand-navy)",
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Edit3 size={12} /> Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(item.id)}
+                    style={{
+                      padding: "0.4rem 0.75rem",
+                      borderRadius: "var(--radius)",
+                      border: "1px solid var(--error-bg)",
+                      background: "var(--error-bg)",
+                      color: "var(--error)",
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Trash2 size={12} />
+                  </button>
+                </div>
               </div>
             </div>
           );
         })}
       </div>
 
+      {/* Modal */}
       {isModalOpen && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(15,23,42,0.6)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-          }}
-        >
-          <div
-            style={{
-              background: "#fff",
-              borderRadius: "16px",
-              width: "100%",
-              maxWidth: "500px",
-              padding: "2rem",
-            }}
-          >
-            <h2 style={{ margin: "0 0 1.5rem 0", fontSize: "1.25rem" }}>
+        <div className="modal-backdrop" onClick={() => setIsModalOpen(false)}>
+          <section className="modal" onClick={(e) => e.stopPropagation()}>
+            <button className="close" onClick={() => setIsModalOpen(false)}>
+              <X size={17} />
+            </button>
+            <span className="eyebrow">
+              {selectedItem ? "Edit Purchase Order" : "New Purchase Order"}
+            </span>
+            <h2>
               {selectedItem ? "Edit Purchase Order" : "New Purchase Order"}
             </h2>
+            <p>Enter the purchase order details below.</p>
             <form onSubmit={handleSave}>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "1rem",
-                  marginBottom: "1.5rem",
-                }}
-              >
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: "0.75rem",
-                      fontWeight: 600,
-                      marginBottom: "0.25rem",
-                    }}
-                  >
-                    Supplier Name
-                  </label>
+              <div className="form-grid">
+                <div className="an-form-group" style={{ gridColumn: "1 / -1" }}>
+                  <label className="an-label">Supplier Name</label>
                   <input
                     type="text"
                     required
                     value={formSupplier}
                     onChange={(e) => setFormSupplier(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "0.6rem",
-                      borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
-                      boxSizing: "border-box",
-                    }}
+                    className="an-input"
                   />
                 </div>
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: "1rem",
-                  }}
-                >
-                  <div>
-                    <label
-                      style={{
-                        display: "block",
-                        fontSize: "0.75rem",
-                        fontWeight: 600,
-                        marginBottom: "0.25rem",
-                      }}
-                    >
-                      Amount (MAD)
-                    </label>
-                    <input
-                      type="number"
-                      required
-                      value={formAmount}
-                      onChange={(e) => setFormAmount(Number(e.target.value))}
-                      style={{
-                        width: "100%",
-                        padding: "0.6rem",
-                        borderRadius: "6px",
-                        border: "1px solid #cbd5e1",
-                        boxSizing: "border-box",
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label
-                      style={{
-                        display: "block",
-                        fontSize: "0.75rem",
-                        fontWeight: 600,
-                        marginBottom: "0.25rem",
-                      }}
-                    >
-                      Status
-                    </label>
-                    <select
-                      value={formStatus}
-                      onChange={(e) => setFormStatus(e.target.value as any)}
-                      style={{
-                        width: "100%",
-                        padding: "0.6rem",
-                        borderRadius: "6px",
-                        border: "1px solid #cbd5e1",
-                        boxSizing: "border-box",
-                      }}
-                    >
-                      <option value="Draft">Draft</option>
-                      <option value="Approval">Approval</option>
-                      <option value="Sent">Sent</option>
-                      <option value="Received">Received</option>
-                      <option value="Cancelled">Cancelled</option>
-                    </select>
-                  </div>
+                <div className="an-form-group">
+                  <label className="an-label">Amount (MAD)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    required
+                    value={formAmount}
+                    onChange={(e) => setFormAmount(e.target.value)}
+                    className="an-input"
+                  />
+                </div>
+                <div className="an-form-group">
+                  <label className="an-label">Status</label>
+                  <select
+                    value={formStatus}
+                    onChange={(e) => setFormStatus(e.target.value as any)}
+                    className="an-select"
+                  >
+                    <option value="Draft">Draft</option>
+                    <option value="Approval">Approval</option>
+                    <option value="Sent">Sent</option>
+                    <option value="Received">Received</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
                 </div>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "0.75rem",
-                }}
-              >
+              <div className="modal-actions">
                 <button
-                  type="button"
+                  className="secondary"
                   onClick={() => setIsModalOpen(false)}
-                  style={{
-                    padding: "0.6rem 1.25rem",
-                    borderRadius: "8px",
-                    border: "1px solid #cbd5e1",
-                    background: "#fff",
-                    cursor: "pointer",
-                    fontWeight: 600,
-                  }}
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  style={{
-                    padding: "0.6rem 1.25rem",
-                    borderRadius: "8px",
-                    border: "none",
-                    background: "#0f172a",
-                    color: "#fff",
-                    cursor: "pointer",
-                    fontWeight: 600,
-                  }}
-                >
+                <button className="primary" type="submit">
                   Save PO
                 </button>
               </div>
             </form>
-          </div>
+          </section>
         </div>
       )}
     </div>

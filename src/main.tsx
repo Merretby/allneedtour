@@ -76,6 +76,7 @@ import {
 import { BusinessWorkspace } from "./BusinessWorkspace";
 import { ReservationsPage } from "./ReservationsPage";
 import { TablesServicePage } from "./FloorPlanPage";
+import { ToastProvider, useToast } from "./components/ToastProvider";
 import "./style.css";
 const storageKey = "allneeds.restaurant.rbac.v1";
 const readState = (): State => {
@@ -382,11 +383,11 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
               <h1>
                 {currentModule === "dashboard" ? "Good morning, Sofia." : title}
               </h1>
-              <p>
+              {/* <p>
                 {currentModule === "dashboard"
                   ? "One view of service, team and control."
                   : "Make access understandable, auditable and easy to operate."}
-              </p>
+              </p> */}
             </div>
             <div className="head-actions">
               <span className="role-chip">
@@ -2981,6 +2982,8 @@ function Platform() {
 }
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
-    <Platform />
+    <ToastProvider>
+      <Platform />
+    </ToastProvider>
   </BrowserRouter>
 );

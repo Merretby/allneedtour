@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Search, Plus, Edit3, Trash2 } from "lucide-react";
+import { useToast } from "./components/ToastProvider";
 
 export interface StockItem {
   id: string;
@@ -11,6 +13,8 @@ export interface StockItem {
   supplier: string;
   lastUpdated: string;
 }
+
+const STORAGE_KEY = "allneeds.stock_items";
 
 const INITIAL_STOCK: StockItem[] = [
   {
@@ -72,6 +76,7 @@ const CATEGORIES = [
 const UNITS = ["kg", "g", "L", "ml", "pc", "box"];
 
 export const StockIngredientsPage: React.FC = () => {
+  const { showToast } = useToast();
   const [stock, setStock] = useState<StockItem[]>(INITIAL_STOCK);
   const [activeTab, setActiveTab] = useState<
     "Current stock" | "Low stock" | "Movements"
@@ -96,6 +101,23 @@ export const StockIngredientsPage: React.FC = () => {
     "add"
   );
 
+  // Load from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        setStock(JSON.parse(stored));
+      }
+    } catch {}
+  }, []);
+
+  // Persist to localStorage on change
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(stock));
+    } catch {}
+  }, [stock]);
+
   // Computed
   const totalValue = stock.reduce(
     (sum, item) => sum + item.quantity * item.unitCost,
@@ -118,10 +140,10 @@ export const StockIngredientsPage: React.FC = () => {
 
   const getStatus = (quantity: number, minThreshold: number) => {
     if (quantity === 0)
-      return { label: "Out of Stock", color: "#ef4444", bg: "#fef2f2" };
+      return { label: "Out of Stock", color: "#EF4444", bg: "#FEF2F2" };
     if (quantity <= minThreshold)
-      return { label: "Low Stock", color: "#f59e0b", bg: "#fffbeb" };
-    return { label: "Healthy", color: "#10b981", bg: "#ecfdf5" };
+      return { label: "Low Stock", color: "#F59E0B", bg: "#FFFBEB" };
+    return { label: "Healthy", color: "#10B981", bg: "#ECFDF5" };
   };
 
   const openCreateModal = () => {
@@ -157,7 +179,10 @@ export const StockIngredientsPage: React.FC = () => {
 
   const handleSaveItem = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formName.trim()) return;
+    if (!formName.trim()) {
+      showToast({ type: "error", title: "Ingredient name is required" });
+      return;
+    }
 
     const newItem: StockItem = {
       id: selectedItem ? selectedItem.id : Date.now().toString(),
@@ -173,8 +198,14 @@ export const StockIngredientsPage: React.FC = () => {
 
     if (selectedItem) {
       setStock(stock.map((s) => (s.id === selectedItem.id ? newItem : s)));
+      showToast({ type: "success", title: "Ingredient updated" });
     } else {
       setStock([...stock, newItem]);
+      showToast({
+        type: "success",
+        title: "Ingredient created",
+        message: formName,
+      });
     }
     setIsModalOpen(false);
   };
@@ -188,7 +219,6 @@ export const StockIngredientsPage: React.FC = () => {
     if (adjustType === "remove" || adjustType === "waste")
       newQuantity -= adjustAmount;
 
-    // Prevent negative stock for standard removals, but maybe allow it if strictly necessary? Let's bound to 0 for now.
     if (newQuantity < 0) newQuantity = 0;
 
     const updatedItem = {
@@ -199,19 +229,30 @@ export const StockIngredientsPage: React.FC = () => {
 
     setStock(stock.map((s) => (s.id === selectedItem.id ? updatedItem : s)));
     setIsAdjustModalOpen(false);
+
+    const actionLabels = { add: "Received", remove: "Used", waste: "Wasted" };
+    showToast({
+      type: "success",
+      title: "Stock adjusted",
+      message: `${selectedItem.name}: ${actionLabels[adjustType]} ${adjustAmount} ${selectedItem.unit}`,
+    });
   };
 
   const handleDeleteItem = (id: string) => {
-    if (confirm("Are you sure you want to delete this ingredient?")) {
-      setStock(stock.filter((s) => s.id !== id));
-      setIsModalOpen(false);
-    }
+    if (!confirm("Are you sure you want to delete this ingredient?")) return;
+    setStock(stock.filter((s) => s.id !== id));
+    setIsModalOpen(false);
+    showToast({ type: "success", title: "Ingredient deleted" });
   };
 
+  const stockTabs: readonly ("Current stock" | "Low stock" | "Movements")[] = [
+    "Current stock",
+    "Low stock",
+    "Movements",
+  ];
+
   return (
-    <div
-      style={{ padding: "1.5rem", fontFamily: "Inter, system-ui, sans-serif" }}
-    >
+    <div className="an-card">
       {/* Header & Metrics */}
       <div style={{ marginBottom: "2rem" }}>
         <p
@@ -230,179 +271,71 @@ export const StockIngredientsPage: React.FC = () => {
           style={{
             margin: "0 0 0.5rem 0",
             fontSize: "1.75rem",
-            color: "#0f172a",
+            color: "#0B1739",
             fontWeight: 700,
           }}
         >
           Stock & Ingredients
         </h1>
-        <p style={{ margin: 0, color: "#475569", fontSize: "0.875rem" }}>
+        <p style={{ margin: 0, color: "#64748B", fontSize: "0.875rem" }}>
           Monitor ingredients, thresholds, movements and stock value.
         </p>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: "1rem",
-          marginBottom: "2rem",
-        }}
-      >
-        <div
-          style={{
-            background: "#fff",
-            padding: "1.25rem",
-            borderRadius: "12px",
-            border: "1px solid #e2e8f0",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-          }}
-        >
-          <p
-            style={{
-              margin: "0 0 0.5rem 0",
-              fontSize: "0.75rem",
-              color: "#64748b",
-              fontWeight: 600,
-              textTransform: "uppercase",
-            }}
-          >
-            Total Items
-          </p>
-          <strong style={{ fontSize: "1.5rem", color: "#0f172a" }}>
-            {totalItems}
-          </strong>
+      <div className="an-page-actions">
+        <div className="an-metric" style={{ flex: 1, minWidth: 200 }}>
+          <span className="an-metric-label">Total Items</span>
+          <span className="an-metric-value">{totalItems}</span>
+          <span className="an-metric-sub">stock items</span>
         </div>
-        <div
-          style={{
-            background: "#fff",
-            padding: "1.25rem",
-            borderRadius: "12px",
-            border: "1px solid #e2e8f0",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-          }}
-        >
-          <p
-            style={{
-              margin: "0 0 0.5rem 0",
-              fontSize: "0.75rem",
-              color: "#64748b",
-              fontWeight: 600,
-              textTransform: "uppercase",
-            }}
-          >
-            Low Stock Alerts
-          </p>
-          <strong
-            style={{
-              fontSize: "1.5rem",
-              color: lowStockItems.length > 0 ? "#ef4444" : "#0f172a",
-            }}
+        <div className="an-metric" style={{ flex: 1, minWidth: 200 }}>
+          <span className="an-metric-label">Low Stock Alerts</span>
+          <span
+            className="an-metric-value"
+            style={{ color: lowStockItems.length > 0 ? "#EF4444" : "#0B1739" }}
           >
             {lowStockItems.length}
-          </strong>
+          </span>
+          <span className="an-metric-sub">below threshold</span>
         </div>
-        <div
-          style={{
-            background: "#fff",
-            padding: "1.25rem",
-            borderRadius: "12px",
-            border: "1px solid #e2e8f0",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-          }}
-        >
-          <p
-            style={{
-              margin: "0 0 0.5rem 0",
-              fontSize: "0.75rem",
-              color: "#64748b",
-              fontWeight: 600,
-              textTransform: "uppercase",
-            }}
-          >
-            Total Stock Value
-          </p>
-          <strong style={{ fontSize: "1.5rem", color: "#0f172a" }}>
+        <div className="an-metric" style={{ flex: 1, minWidth: 200 }}>
+          <span className="an-metric-label">Total Stock Value</span>
+          <span className="an-metric-value">
             €
             {totalValue.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
-          </strong>
+          </span>
+          <span className="an-metric-sub">total inventory value</span>
         </div>
+        <button className="an-btn an-btn-primary" onClick={openCreateModal}>
+          <Plus size={16} /> Create Item
+        </button>
       </div>
 
       {/* Tabs */}
-      <div
-        style={{
-          display: "flex",
-          borderBottom: "1px solid #e2e8f0",
-          marginBottom: "1.5rem",
-          gap: "2rem",
-        }}
-      >
-        {(["Current stock", "Low stock", "Movements"] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            style={{
-              background: "none",
-              border: "none",
-              padding: "0.75rem 0",
-              fontSize: "0.875rem",
-              fontWeight: 600,
-              color: activeTab === tab ? "#0f172a" : "#64748b",
-              borderBottom:
-                activeTab === tab
-                  ? "2px solid #0f172a"
-                  : "2px solid transparent",
-              cursor: "pointer",
-              marginBottom: "-1px",
-            }}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-
-      {/* Search & Actions */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "1.5rem",
-          gap: "1rem",
-          flexWrap: "wrap",
-        }}
-      >
-        <input
-          type="text"
-          placeholder="Search stock & ingredients..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          style={{
-            padding: "0.6rem 1rem",
-            borderRadius: "8px",
-            border: "1px solid #cbd5e1",
-            width: "300px",
-            fontSize: "0.875rem",
-          }}
-        />
-        <button
-          onClick={openCreateModal}
-          style={{
-            padding: "0.6rem 1.25rem",
-            borderRadius: "8px",
-            border: "none",
-            background: "#0f172a",
-            color: "#fff",
-            fontWeight: 600,
-            cursor: "pointer",
-            fontSize: "0.875rem",
-          }}
-        >
-          + Create Item
-        </button>
+      <div className="an-table-toolbar">
+        <div className="an-tabs">
+          {stockTabs.map((tab) => (
+            <button
+              key={tab}
+              className={`an-tab ${activeTab === tab ? "an-tab-active" : ""}`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+        <div className="an-search">
+          <Search size={14} />
+          <input
+            type="text"
+            placeholder="Search stock & ingredients..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
       </div>
 
       {/* List */}
@@ -414,15 +347,13 @@ export const StockIngredientsPage: React.FC = () => {
           return (
             <div
               key={item.id}
+              className="an-card"
               style={{
-                background: "#fff",
-                border: "1px solid #e2e8f0",
-                borderRadius: "12px",
                 padding: "1rem 1.5rem",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                boxShadow: "0 1px 2px rgba(0,0,0,0.02)",
+                gap: "1rem",
               }}
             >
               <div
@@ -442,7 +373,7 @@ export const StockIngredientsPage: React.FC = () => {
                   <h4
                     style={{
                       margin: "0 0 0.25rem 0",
-                      color: "#0f172a",
+                      color: "#0B1739",
                       fontSize: "1rem",
                       fontWeight: 600,
                     }}
@@ -450,7 +381,7 @@ export const StockIngredientsPage: React.FC = () => {
                     {item.name}
                   </h4>
                   <p
-                    style={{ margin: 0, fontSize: "0.75rem", color: "#64748b" }}
+                    style={{ margin: 0, fontSize: "0.75rem", color: "#64748B" }}
                   >
                     {item.category} • Supplier: {item.supplier || "N/A"}
                   </p>
@@ -461,7 +392,7 @@ export const StockIngredientsPage: React.FC = () => {
                     style={{
                       fontSize: "1.125rem",
                       fontWeight: 700,
-                      color: "#0f172a",
+                      color: "#0B1739",
                     }}
                   >
                     {item.quantity.toLocaleString()} {item.unit}
@@ -469,7 +400,7 @@ export const StockIngredientsPage: React.FC = () => {
                   <div
                     style={{
                       fontSize: "0.75rem",
-                      color: "#64748b",
+                      color: "#64748B",
                       marginTop: "0.125rem",
                     }}
                   >
@@ -482,7 +413,7 @@ export const StockIngredientsPage: React.FC = () => {
                     style={{
                       fontSize: "0.875rem",
                       fontWeight: 600,
-                      color: "#0f172a",
+                      color: "#0B1739",
                     }}
                   >
                     €
@@ -494,7 +425,7 @@ export const StockIngredientsPage: React.FC = () => {
                   <div
                     style={{
                       fontSize: "0.75rem",
-                      color: "#64748b",
+                      color: "#64748B",
                       marginTop: "0.125rem",
                     }}
                   >
@@ -527,7 +458,7 @@ export const StockIngredientsPage: React.FC = () => {
                     borderRadius: "6px",
                     border: "1px solid #cbd5e1",
                     background: "#fff",
-                    color: "#0f172a",
+                    color: "#0B1739",
                     fontSize: "0.75rem",
                     fontWeight: 600,
                     cursor: "pointer",
@@ -542,7 +473,7 @@ export const StockIngredientsPage: React.FC = () => {
                     borderRadius: "6px",
                     border: "1px solid #cbd5e1",
                     background: "#f8fafc",
-                    color: "#0f172a",
+                    color: "#0B1739",
                     fontSize: "0.75rem",
                     fontWeight: 600,
                     cursor: "pointer",
@@ -559,7 +490,7 @@ export const StockIngredientsPage: React.FC = () => {
             style={{
               padding: "3rem",
               textAlign: "center",
-              color: "#64748b",
+              color: "#64748B",
               background: "#f8fafc",
               borderRadius: "12px",
               border: "1px dashed #cbd5e1",
@@ -606,7 +537,7 @@ export const StockIngredientsPage: React.FC = () => {
                 marginBottom: "1.5rem",
               }}
             >
-              <h2 style={{ margin: 0, fontSize: "1.25rem", color: "#0f172a" }}>
+              <h2 style={{ margin: 0, fontSize: "1.25rem", color: "#0B1739" }}>
                 {selectedItem ? "Edit Ingredient" : "New Ingredient"}
               </h2>
               {selectedItem && (
@@ -616,7 +547,7 @@ export const StockIngredientsPage: React.FC = () => {
                   style={{
                     background: "none",
                     border: "none",
-                    color: "#ef4444",
+                    color: "#EF4444",
                     fontSize: "0.875rem",
                     fontWeight: 600,
                     cursor: "pointer",
@@ -628,63 +559,24 @@ export const StockIngredientsPage: React.FC = () => {
             </div>
 
             <form onSubmit={handleSaveItem}>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "1rem",
-                  marginBottom: "1rem",
-                }}
-              >
-                <div style={{ gridColumn: "1 / -1" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: "0.75rem",
-                      fontWeight: 600,
-                      marginBottom: "0.25rem",
-                      color: "#475569",
-                    }}
-                  >
-                    Ingredient Name *
-                  </label>
+              <div className="form-grid">
+                <div className="an-form-group" style={{ gridColumn: "1 / -1" }}>
+                  <label className="an-label">Ingredient Name</label>
                   <input
                     type="text"
                     required
                     value={formName}
                     onChange={(e) => setFormName(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "0.6rem",
-                      borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
-                      boxSizing: "border-box",
-                    }}
+                    className="an-input"
                   />
                 </div>
 
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: "0.75rem",
-                      fontWeight: 600,
-                      marginBottom: "0.25rem",
-                      color: "#475569",
-                    }}
-                  >
-                    Category
-                  </label>
+                <div className="an-form-group">
+                  <label className="an-label">Category</label>
                   <select
                     value={formCategory}
                     onChange={(e) => setFormCategory(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "0.6rem",
-                      borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
-                      boxSizing: "border-box",
-                    }}
+                    className="an-select"
                   >
                     {CATEGORIES.map((c) => (
                       <option key={c} value={c}>
@@ -694,82 +586,34 @@ export const StockIngredientsPage: React.FC = () => {
                   </select>
                 </div>
 
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: "0.75rem",
-                      fontWeight: 600,
-                      marginBottom: "0.25rem",
-                      color: "#475569",
-                    }}
-                  >
-                    Supplier
-                  </label>
+                <div className="an-form-group">
+                  <label className="an-label">Supplier</label>
                   <input
                     type="text"
                     value={formSupplier}
                     onChange={(e) => setFormSupplier(e.target.value)}
                     placeholder="e.g. Local Farms"
-                    style={{
-                      width: "100%",
-                      padding: "0.6rem",
-                      borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
-                      boxSizing: "border-box",
-                    }}
+                    className="an-input"
                   />
                 </div>
 
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: "0.75rem",
-                      fontWeight: 600,
-                      marginBottom: "0.25rem",
-                      color: "#475569",
-                    }}
-                  >
-                    Initial Quantity
-                  </label>
+                <div className="an-form-group">
+                  <label className="an-label">Initial Quantity</label>
                   <input
                     type="number"
                     step="0.01"
                     value={formQuantity}
                     onChange={(e) => setFormQuantity(Number(e.target.value))}
-                    style={{
-                      width: "100%",
-                      padding: "0.6rem",
-                      borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
-                      boxSizing: "border-box",
-                    }}
+                    className="an-input"
                   />
                 </div>
 
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: "0.75rem",
-                      fontWeight: 600,
-                      marginBottom: "0.25rem",
-                      color: "#475569",
-                    }}
-                  >
-                    Unit
-                  </label>
+                <div className="an-form-group">
+                  <label className="an-label">Unit</label>
                   <select
                     value={formUnit}
                     onChange={(e) => setFormUnit(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "0.6rem",
-                      borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
-                      boxSizing: "border-box",
-                    }}
+                    className="an-select"
                   >
                     {UNITS.map((u) => (
                       <option key={u} value={u}>
@@ -779,18 +623,8 @@ export const StockIngredientsPage: React.FC = () => {
                   </select>
                 </div>
 
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: "0.75rem",
-                      fontWeight: 600,
-                      marginBottom: "0.25rem",
-                      color: "#475569",
-                    }}
-                  >
-                    Min. Threshold (Alert)
-                  </label>
+                <div className="an-form-group">
+                  <label className="an-label">Min. Threshold (Alert)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -798,40 +632,18 @@ export const StockIngredientsPage: React.FC = () => {
                     onChange={(e) =>
                       setFormMinThreshold(Number(e.target.value))
                     }
-                    style={{
-                      width: "100%",
-                      padding: "0.6rem",
-                      borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
-                      boxSizing: "border-box",
-                    }}
+                    className="an-input"
                   />
                 </div>
 
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: "0.75rem",
-                      fontWeight: 600,
-                      marginBottom: "0.25rem",
-                      color: "#475569",
-                    }}
-                  >
-                    Unit Cost (MAD)
-                  </label>
+                <div className="an-form-group">
+                  <label className="an-label">Unit Cost (MAD)</label>
                   <input
                     type="number"
                     step="0.01"
                     value={formUnitCost}
                     onChange={(e) => setFormUnitCost(Number(e.target.value))}
-                    style={{
-                      width: "100%",
-                      padding: "0.6rem",
-                      borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
-                      boxSizing: "border-box",
-                    }}
+                    className="an-input"
                   />
                 </div>
               </div>
@@ -866,7 +678,7 @@ export const StockIngredientsPage: React.FC = () => {
                     padding: "0.6rem 1.25rem",
                     borderRadius: "8px",
                     border: "none",
-                    background: "#0f172a",
+                    background: "#0B1739",
                     color: "#fff",
                     cursor: "pointer",
                     fontWeight: 600,
@@ -912,7 +724,7 @@ export const StockIngredientsPage: React.FC = () => {
               style={{
                 margin: "0 0 1.5rem 0",
                 fontSize: "1.25rem",
-                color: "#0f172a",
+                color: "#0B1739",
               }}
             >
               Adjust Stock: {selectedItem.name}
@@ -946,9 +758,9 @@ export const StockIngredientsPage: React.FC = () => {
                       borderRadius: "6px",
                       border:
                         adjustType === "add"
-                          ? "2px solid #10b981"
+                          ? "2px solid #10B981"
                           : "1px solid #cbd5e1",
-                      background: adjustType === "add" ? "#ecfdf5" : "#fff",
+                      background: adjustType === "add" ? "#ECFDF5" : "#fff",
                       color: adjustType === "add" ? "#047857" : "#475569",
                       fontWeight: 600,
                       fontSize: "0.75rem",
@@ -965,10 +777,10 @@ export const StockIngredientsPage: React.FC = () => {
                       borderRadius: "6px",
                       border:
                         adjustType === "remove"
-                          ? "2px solid #f59e0b"
+                          ? "2px solid #F59E0B"
                           : "1px solid #cbd5e1",
-                      background: adjustType === "remove" ? "#fffbeb" : "#fff",
-                      color: adjustType === "remove" ? "#b45309" : "#475569",
+                      background: adjustType === "remove" ? "#FFFBEB" : "#fff",
+                      color: adjustType === "remove" ? "#B45309" : "#475569",
                       fontWeight: 600,
                       fontSize: "0.75rem",
                       cursor: "pointer",
@@ -984,10 +796,10 @@ export const StockIngredientsPage: React.FC = () => {
                       borderRadius: "6px",
                       border:
                         adjustType === "waste"
-                          ? "2px solid #ef4444"
+                          ? "2px solid #EF4444"
                           : "1px solid #cbd5e1",
-                      background: adjustType === "waste" ? "#fef2f2" : "#fff",
-                      color: adjustType === "waste" ? "#b91c1c" : "#475569",
+                      background: adjustType === "waste" ? "#FEF2F2" : "#fff",
+                      color: adjustType === "waste" ? "#B91C1C" : "#475569",
                       fontWeight: 600,
                       fontSize: "0.75rem",
                       cursor: "pointer",
@@ -1029,7 +841,7 @@ export const StockIngredientsPage: React.FC = () => {
                   style={{
                     margin: "0.5rem 0 0 0",
                     fontSize: "0.75rem",
-                    color: "#64748b",
+                    color: "#64748B",
                   }}
                 >
                   Current Stock:{" "}
@@ -1066,7 +878,7 @@ export const StockIngredientsPage: React.FC = () => {
                     padding: "0.6rem 1.25rem",
                     borderRadius: "8px",
                     border: "none",
-                    background: "#0f172a",
+                    background: "#0B1739",
                     color: "#fff",
                     cursor: "pointer",
                     fontWeight: 600,
