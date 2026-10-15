@@ -1,0 +1,18 @@
+{
+  "eyebrow": "TRACEABILITY",
+  "title": "Nothing important disappears.",
+  "desc": "Every permission change and sensitive action is recorded with its actor, time and result.",
+  "btn_export_log": "Export log",
+  "col_time": "Time",
+  "col_action": "Action",
+  "col_target": "Target",
+  "col_actor": "Actor",
+  "col_level": "Level",
+  "label_recorded_events": "recorded events",
+  "placeholder_search": "Search the audit log...",
+  "level_info": "info",
+  "level_sensitive": "sensitive",
+  "level_security": "security",
+  "result_allowed": "Allowed",
+  "result_denied": "Denied"
+}

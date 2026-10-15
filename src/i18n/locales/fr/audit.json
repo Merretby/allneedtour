@@ -1,0 +1,18 @@
+{
+  "eyebrow": "TRAÇABILITÉ",
+  "title": "Rien d'important ne disparaît.",
+  "desc": "Chaque changement de permission et action sensible est enregistré avec son acteur, heure et résultat.",
+  "btn_export_log": "Exporter le journal",
+  "col_time": "Heure",
+  "col_action": "Action",
+  "col_target": "Cible",
+  "col_actor": "Acteur",
+  "col_level": "Niveau",
+  "label_recorded_events": "événements enregistrés",
+  "placeholder_search": "Rechercher dans le journal d'audit...",
+  "level_info": "info",
+  "level_sensitive": "sensible",
+  "level_security": "sécurité",
+  "result_allowed": "Autorisé",
+  "result_denied": "Refusé"
+}

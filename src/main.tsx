@@ -214,6 +214,15 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
   useEffect(() => {
     setCurrentModule(getModuleFromPath(location.pathname));
   }, [location.pathname]);
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && mobile) {
+        setMobile(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [mobile]);
   const user =
     state.users.find((u) => u.id === account?.userId) ||
     state.users.find((u) => u.id === state.sessionId)!;
@@ -258,6 +267,13 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
   return (
     <div className="app">
       <aside className={mobile ? "sidebar open" : "sidebar"}>
+        <button
+          className="sidebar-close"
+          onClick={() => setMobile(false)}
+          aria-label="Close navigation menu"
+        >
+          <X size={18} />
+        </button>
         <div className="brand">
           <img
             className="brand-mark"
@@ -337,16 +353,15 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
               <small>RBAC enforced on every action</small>
             </span>
           </div>
-          <div className="me">
-            <span className="avatar">SB</span>
-            <span>
-              <strong>{user.name}</strong>
-              <small>{role.name}</small>
-            </span>
-            <MoreHorizontal size={16} />
-          </div>
         </div>
       </aside>
+      {mobile && (
+        <div
+          className="sidebar-backdrop"
+          onClick={() => setMobile(false)}
+          aria-hidden="true"
+        />
+      )}
       <main>
         <header>
           <button

@@ -1218,33 +1218,7 @@
   justify-content: center;
   width: 100%;
 }
-@media (max-width: 700px) {
-  .reservation-list-toolbar {
-    display: block;
-  }
-  .reservation-list-toolbar .reservation-search {
-    max-width: none;
-    margin-top: 10px;
-  }
-  .reservation-summary {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .reservation-list-page .list-card {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-  .reservation-card-side {
-    flex-direction: row;
-    align-items: center;
-    min-width: 0;
-  }
-  .reservation-card-actions {
-    margin-left: auto;
-  }
-  .reservation-list-header {
-    margin-top: 17px;
-  }
-}
+
 @media (max-width: 450px) {
   .reservation-summary-card {
     padding: 11px 10px;
@@ -3649,11 +3623,17 @@ footer span {
 }
 @media (max-width: 700px) {
   .sidebar {
-    transform: translateX(-100%);
-    width: 248px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: -248px;
+    width: min(300px, 85vw);
+    height: 100dvh;
+    z-index: 100;
+    overflow-y: auto;
   }
   .sidebar.open {
-    transform: translateX(0);
+    left: 0;
   }
   main {
     margin-left: 0;
@@ -3729,6 +3709,43 @@ footer span {
     gap: 8px;
     flex-direction: column;
   }
+}
+/* Mobile sidebar drawer — close button and backdrop */
+.sidebar-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 30;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #dcebe5;
+  display: none;
+}
+@media (max-width: 700px) {
+  .sidebar-close {
+    display: grid;
+  }
+}
+.sidebar-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+.sidebar-close:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(16, 44, 53, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 /* Restaurant operations UX refresh — front-end only */
 .module-page {
