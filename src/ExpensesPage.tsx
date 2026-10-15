@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search } from 'lucide-react';
+import React, { useState } from "react";
+import { Search } from "lucide-react";
 
 interface Expense {
   id: string;
@@ -7,27 +7,53 @@ interface Expense {
   reference: string;
   date: string;
   amount: number;
-  category: 'Utilities' | 'Payroll' | 'Maintenance' | 'Marketing' | 'Supplies' | 'Other';
-  status: 'Paid' | 'Pending';
-  paymentMethod: 'Transfer' | 'Card' | 'Check' | 'Cash';
+  category:
+    | "Utilities"
+    | "Payroll"
+    | "Maintenance"
+    | "Marketing"
+    | "Supplies"
+    | "Other";
+  status: "Paid" | "Pending";
+  paymentMethod: "Transfer" | "Card" | "Check" | "Cash";
   notes?: string;
 }
 
 const MOCK_EXPENSES: Expense[] = [
-  { id: '1', supplier: 'Redal', reference: 'EXP-23-1104', date: '2023-10-08', amount: 3500.00, category: 'Utilities', status: 'Paid', paymentMethod: 'Transfer', notes: 'Monthly bill' },
-  { id: '2', supplier: 'FixIt Co.', reference: 'EXP-23-1103', date: '2023-10-08', amount: 1200.00, category: 'Maintenance', status: 'Pending', paymentMethod: 'Check', notes: 'AC Repair' },
+  {
+    id: "1",
+    supplier: "Redal",
+    reference: "EXP-23-1104",
+    date: "2023-10-08",
+    amount: 3500.0,
+    category: "Utilities",
+    status: "Paid",
+    paymentMethod: "Transfer",
+    notes: "Monthly bill",
+  },
+  {
+    id: "2",
+    supplier: "FixIt Co.",
+    reference: "EXP-23-1103",
+    date: "2023-10-08",
+    amount: 1200.0,
+    category: "Maintenance",
+    status: "Pending",
+    paymentMethod: "Check",
+    notes: "AC Repair",
+  },
 ];
 
 export const ExpensesPage: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filter, setFilter] = useState('All');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filter, setFilter] = useState("All");
 
   const formatCurrency = (amount: number) => {
-    return amount.toFixed(2).replace('.', ',') + ' MAD';
+    return amount.toFixed(2).replace(".", ",") + " MAD";
   };
 
   const getStatusBadge = (status: string) => {
-    if (status === 'Paid') {
+    if (status === "Paid") {
       return (
         <span className="badge active">
           <i /> Validé
@@ -35,8 +61,11 @@ export const ExpensesPage: React.FC = () => {
       );
     }
     return (
-      <span className="badge off" style={{ background: '#fff0dc', color: '#bb7e2f' }}>
-        <i style={{ background: '#bb7e2f' }} /> À vérifier
+      <span
+        className="badge off"
+        style={{ background: "#fff0dc", color: "#bb7e2f" }}
+      >
+        <i style={{ background: "#bb7e2f" }} /> À vérifier
       </span>
     );
   };
@@ -46,15 +75,15 @@ export const ExpensesPage: React.FC = () => {
       <div className="table-toolbar">
         <div className="search">
           <Search size={15} />
-          <input 
-            type="text" 
-            placeholder="Search a name, a record..." 
+          <input
+            type="text"
+            placeholder="Search a name, a record..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        
-        <select 
+
+        <select
           className="filter"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
@@ -63,13 +92,17 @@ export const ExpensesPage: React.FC = () => {
           <option value="Paid">Paid</option>
           <option value="Pending">Pending</option>
         </select>
-        
-        <input 
-          type="date" 
-          className="filter"
-        />
-        
-        <button className="secondary" onClick={() => window.dispatchEvent(new CustomEvent("allneeds:toast", { detail: "Add new expense" }))}>
+
+        <input type="date" className="filter" />
+
+        <button
+          className="secondary"
+          onClick={() =>
+            window.dispatchEvent(
+              new CustomEvent("allneeds:toast", { detail: "Add new expense" })
+            )
+          }
+        >
           + Add
         </button>
       </div>
@@ -101,15 +134,17 @@ export const ExpensesPage: React.FC = () => {
                 <td>
                   <strong>{formatCurrency(expense.amount)}</strong>
                 </td>
-                <td>
-                  {getStatusBadge(expense.status)}
-                </td>
+                <td>{getStatusBadge(expense.status)}</td>
                 <td>
                   <div className="row-actions">
                     <button>Edit</button>
-                    {expense.status === 'Pending' && (
+                    {expense.status === "Pending" && (
                       <>
-                        <button style={{ color: '#338568', borderColor: '#9accc0' }}>Validate</button>
+                        <button
+                          style={{ color: "#338568", borderColor: "#9accc0" }}
+                        >
+                          Validate
+                        </button>
                         <button>To correct</button>
                       </>
                     )}

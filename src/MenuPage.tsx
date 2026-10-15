@@ -16,7 +16,8 @@ const INITIAL_ITEMS: MenuItem[] = [
     name: "Truffle Risotto",
     category: "Mains",
     price: 28,
-    description: "Creamy Arborio rice with black truffle paste, shaved parmesan, and fresh herbs.",
+    description:
+      "Creamy Arborio rice with black truffle paste, shaved parmesan, and fresh herbs.",
     imageUrl: "/dishes/truffle.jpg",
     available: true,
   },
@@ -78,15 +79,26 @@ export const MenuPage: React.FC = () => {
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
 
   const [formName, setFormName] = useState<string>("");
-  const [formCategory, setFormCategory] = useState<MenuItem["category"]>("Mains");
+  const [formCategory, setFormCategory] =
+    useState<MenuItem["category"]>("Mains");
   const [formPrice, setFormPrice] = useState<string>("15");
   const [formDescription, setFormDescription] = useState<string>("");
-  const [formImageUrl, setFormImageUrl] = useState<string>("/dishes/truffle.jpg");
+  const [formImageUrl, setFormImageUrl] = useState<string>(
+    "/dishes/truffle.jpg"
+  );
 
-  const categories = ["All", "Starters", "Mains", "Dessert", "Drinks", "Side Dishes"];
+  const categories = [
+    "All",
+    "Starters",
+    "Mains",
+    "Dessert",
+    "Drinks",
+    "Side Dishes",
+  ];
 
   const filteredItems = items.filter((item) => {
-    const matchesCategory = activeCategory === "All" || item.category === activeCategory;
+    const matchesCategory =
+      activeCategory === "All" || item.category === activeCategory;
     const matchesSearch =
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -131,8 +143,8 @@ export const MenuPage: React.FC = () => {
                 description: formDescription,
                 imageUrl: formImageUrl || "/dishes/truffle.jpg",
               }
-            : it,
-        ),
+            : it
+        )
       );
     } else {
       const newItem: MenuItem = {
@@ -157,7 +169,11 @@ export const MenuPage: React.FC = () => {
   };
 
   const handleToggleAvailability = (id: string) => {
-    setItems((prev) => prev.map((it) => (it.id === id ? { ...it, available: !it.available } : it)));
+    setItems((prev) =>
+      prev.map((it) =>
+        it.id === id ? { ...it, available: !it.available } : it
+      )
+    );
   };
 
   return (
@@ -245,7 +261,9 @@ export const MenuPage: React.FC = () => {
               flexDirection: "column",
             }}
           >
-            <div style={{ position: "relative", width: "100%", height: "180px" }}>
+            <div
+              style={{ position: "relative", width: "100%", height: "180px" }}
+            >
               <img
                 src={item.imageUrl}
                 alt={item.name}
@@ -289,7 +307,14 @@ export const MenuPage: React.FC = () => {
               </span>
             </div>
 
-            <div style={{ padding: "1.25rem", flex: 1, display: "flex", flexDirection: "column" }}>
+            <div
+              style={{
+                padding: "1.25rem",
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
               <h3
                 style={{
                   margin: "0 0 0.5rem 0",
@@ -562,7 +587,10 @@ export const MenuPage: React.FC = () => {
                       style={{
                         padding: "4px 8px",
                         borderRadius: "4px",
-                        border: formImageUrl === p.url ? "2px solid #0f172a" : "1px solid #cbd5e1",
+                        border:
+                          formImageUrl === p.url
+                            ? "2px solid #0f172a"
+                            : "1px solid #cbd5e1",
                         background: formImageUrl === p.url ? "#f1f5f9" : "#fff",
                         fontSize: "0.75rem",
                         cursor: "pointer",
@@ -587,7 +615,13 @@ export const MenuPage: React.FC = () => {
                 />
               </div>
 
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: "0.75rem",
+                }}
+              >
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}

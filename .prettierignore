@@ -1,0 +1,6 @@
+node_modules/
+dist/
+build/
+public/
+ALLNEEDS-SANTE-GRILLE-360-V17/
+package-lock.json

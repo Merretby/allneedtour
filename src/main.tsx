@@ -1,22 +1,27 @@
 import { MenuPage } from "./MenuPage";
 import { TechnicalSheetsPage } from "./TechnicalSheetsPage";
 import { StockIngredientsPage } from "./StockIngredientsPage";
-import { PurchasesPage } from './PurchasesPage';
-import { SuppliersPage } from './SuppliersPage';
-import { MerchandiseReceptionPage } from './MerchandiseReceptionPage';
-import { InventoriesPage } from './InventoriesPage';
-import { LossesWastePage } from './LossesWastePage';
-import { PaymentsCollectionsPage } from './PaymentsCollectionsPage';
-import { ExpensesPage } from './ExpensesPage';
+import { PurchasesPage } from "./PurchasesPage";
+import { SuppliersPage } from "./SuppliersPage";
+import { MerchandiseReceptionPage } from "./MerchandiseReceptionPage";
+import { InventoriesPage } from "./InventoriesPage";
+import { LossesWastePage } from "./LossesWastePage";
+import { PaymentsCollectionsPage } from "./PaymentsCollectionsPage";
+import { ExpensesPage } from "./ExpensesPage";
 
-import { TeamSchedulesPage } from './TeamSchedulesPage';
-import { ReportsKPIsPage } from './ReportsKPIsPage';
-import { DocumentsPage } from './DocumentsPage';
-import { SystemSettingsPage } from './SystemSettingsPage';
+import { TeamSchedulesPage } from "./TeamSchedulesPage";
+import { ReportsKPIsPage } from "./ReportsKPIsPage";
+import { DocumentsPage } from "./DocumentsPage";
+import { SystemSettingsPage } from "./SystemSettingsPage";
 
-
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";
+import {
+  BrowserRouter,
+  NavLink,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import {
   Activity,
   AlertTriangle,
@@ -83,7 +88,7 @@ const readState = (): State => {
       users: [
         ...seed.users,
         ...(stored.users || []).filter(
-          (user: User) => !seed.users.some((base) => base.id === user.id),
+          (user: User) => !seed.users.some((base) => base.id === user.id)
         ),
       ],
     };
@@ -130,16 +135,84 @@ const navGroups = [
       "expenses",
     ],
   },
-  { label: "PEOPLE & CONTROL", items: ["team", "reports", "documents", "users", "settings"] },
+  {
+    label: "PEOPLE & CONTROL",
+    items: ["team", "reports", "documents", "users", "settings"],
+  },
 ];
+
+const moduleToRoute: Record<string, string> = {
+  dashboard: "dashboard",
+  reservations: "reservations",
+  floor: "tables-service",
+  menu: "menu-prices",
+  technical: "technical-sheets",
+  stock: "stock-ingredients",
+  purchases: "purchases",
+  suppliers: "suppliers",
+  receptions: "Merchandise-reception",
+  inventories: "inventories",
+  waste: "losses-waste",
+  payments: "payments-collections",
+  expenses: "expenses",
+  team: "team-schedules",
+  reports: "reports-kpis",
+  documents: "documents",
+  users: "users-permissions",
+  settings: "system-settings",
+  roles: "role-management",
+  audit: "audit-log",
+};
+
+const routeToModule: Record<string, string> = {
+  dashboard: "dashboard",
+  reservations: "reservations",
+  "tables-service": "floor",
+  "menu-prices": "menu",
+  "technical-sheets": "technical",
+  "stock-ingredients": "stock",
+  purchases: "purchases",
+  suppliers: "suppliers",
+  "Merchandise-reception": "receptions",
+  inventories: "inventories",
+  "losses-waste": "waste",
+  "payments-collections": "payments",
+  expenses: "expenses",
+  "team-schedules": "team",
+  "reports-kpis": "reports",
+  documents: "documents",
+  "users-permissions": "users",
+  "system-settings": "settings",
+  "role-management": "roles",
+  "audit-log": "audit",
+};
+
+function getPathForModule(moduleId: string): string {
+  return `/business/restaurant/${moduleToRoute[moduleId] || moduleId}`;
+}
+
+function getModuleFromPath(pathname: string): string {
+  const match = pathname.match(/\/business\/restaurant\/(.+)/);
+  if (!match) return "dashboard";
+  const last = match[1].split("/").pop() || "dashboard";
+  return routeToModule[last] || last;
+}
+
 function RestaurantApp({ account }: { account?: DemoAccount }) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [state, setState] = useState<State>(readState),
-    [page, setPage] = useState<string>("dashboard"),
     [query, setQuery] = useState(""),
     [modal, setModal] = useState<"user" | "role" | "confirm" | null>(null),
     [target, setTarget] = useState<User | Role | null>(null),
     [toast, setToast] = useState(""),
     [mobile, setMobile] = useState(false);
+  const [currentModule, setCurrentModule] = useState<string>(() =>
+    getModuleFromPath(location.pathname)
+  );
+  useEffect(() => {
+    setCurrentModule(getModuleFromPath(location.pathname));
+  }, [location.pathname]);
   const user =
     state.users.find((u) => u.id === account?.userId) ||
     state.users.find((u) => u.id === state.sessionId)!;
@@ -155,11 +228,16 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
   const allowed = (module: ModuleId, action: PermissionAction = "view") =>
     can(state, user, module, action);
   const go = (next: string) => {
-    setPage(next);
+    navigate(getPathForModule(next));
     setMobile(false);
   };
   const sensitive = (action: string, targetName: string, run: () => void) => {
-    setTarget({ id: "confirm", name: action, description: targetName, active: true } as Role);
+    setTarget({
+      id: "confirm",
+      name: action,
+      description: targetName,
+      active: true,
+    } as Role);
     setModal("confirm");
     (window as any).__confirmRun = run;
   };
@@ -168,18 +246,23 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
     notify(message);
   };
   const title =
-    page === "users"
+    currentModule === "users"
       ? "Users & Permissions"
-      : page === "roles"
+      : currentModule === "roles"
         ? "Roles & Permission matrix"
-        : page === "audit"
+        : currentModule === "audit"
           ? "Audit log"
-          : moduleLabels[page as ModuleId] || "Today at ALLNEEDS - TOURISM";
+          : moduleLabels[currentModule as ModuleId] ||
+            "Today at ALLNEEDS - TOURISM";
   return (
     <div className="app">
       <aside className={mobile ? "sidebar open" : "sidebar"}>
         <div className="brand">
-          <span className="brand-mark">M</span>
+          <img
+            className="brand-mark"
+            src="/logo.jpg"
+            alt="ALLNEEDS - TOURISM logo"
+          />
           <span>
             ALLNEEDS - TOURISM<small>RESTAURANT OS</small>
           </span>
@@ -202,42 +285,47 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
                 const Icon = icons[id];
                 const permitted = allowed(id as ModuleId);
                 return (
-                  <button
+                  <NavLink
                     key={id}
+                    to={getPathForModule(id)}
+                    className={({ isActive }) => (isActive ? "active" : "")}
+                    onClick={() => setMobile(false)}
                     aria-disabled={!permitted}
-                    className={page === id ? "active" : ""}
-                    onClick={() => go(id)}
                   >
                     <Icon size={16} />
-                    {id === "users" ? "Users & Permissions" : moduleLabels[id as ModuleId]}
+                    {id === "users"
+                      ? "Users & Permissions"
+                      : moduleLabels[id as ModuleId]}
                     {id === "users" && (
                       <span className="nav-lock">
                         <LockKeyhole size={11} />
                       </span>
                     )}
-                  </button>
+                  </NavLink>
                 );
               })}
             </section>
           ))}
           <section>
             <span className="nav-label">ADMINISTRATION</span>
-            <button
-              className={page === "roles" ? "active" : ""}
+            <NavLink
+              to={getPathForModule("roles")}
+              className={({ isActive }) => (isActive ? "active" : "")}
+              onClick={() => setMobile(false)}
               aria-disabled={!allowed("users", "edit")}
-              onClick={() => go("roles")}
             >
               <SlidersHorizontal size={16} />
               Role management
-            </button>
-            <button
-              className={page === "audit" ? "active" : ""}
+            </NavLink>
+            <NavLink
+              to={getPathForModule("audit")}
+              className={({ isActive }) => (isActive ? "active" : "")}
+              onClick={() => setMobile(false)}
               aria-disabled={!allowed("users")}
-              onClick={() => go("audit")}
             >
               <ShieldCheck size={16} />
               Audit log
-            </button>
+            </NavLink>
           </section>
         </nav>
         <div className="sidebar-bottom">
@@ -268,7 +356,8 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
             <Menu />
           </button>
           <span>
-            ALLNEEDS - TOURISM <ChevronDown size={12} /> <strong>{title}</strong>
+            ALLNEEDS - TOURISM <ChevronDown size={12} />{" "}
+            <strong>{title}</strong>
           </span>
           <div className="header-right">
             <span className="live">
@@ -287,10 +376,14 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
         <div className="content">
           <div className="page-head">
             <div>
-              <span className="eyebrow">ALLNEEDS - TOURISM / ACCESS CONTROL</span>
-              <h1>{page === "dashboard" ? "Good morning, Sofia." : title}</h1>
+              <span className="eyebrow">
+                ALLNEEDS - TOURISM / ACCESS CONTROL
+              </span>
+              <h1>
+                {currentModule === "dashboard" ? "Good morning, Sofia." : title}
+              </h1>
               <p>
-                {page === "dashboard"
+                {currentModule === "dashboard"
                   ? "One view of service, team and control."
                   : "Make access understandable, auditable and easy to operate."}
               </p>
@@ -300,23 +393,23 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
                 <ShieldCheck size={13} />
                 {role.name}
               </span>
-              {(page === "users" || page === "roles") && (
+              {(currentModule === "users" || currentModule === "roles") && (
                 <button
                   className="primary"
                   onClick={() => {
                     setTarget(null);
-                    setModal(page === "users" ? "user" : "role");
+                    setModal(currentModule === "users" ? "user" : "role");
                   }}
                 >
                   <Plus size={15} />
-                  {page === "users" ? "Create user" : "Create role"}
+                  {currentModule === "users" ? "Create user" : "Create role"}
                 </button>
               )}
             </div>
           </div>
-          {page === "dashboard" ? (
+          {currentModule === "dashboard" ? (
             <Dashboard state={state} user={user} allowed={allowed} go={go} />
-          ) : page === "users" ? (
+          ) : currentModule === "users" ? (
             <UsersPage
               state={state}
               setState={setState}
@@ -330,7 +423,7 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
               sensitive={sensitive}
               commit={commit}
             />
-          ) : page === "roles" ? (
+          ) : currentModule === "roles" ? (
             <RolesPage
               state={state}
               setState={setState}
@@ -341,10 +434,15 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
               }}
               commit={commit}
             />
-          ) : page === "audit" ? (
+          ) : currentModule === "audit" ? (
             <AuditPage state={state} query={query} setQuery={setQuery} />
           ) : (
-            <ModulePage page={page as ModuleId} allowed={allowed} go={go} sensitive={sensitive} />
+            <ModulePage
+              page={currentModule as ModuleId}
+              allowed={allowed}
+              go={go}
+              sensitive={sensitive}
+            />
           )}
           <footer>
             <span>
@@ -543,7 +641,8 @@ function Dashboard({
           <div className="control-row">
             <span>Protected modules</span>
             <b>
-              {moduleOrder.filter((m) => can(state, user, m)).length}/{moduleOrder.length}
+              {moduleOrder.filter((m) => can(state, user, m)).length}/
+              {moduleOrder.length}
             </b>
           </div>
           <div className="control-row">
@@ -587,12 +686,17 @@ function ModulePage({
   if (page === "documents") return <DocumentsPage />;
   if (page === "settings") return <SystemSettingsPage />;
 
-
   const blocked = !allowed(page);
   const Icon = icons[page];
   const configs: Record<
     ModuleId,
-    { eyebrow: string; description: string; tabs: string[]; records: string[]; metrics: string[] }
+    {
+      eyebrow: string;
+      description: string;
+      tabs: string[];
+      records: string[];
+      metrics: string[];
+    }
   > = {
     dashboard: {
       eyebrow: "COMMAND CENTER",
@@ -604,11 +708,17 @@ function ModulePage({
         "Stock approval · 2 items",
         "Team handover · 18:30",
       ],
-      metrics: ["24 reservations", "8,420 MAD collected", "7 stock alerts", "18 team on shift"],
+      metrics: [
+        "24 reservations",
+        "8,420 MAD collected",
+        "7 stock alerts",
+        "18 team on shift",
+      ],
     },
     reservations: {
       eyebrow: "GUEST FLOW",
-      description: "Plan, confirm and manage every reservation across today’s services.",
+      description:
+        "Plan, confirm and manage every reservation across today’s services.",
       tabs: ["Today", "Upcoming", "Waitlist"],
       records: [
         "Table 12 · Martin · 19:30",
@@ -620,7 +730,8 @@ function ModulePage({
     },
     floor: {
       eyebrow: "SERVICE MAP",
-      description: "Manage tables, sections, seating status and live service flow.",
+      description:
+        "Manage tables, sections, seating status and live service flow.",
       tabs: ["Floor view", "Sections", "Table status"],
       records: [
         "Table 01 · Ready",
@@ -632,7 +743,8 @@ function ModulePage({
     },
     menu: {
       eyebrow: "COMMERCIAL CATALOG",
-      description: "Keep dishes, prices, availability and service categories aligned.",
+      description:
+        "Keep dishes, prices, availability and service categories aligned.",
       tabs: ["Menu items", "Categories", "Availability"],
       records: [
         "Truffle risotto · 28 MAD",
@@ -640,11 +752,17 @@ function ModulePage({
         "Atlas burger · 22 MAD",
         "Chocolate tart · 12 MAD",
       ],
-      metrics: ["48 items", "6 categories", "4 unavailable", "112 MAD avg. cover"],
+      metrics: [
+        "48 items",
+        "6 categories",
+        "4 unavailable",
+        "112 MAD avg. cover",
+      ],
     },
     technical: {
       eyebrow: "KITCHEN CONTROL",
-      description: "Recipes, yields, allergens and food-cost details for every item.",
+      description:
+        "Recipes, yields, allergens and food-cost details for every item.",
       tabs: ["Recipes", "Costing", "Allergens"],
       records: [
         "Truffle risotto · 31% cost",
@@ -656,7 +774,8 @@ function ModulePage({
     },
     stock: {
       eyebrow: "INVENTORY CONTROL",
-      description: "Monitor ingredients, thresholds, movements and stock value.",
+      description:
+        "Monitor ingredients, thresholds, movements and stock value.",
       tabs: ["Current stock", "Low stock", "Movements"],
       records: [
         "Truffle · 2.4 kg · Low",
@@ -668,7 +787,8 @@ function ModulePage({
     },
     purchases: {
       eyebrow: "PROCUREMENT",
-      description: "Create purchase orders, compare suppliers and track approvals.",
+      description:
+        "Create purchase orders, compare suppliers and track approvals.",
       tabs: ["Orders", "Drafts", "Approvals"],
       records: [
         "PO-1048 · Fresh Market · 2,480 MAD",
@@ -676,11 +796,17 @@ function ModulePage({
         "Draft · Dry store · 740 MAD",
         "Approval · Produce · 1,140 MAD",
       ],
-      metrics: ["18 open orders", "4 awaiting approval", "8.2k MAD this week", "12 suppliers"],
+      metrics: [
+        "18 open orders",
+        "4 awaiting approval",
+        "8.2k MAD this week",
+        "12 suppliers",
+      ],
     },
     suppliers: {
       eyebrow: "SUPPLIER DIRECTORY",
-      description: "Centralize contacts, terms, performance and purchasing history.",
+      description:
+        "Centralize contacts, terms, performance and purchasing history.",
       tabs: ["All suppliers", "Preferred", "Performance"],
       records: [
         "Fresh Market · Produce · 98% on time",
@@ -692,7 +818,8 @@ function ModulePage({
     },
     receptions: {
       eyebrow: "GOODS IN",
-      description: "Receive deliveries, verify quantities and validate discrepancies.",
+      description:
+        "Receive deliveries, verify quantities and validate discrepancies.",
       tabs: ["Pending", "Validated", "Discrepancies"],
       records: [
         "MR-1048 · Fresh Market · Today",
@@ -700,11 +827,17 @@ function ModulePage({
         "MR-1045 · Atlas Drinks · Yesterday",
         "MR-1042 · Maison Pro · Yesterday",
       ],
-      metrics: ["4 pending", "18 validated", "2 discrepancies", "6.4k MAD received"],
+      metrics: [
+        "4 pending",
+        "18 validated",
+        "2 discrepancies",
+        "6.4k MAD received",
+      ],
     },
     inventories: {
       eyebrow: "STOCKTAKE",
-      description: "Run counts, compare expected quantities and validate adjustments.",
+      description:
+        "Run counts, compare expected quantities and validate adjustments.",
       tabs: ["Open counts", "History", "Adjustments"],
       records: [
         "Dry store · Count #28 · Open",
@@ -712,11 +845,17 @@ function ModulePage({
         "Bar · Count #26 · Validated",
         "Freezer · Count #25 · Variance",
       ],
-      metrics: ["4 open counts", "2 variances", "420 MAD variance", "18 completed"],
+      metrics: [
+        "4 open counts",
+        "2 variances",
+        "420 MAD variance",
+        "18 completed",
+      ],
     },
     waste: {
       eyebrow: "LOSS CONTROL",
-      description: "Record waste, identify causes and protect food-cost performance.",
+      description:
+        "Record waste, identify causes and protect food-cost performance.",
       tabs: ["Today", "By reason", "History"],
       records: [
         "Produce trim · 42 MAD · Prep",
@@ -724,11 +863,17 @@ function ModulePage({
         "Overproduction · 76 MAD · Kitchen",
         "Expired dairy · 31 MAD · Storage",
       ],
-      metrics: ["167 MAD today", "8 incidents", "2 recurring causes", "0 critical"],
+      metrics: [
+        "167 MAD today",
+        "8 incidents",
+        "2 recurring causes",
+        "0 critical",
+      ],
     },
     payments: {
       eyebrow: "CASH CONTROL",
-      description: "Track payments, collections, settlements and outstanding amounts.",
+      description:
+        "Track payments, collections, settlements and outstanding amounts.",
       tabs: ["Today", "Outstanding", "Settlements"],
       records: [
         "Check #4821 · 184 MAD · Card",
@@ -736,7 +881,12 @@ function ModulePage({
         "Invoice #104 · 1,240 MAD · Due",
         "Settlement · POS · 8,420 MAD",
       ],
-      metrics: ["8,420 MAD collected", "1,240 MAD outstanding", "98% settled", "12 invoices"],
+      metrics: [
+        "8,420 MAD collected",
+        "1,240 MAD outstanding",
+        "98% settled",
+        "12 invoices",
+      ],
     },
     expenses: {
       eyebrow: "FINANCIAL CONTROL",
@@ -748,11 +898,17 @@ function ModulePage({
         "Repairs · 640 MAD · Pending",
         "Marketing · 900 MAD · Review",
       ],
-      metrics: ["12.4k MAD month", "1.5k MAD pending", "14 categories", "3 reviews"],
+      metrics: [
+        "12.4k MAD month",
+        "1.5k MAD pending",
+        "14 categories",
+        "3 reviews",
+      ],
     },
     team: {
       eyebrow: "PEOPLE & SHIFTS",
-      description: "Build schedules, monitor coverage and keep responsibilities clear.",
+      description:
+        "Build schedules, monitor coverage and keep responsibilities clear.",
       tabs: ["Today", "Schedule", "Availability"],
       records: [
         "Dinner · 18 staff · 19:00",
@@ -764,7 +920,8 @@ function ModulePage({
     },
     reports: {
       eyebrow: "PERFORMANCE",
-      description: "Turn service, financial and operational data into clear decisions.",
+      description:
+        "Turn service, financial and operational data into clear decisions.",
       tabs: ["Overview", "Operations", "Finance"],
       records: [
         "Daily service report · Ready",
@@ -772,11 +929,17 @@ function ModulePage({
         "Revenue report · +12.4%",
         "Labor report · 31.2%",
       ],
-      metrics: ["48.2k MAD revenue", "29.4% food cost", "31.2% labor", "4.8 rating"],
+      metrics: [
+        "48.2k MAD revenue",
+        "29.4% food cost",
+        "31.2% labor",
+        "4.8 rating",
+      ],
     },
     documents: {
       eyebrow: "DOCUMENT CENTER",
-      description: "Store procedures, invoices, contracts and operational documents.",
+      description:
+        "Store procedures, invoices, contracts and operational documents.",
       tabs: ["All documents", "Recent", "Templates"],
       records: [
         "Opening checklist · Updated today",
@@ -788,7 +951,8 @@ function ModulePage({
     },
     settings: {
       eyebrow: "WORKSPACE CONFIGURATION",
-      description: "Control restaurant preferences, service rules and operational defaults.",
+      description:
+        "Control restaurant preferences, service rules and operational defaults.",
       tabs: ["General", "Service", "Notifications"],
       records: [
         "Restaurant profile · Complete",
@@ -816,7 +980,9 @@ function ModulePage({
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
-  const filtered = cfg.records.filter((r) => r.toLowerCase().includes(search.toLowerCase()));
+  const filtered = cfg.records.filter((r) =>
+    r.toLowerCase().includes(search.toLowerCase())
+  );
   const action = (message: string) => {
     setNotice(message);
     window.setTimeout(() => setNotice(""), 2200);
@@ -829,8 +995,9 @@ function ModulePage({
           <span className="eyebrow">ACCESS RESTRICTED</span>
           <h2>This module is protected.</h2>
           <p>
-            Your role does not include access to {moduleLabels[page].toLowerCase()}. You can still
-            navigate the workspace; ask an administrator for the required permission.
+            Your role does not include access to{" "}
+            {moduleLabels[page].toLowerCase()}. You can still navigate the
+            workspace; ask an administrator for the required permission.
           </p>
           <button className="primary" onClick={() => go("dashboard")}>
             Back to dashboard <ArrowRight size={14} />
@@ -868,7 +1035,11 @@ function ModulePage({
       </div>
       <div className="module-tabs">
         {cfg.tabs.map((t) => (
-          <button key={t} className={tab === t ? "active" : ""} onClick={() => setTab(t)}>
+          <button
+            key={t}
+            className={tab === t ? "active" : ""}
+            onClick={() => setTab(t)}
+          >
             {t}
           </button>
         ))}
@@ -882,11 +1053,17 @@ function ModulePage({
             placeholder={`Search ${moduleLabels[page].toLowerCase()}...`}
           />
         </div>
-        <button className="secondary" onClick={() => action(`Filters opened for ${tab}`)}>
+        <button
+          className="secondary"
+          onClick={() => action(`Filters opened for ${tab}`)}
+        >
           Filter
         </button>
         {allowed(page, "export") && (
-          <button className="secondary" onClick={() => action("Export prepared — front-end demo")}>
+          <button
+            className="secondary"
+            onClick={() => action("Export prepared — front-end demo")}
+          >
             <Download size={15} /> Export
           </button>
         )}
@@ -895,7 +1072,7 @@ function ModulePage({
             className="primary"
             onClick={() =>
               sensitive(`Create ${moduleLabels[page]}`, "New record", () =>
-                action("Create flow opened"),
+                action("Create flow opened")
               )
             }
           >
@@ -935,15 +1112,18 @@ function ModulePage({
             <span className="eyebrow">SELECTED RECORD</span>
             <h3>{selected}</h3>
             <p>
-              This is a front-end interaction state. Connect the real API later without changing the
-              navigation or UX.
+              This is a front-end interaction state. Connect the real API later
+              without changing the navigation or UX.
             </p>
           </div>
           <div className="drawer-actions">
             <button className="secondary" onClick={() => setSelected(null)}>
               Close
             </button>
-            <button className="primary" onClick={() => action(`Edit flow opened for ${selected}`)}>
+            <button
+              className="primary"
+              onClick={() => action(`Edit flow opened for ${selected}`)}
+            >
               Edit <ArrowRight size={14} />
             </button>
           </div>
@@ -979,7 +1159,9 @@ function UsersPage({
   commit: (s: State, m: string) => void;
 }) {
   const rows = state.users.filter((u) =>
-    `${u.name} ${u.email} ${u.department}`.toLowerCase().includes(query.toLowerCase()),
+    `${u.name} ${u.email} ${u.department}`
+      .toLowerCase()
+      .includes(query.toLowerCase())
   );
   const canEdit = can(state, user, "users", "edit");
   return (
@@ -988,7 +1170,10 @@ function UsersPage({
         <div>
           <span className="eyebrow">IDENTITY & ACCESS</span>
           <h2>Everyone has the right access.</h2>
-          <p>Manage people, roles and individual exceptions from one controlled workspace.</p>
+          <p>
+            Manage people, roles and individual exceptions from one controlled
+            workspace.
+          </p>
         </div>
         <div className="admin-metrics">
           <strong>
@@ -1020,7 +1205,9 @@ function UsersPage({
             className="secondary"
             onClick={() =>
               window.dispatchEvent(
-                new CustomEvent("allneeds:toast", { detail: "Export prepared — front-end demo" }),
+                new CustomEvent("allneeds:toast", {
+                  detail: "Export prepared — front-end demo",
+                })
               )
             }
           >
@@ -1078,19 +1265,25 @@ function UsersPage({
                           <button
                             onClick={() =>
                               sensitive(
-                                u.active ? "Deactivate account" : "Activate account",
+                                u.active
+                                  ? "Deactivate account"
+                                  : "Activate account",
                                 u.name,
                                 () =>
                                   commit(
                                     audit(
                                       state,
                                       user,
-                                      u.active ? "Deactivated account" : "Activated account",
+                                      u.active
+                                        ? "Deactivated account"
+                                        : "Activated account",
                                       u.name,
-                                      "security",
+                                      "security"
                                     ),
-                                    u.active ? "Account deactivated" : "Account activated",
-                                  ),
+                                    u.active
+                                      ? "Account deactivated"
+                                      : "Account activated"
+                                  )
                               )
                             }
                           >
@@ -1113,7 +1306,11 @@ function UsersPage({
   );
 }
 function PowerIcon({ active }: { active: boolean }) {
-  return <span className={active ? "power-on" : "power-off"}>{active ? "−" : "+"}</span>;
+  return (
+    <span className={active ? "power-on" : "power-off"}>
+      {active ? "−" : "+"}
+    </span>
+  );
 }
 function RolesPage({
   state,
@@ -1136,12 +1333,18 @@ function RolesPage({
       ...role,
       permissions: {
         ...role.permissions,
-        [module]: { ...role.permissions[module], [action]: !role.permissions[module][action] },
+        [module]: {
+          ...role.permissions[module],
+          [action]: !role.permissions[module][action],
+        },
       },
     };
     commit(
-      { ...state, roles: state.roles.map((r) => (r.id === role.id ? next : r)) },
-      "Permission updated",
+      {
+        ...state,
+        roles: state.roles.map((r) => (r.id === role.id ? next : r)),
+      },
+      "Permission updated"
     );
   };
   return (
@@ -1151,8 +1354,8 @@ function RolesPage({
           <span className="eyebrow">POLICY BUILDER</span>
           <h2>Roles that explain themselves.</h2>
           <p>
-            Use the matrix to set module and action access. Individual user overrides remain visible
-            in each profile.
+            Use the matrix to set module and action access. Individual user
+            overrides remain visible in each profile.
           </p>
         </div>
         <button className="secondary" onClick={() => open(role)}>
@@ -1203,7 +1406,9 @@ function RolesPage({
                   ] as PermissionAction[]
                 ).map((a) => (
                   <th key={a} title={actionLabels[a]}>
-                    {a === "sensitive" ? "Sensitive" : a[0].toUpperCase() + a.slice(1)}
+                    {a === "sensitive"
+                      ? "Sensitive"
+                      : a[0].toUpperCase() + a.slice(1)}
                   </th>
                 ))}
               </tr>
@@ -1255,7 +1460,9 @@ function AuditPage({
   setQuery: (s: string) => void;
 }) {
   const rows = state.audit.filter((a) =>
-    `${a.actorName} ${a.action} ${a.target}`.toLowerCase().includes(query.toLowerCase()),
+    `${a.actorName} ${a.action} ${a.target}`
+      .toLowerCase()
+      .includes(query.toLowerCase())
   );
   return (
     <section className="admin-page">
@@ -1264,8 +1471,8 @@ function AuditPage({
           <span className="eyebrow">TRACEABILITY</span>
           <h2>Nothing important disappears.</h2>
           <p>
-            Every permission change and sensitive action is recorded with its actor, time and
-            result.
+            Every permission change and sensitive action is recorded with its
+            actor, time and result.
           </p>
         </div>
         <button className="secondary">
@@ -1325,7 +1532,8 @@ function UserModal({
         <span className="eyebrow">{user ? "EDIT USER" : "NEW USER"}</span>
         <h2>{user ? "User profile" : "Invite a team member"}</h2>
         <p>
-          Assign a role first. You can add individual permissions later without changing the role.
+          Assign a role first. You can add individual permissions later without
+          changing the role.
         </p>
         <label>
           Full name
@@ -1378,7 +1586,9 @@ function UserModal({
                 ...state,
                 users: user
                   ? state.users.map((u) =>
-                      u.id === user.id ? { ...u, name, email, department, roleId } : u,
+                      u.id === user.id
+                        ? { ...u, name, email, department, roleId }
+                        : u
                     )
                   : [
                       ...state.users,
@@ -1416,7 +1626,9 @@ function RoleModal({
   onSave: (s: State) => void;
 }) {
   const [name, setName] = useState(role ? `${role.name} copy` : "");
-  const [description, setDescription] = useState(role?.description || "Custom access profile");
+  const [description, setDescription] = useState(
+    role?.description || "Custom access profile"
+  );
   const base = role || defaultRoles[2];
   return (
     <div className="modal-backdrop">
@@ -1437,7 +1649,10 @@ function RoleModal({
         </label>
         <label>
           Description
-          <input value={description} onChange={(e) => setDescription(e.target.value)} />
+          <input
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
         </label>
         <div className="role-matrix">
           <table>
@@ -1455,13 +1670,22 @@ function RoleModal({
               {moduleOrder.slice(0, 8).map((m) => (
                 <tr key={m}>
                   <td>{moduleLabels[m]}</td>
-                  {(["view", "create", "edit", "validate", "export"] as PermissionAction[]).map(
-                    (a) => (
-                      <td key={a}>
-                        <input type="checkbox" defaultChecked={base.permissions[m][a]} />
-                      </td>
-                    ),
-                  )}
+                  {(
+                    [
+                      "view",
+                      "create",
+                      "edit",
+                      "validate",
+                      "export",
+                    ] as PermissionAction[]
+                  ).map((a) => (
+                    <td key={a}>
+                      <input
+                        type="checkbox"
+                        defaultChecked={base.permissions[m][a]}
+                      />
+                    </td>
+                  ))}
                 </tr>
               ))}
             </tbody>
@@ -1479,7 +1703,13 @@ function RoleModal({
                 ...state,
                 roles: [
                   ...state.roles,
-                  { ...base, id: crypto.randomUUID(), name, description, active: true },
+                  {
+                    ...base,
+                    id: crypto.randomUUID(),
+                    name,
+                    description,
+                    active: true,
+                  },
                 ],
               })
             }
@@ -1509,8 +1739,9 @@ function ConfirmModal({
         <span className="eyebrow">CONFIRM SENSITIVE ACTION</span>
         <h2>{target.name}?</h2>
         <p>
-          This action changes access or security state for <strong>{target.description}</strong>. It
-          will be recorded in the audit log.
+          This action changes access or security state for{" "}
+          <strong>{target.description}</strong>. It will be recorded in the
+          audit log.
         </p>
         <div className="modal-actions">
           <button className="secondary" onClick={onClose}>
@@ -1757,12 +1988,27 @@ const permissionSets: Record<string, string[]> = {
     "team.view",
     "incidents.view",
   ],
-  "Housekeeping Staff": ["dashboard.view", "rooms.view", "housekeeping.view", "incidents.view"],
-  Maintenance: ["dashboard.view", "rooms.view", "maintenance.view", "incidents.view"],
+  "Housekeeping Staff": [
+    "dashboard.view",
+    "rooms.view",
+    "housekeeping.view",
+    "incidents.view",
+  ],
+  Maintenance: [
+    "dashboard.view",
+    "rooms.view",
+    "maintenance.view",
+    "incidents.view",
+  ],
 };
-const permissionsFor = (role: string) => permissionSets[role] || ["dashboard.view"];
+const permissionsFor = (role: string) =>
+  permissionSets[role] || ["dashboard.view"];
 const demoAccounts: DemoAccount[] = [
-  { email: "sofia.owner@maisonatlas.com", name: "Sofia Benali", role: "Super Admin / Owner" },
+  {
+    email: "sofia.owner@maisonatlas.com",
+    name: "Sofia Benali",
+    role: "Super Admin / Owner",
+  },
   {
     email: "sofia.restaurant-owner@maisonatlas.com",
     name: "Sofia Benali",
@@ -1771,78 +2017,193 @@ const demoAccounts: DemoAccount[] = [
     userId: "u-owner",
   },
   ...[
-    ["karim.direction@maisonatlas.com", "Karim Haddad", "Direction / Manager", "u-manager"],
-    ["nora.restaurant-manager@maisonatlas.com", "Nora Martin", "Restaurant Manager", "u-nora"],
+    [
+      "karim.direction@maisonatlas.com",
+      "Karim Haddad",
+      "Direction / Manager",
+      "u-manager",
+    ],
+    [
+      "nora.restaurant-manager@maisonatlas.com",
+      "Nora Martin",
+      "Restaurant Manager",
+      "u-nora",
+    ],
     [
       "yassine.supervisor@maisonatlas.com",
       "Yassine Amrani",
       "Head Waiter / Supervisor",
       "u-yassine",
     ],
-    ["lina.chef@maisonatlas.com", "Lina Farah", "Chef / Kitchen Manager", "u-chef"],
+    [
+      "lina.chef@maisonatlas.com",
+      "Lina Farah",
+      "Chef / Kitchen Manager",
+      "u-chef",
+    ],
     ["adam.kitchen@maisonatlas.com", "Adam Costa", "Kitchen Staff", "u-adam"],
     ["thomas.cashier@maisonatlas.com", "Thomas Roy", "Cashier", "u-cashier"],
-    ["ines.purchasing@maisonatlas.com", "Ines Rahal", "Purchasing / Stock Manager", "u-ines"],
-    ["salma.hr@maisonatlas.com", "Salma Idrissi", "HR / Administration", "u-salma"],
-    ["mehdi.staff@maisonatlas.com", "Mehdi Benali", "Employee / Staff", "u-mehdi"],
+    [
+      "ines.purchasing@maisonatlas.com",
+      "Ines Rahal",
+      "Purchasing / Stock Manager",
+      "u-ines",
+    ],
+    [
+      "salma.hr@maisonatlas.com",
+      "Salma Idrissi",
+      "HR / Administration",
+      "u-salma",
+    ],
+    [
+      "mehdi.staff@maisonatlas.com",
+      "Mehdi Benali",
+      "Employee / Staff",
+      "u-mehdi",
+    ],
   ].map(
     ([email, name, role, userId]) =>
-      ({ email, name, role, businessId: "restaurant-casablanca", userId }) as DemoAccount,
+      ({
+        email,
+        name,
+        role,
+        businessId: "restaurant-casablanca",
+        userId,
+      }) as DemoAccount
   ),
   ...[
-    ["sofia.travel-owner@maisonatlas.com", "Sofia Benali", "Travel Agency Owner"],
+    [
+      "sofia.travel-owner@maisonatlas.com",
+      "Sofia Benali",
+      "Travel Agency Owner",
+    ],
     ["nabil.travel-manager@maisonatlas.com", "Nabil Haddad", "Agency Manager"],
     ["aya.travel-agent@maisonatlas.com", "Aya Farah", "Travel Agent"],
-    ["youssef.travel-accountant@maisonatlas.com", "Youssef Idrissi", "Accountant"],
-    ["meryem.travel-operations@maisonatlas.com", "Meryem Alaoui", "Operations Manager"],
+    [
+      "youssef.travel-accountant@maisonatlas.com",
+      "Youssef Idrissi",
+      "Accountant",
+    ],
+    [
+      "meryem.travel-operations@maisonatlas.com",
+      "Meryem Alaoui",
+      "Operations Manager",
+    ],
     ["omar.travel-staff@maisonatlas.com", "Omar Karim", "Agency Staff"],
   ].map(
-    ([email, name, role]) => ({ email, name, role, businessId: "atlas-travel" }) as DemoAccount,
+    ([email, name, role]) =>
+      ({ email, name, role, businessId: "atlas-travel" }) as DemoAccount
   ),
   ...[
-    ["sofia.transport-owner@maisonatlas.com", "Sofia Benali", "Transport Owner"],
-    ["hamza.transport-manager@maisonatlas.com", "Hamza Haddad", "Transport Manager"],
+    [
+      "sofia.transport-owner@maisonatlas.com",
+      "Sofia Benali",
+      "Transport Owner",
+    ],
+    [
+      "hamza.transport-manager@maisonatlas.com",
+      "Hamza Haddad",
+      "Transport Manager",
+    ],
     ["amina.dispatch@maisonatlas.com", "Amina Farah", "Dispatch Manager"],
     ["rachid.fleet@maisonatlas.com", "Rachid Idrissi", "Fleet Manager"],
     ["ahmed.driver@maisonatlas.com", "Ahmed Karim", "Driver"],
-    ["nadia.transport-accountant@maisonatlas.com", "Nadia Alaoui", "Accountant"],
-    ["bilal.transport-staff@maisonatlas.com", "Bilal Benali", "Transport Staff"],
-  ].map(
-    ([email, name, role]) => ({ email, name, role, businessId: "atlas-transport" }) as DemoAccount,
-  ),
-  ...[
-    ["sofia.activities-owner@maisonatlas.com", "Sofia Benali", "Activities Owner"],
-    ["ikram.activities-manager@maisonatlas.com", "Ikram Haddad", "Activities Manager"],
-    ["yanis.activity-coordinator@maisonatlas.com", "Yanis Farah", "Activity Coordinator"],
-    ["hajar.guide@maisonatlas.com", "Hajar Idrissi", "Guide / Instructor"],
-    ["mehdi.equipment@maisonatlas.com", "Mehdi Karim", "Equipment Manager"],
-    ["siham.activities-accountant@maisonatlas.com", "Siham Alaoui", "Accountant"],
-    ["soufiane.activity-staff@maisonatlas.com", "Soufiane Benali", "Activity Staff"],
-  ].map(
-    ([email, name, role]) => ({ email, name, role, businessId: "atlas-activities" }) as DemoAccount,
-  ),
-  ...[
-    ["sofia.accommodation-owner@maisonatlas.com", "Sofia Benali", "Accommodation Owner"],
-    ["karim.accommodation-manager@maisonatlas.com", "Karim Haddad", "Accommodation Manager"],
-    ["loubna.reception@maisonatlas.com", "Loubna Farah", "Receptionist"],
-    ["fatima.housekeeping-manager@maisonatlas.com", "Fatima Idrissi", "Housekeeping Manager"],
-    ["amina.housekeeping@maisonatlas.com", "Amina Karim", "Housekeeping Staff"],
-    ["rachid.maintenance@maisonatlas.com", "Rachid Alaoui", "Maintenance"],
-    ["i. MADaccommodation-accountant@maisonatlas.com", "I€ Benali", "Accountant"],
-    ["sara.accommodation-staff@maisonatlas.com", "Sara Haddad", "Accommodation Staff"],
+    [
+      "nadia.transport-accountant@maisonatlas.com",
+      "Nadia Alaoui",
+      "Accountant",
+    ],
+    [
+      "bilal.transport-staff@maisonatlas.com",
+      "Bilal Benali",
+      "Transport Staff",
+    ],
   ].map(
     ([email, name, role]) =>
-      ({ email, name, role, businessId: "atlas-hebergement" }) as DemoAccount,
+      ({ email, name, role, businessId: "atlas-transport" }) as DemoAccount
+  ),
+  ...[
+    [
+      "sofia.activities-owner@maisonatlas.com",
+      "Sofia Benali",
+      "Activities Owner",
+    ],
+    [
+      "ikram.activities-manager@maisonatlas.com",
+      "Ikram Haddad",
+      "Activities Manager",
+    ],
+    [
+      "yanis.activity-coordinator@maisonatlas.com",
+      "Yanis Farah",
+      "Activity Coordinator",
+    ],
+    ["hajar.guide@maisonatlas.com", "Hajar Idrissi", "Guide / Instructor"],
+    ["mehdi.equipment@maisonatlas.com", "Mehdi Karim", "Equipment Manager"],
+    [
+      "siham.activities-accountant@maisonatlas.com",
+      "Siham Alaoui",
+      "Accountant",
+    ],
+    [
+      "soufiane.activity-staff@maisonatlas.com",
+      "Soufiane Benali",
+      "Activity Staff",
+    ],
+  ].map(
+    ([email, name, role]) =>
+      ({ email, name, role, businessId: "atlas-activities" }) as DemoAccount
+  ),
+  ...[
+    [
+      "sofia.accommodation-owner@maisonatlas.com",
+      "Sofia Benali",
+      "Accommodation Owner",
+    ],
+    [
+      "karim.accommodation-manager@maisonatlas.com",
+      "Karim Haddad",
+      "Accommodation Manager",
+    ],
+    ["loubna.reception@maisonatlas.com", "Loubna Farah", "Receptionist"],
+    [
+      "fatima.housekeeping-manager@maisonatlas.com",
+      "Fatima Idrissi",
+      "Housekeeping Manager",
+    ],
+    ["amina.housekeeping@maisonatlas.com", "Amina Karim", "Housekeeping Staff"],
+    ["rachid.maintenance@maisonatlas.com", "Rachid Alaoui", "Maintenance"],
+    [
+      "i. MADaccommodation-accountant@maisonatlas.com",
+      "I€ Benali",
+      "Accountant",
+    ],
+    [
+      "sara.accommodation-staff@maisonatlas.com",
+      "Sara Haddad",
+      "Accommodation Staff",
+    ],
+  ].map(
+    ([email, name, role]) =>
+      ({ email, name, role, businessId: "atlas-hebergement" }) as DemoAccount
   ),
 ];
-function LoginPage({ onLogin }: { onLogin: (email: string, password: string) => boolean }) {
+function LoginPage({
+  onLogin,
+}: {
+  onLogin: (email: string, password: string) => boolean;
+}) {
   const [email, setEmail] = useState("sofia.owner@maisonatlas.com");
   const [password, setPassword] = useState("demo-owner");
   const [error, setError] = useState("");
   return (
     <div className="auth-screen reference-login">
       <div className="auth-art">
-        <span className="brand-mark large">M</span>
+        <img
+          className="brand-mark large"
+          src="/logo.jpg"
+          alt="ALLNEEDS - TOURISM logo"
+        />
         <span className="eyebrow">ALLNEEDS - TOURISM / PLATFORM</span>
         <h1>
           One account.
@@ -1850,15 +2211,16 @@ function LoginPage({ onLogin }: { onLogin: (email: string, password: string) => 
           <em>Every operation.</em>
         </h1>
         <p>
-          Secure access to your restaurant, travel, transport, activities and accommodation
-          businesses.
+          Secure access to your restaurant, travel, transport, activities and
+          accommodation businesses.
         </p>
         <div className="auth-proof">
           <ShieldCheck size={17} />
           <span>
             <strong>Protected by business-aware access control</strong>
             <small>
-              Session, membership and permissions are verified before every workspace loads.
+              Session, membership and permissions are verified before every
+              workspace loads.
             </small>
           </span>
         </div>
@@ -1868,7 +2230,9 @@ function LoginPage({ onLogin }: { onLogin: (email: string, password: string) => 
         onSubmit={(e) => {
           e.preventDefault();
           if (!onLogin(email, password))
-            setError("Email or password incorrect. Use demo-owner for this demo.");
+            setError(
+              "Email or password incorrect. Use demo-owner for this demo."
+            );
         }}
       >
         <span className="eyebrow">WELCOME TO YOUR WORKSPACE</span>
@@ -1932,7 +2296,9 @@ function LoginPage({ onLogin }: { onLogin: (email: string, password: string) => 
         <button className="primary full" type="submit">
           Enter workspace <ArrowRight size={15} />
         </button>
-        <small className="auth-note">Demo environment · Password: demo-owner</small>
+        <small className="auth-note">
+          Demo environment · Password: demo-owner
+        </small>
       </form>
     </div>
   );
@@ -1949,17 +2315,26 @@ function ArchivedBusinessSelector({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const matches = businesses.filter((b) =>
-    `${b.name} ${businessTypeLabels[b.type]}`.toLowerCase().includes(query.toLowerCase()),
+    `${b.name} ${businessTypeLabels[b.type]}`
+      .toLowerCase()
+      .includes(query.toLowerCase())
   );
   return (
     <div className="business-selector">
       <button className="business-trigger" onClick={() => setOpen(!open)}>
-        <span className="business-logo" style={{ background: active?.accent || "#d9eee6" }}>
+        <span
+          className="business-logo"
+          style={{ background: active?.accent || "#d9eee6" }}
+        >
           {active ? businessTypeIcons[active.type] : "◈"}
         </span>
         <span>
           <strong>{active?.name || "All Businesses"}</strong>
-          <small>{active ? businessTypeLabels[active.type] : "Global owner dashboard"}</small>
+          <small>
+            {active
+              ? businessTypeLabels[active.type]
+              : "Global owner dashboard"}
+          </small>
         </span>
         <ChevronDown size={16} />
       </button>
@@ -2032,8 +2407,8 @@ function GlobalDashboard({ onSelect }: { onSelect: (b: Business) => void }) {
             <em>in one clear view.</em>
           </h2>
           <p>
-            Move from the signal to the business that needs your attention. Every figure is scoped
-            and traceable.
+            Move from the signal to the business that needs your attention.
+            Every figure is scoped and traceable.
           </p>
         </div>
         <div className="portfolio-orbit">
@@ -2063,7 +2438,11 @@ function GlobalDashboard({ onSelect }: { onSelect: (b: Business) => void }) {
       </div>
       <div className="portfolio-grid">
         {businesses.map((b) => (
-          <button className="portfolio-card" key={b.id} onClick={() => onSelect(b)}>
+          <button
+            className="portfolio-card"
+            key={b.id}
+            onClick={() => onSelect(b)}
+          >
             <div className="portfolio-top">
               <span className="business-logo" style={{ background: b.accent }}>
                 {businessTypeIcons[b.type]}
@@ -2090,7 +2469,13 @@ function GlobalDashboard({ onSelect }: { onSelect: (b: Business) => void }) {
                 <small>revenue</small>
               </span>
               <span>
-                <b>{b.type === "accommodation" ? "78%" : b.type === "transport" ? "142" : "24"}</b>
+                <b>
+                  {b.type === "accommodation"
+                    ? "78%"
+                    : b.type === "transport"
+                      ? "142"
+                      : "24"}
+                </b>
                 <small>
                   {b.type === "accommodation"
                     ? "occupancy"
@@ -2172,24 +2557,34 @@ const businessNav: Record<Exclude<BusinessType, "restaurant">, string[]> = {
   ],
 };
 const businessNavBase = Object.fromEntries(
-  Object.entries(businessNav).map(([type, items]) => [type, [...items]]),
+  Object.entries(businessNav).map(([type, items]) => [type, [...items]])
 ) as typeof businessNav;
 const navPermissionKey = (item: string) =>
-  item.toLowerCase().replaceAll(" & ", "_").replaceAll(" ", "_").replaceAll("-", "_");
+  item
+    .toLowerCase()
+    .replaceAll(" & ", "_")
+    .replaceAll(" ", "_")
+    .replaceAll("-", "_");
 setInterval(() => {
   try {
-    const account = JSON.parse(sessionStorage.getItem("allneeds.account") || "null");
+    const account = JSON.parse(
+      sessionStorage.getItem("allneeds.account") || "null"
+    );
     if (!account || !account.businessId) return;
-    const permissions: string[] = account.permissions || permissionsFor(account.role || "");
-    for (const type of Object.keys(businessNav) as Exclude<BusinessType, "restaurant">[]) {
+    const permissions: string[] =
+      account.permissions || permissionsFor(account.role || "");
+    for (const type of Object.keys(businessNav) as Exclude<
+      BusinessType,
+      "restaurant"
+    >[]) {
       businessNav[type] = businessNavBase[type].filter(
         (item) =>
           item === "Today" ||
           permissions.includes("*") ||
           permissions.includes(`${navPermissionKey(item)}.view`) ||
           permissions.includes(
-            `${item === "Client requests" ? "client_requests" : item === "Trips / Circuits" ? "trips" : item === "Transfers / trips" ? "transfers" : item === "Dispatch planning" ? "dispatch" : item === "Sessions / slots" ? "sessions" : item === "Rooms / units" ? "rooms" : item === "Check-in / Check-out" ? "checkin" : navPermissionKey(item)}.view`,
-          ),
+            `${item === "Client requests" ? "client_requests" : item === "Trips / Circuits" ? "trips" : item === "Transfers / trips" ? "transfers" : item === "Dispatch planning" ? "dispatch" : item === "Sessions / slots" ? "sessions" : item === "Rooms / units" ? "rooms" : item === "Check-in / Check-out" ? "checkin" : navPermissionKey(item)}.view`
+          )
       );
     }
   } catch {}
@@ -2202,7 +2597,8 @@ function BusinessWorkspaceLegacy({
   onChange: (b: Business) => void;
 }) {
   const [page, setPage] = useState("Today");
-  const nav = businessNav[business.type as Exclude<BusinessType, "restaurant">] || [];
+  const nav =
+    businessNav[business.type as Exclude<BusinessType, "restaurant">] || [];
   const copy: Record<
     Exclude<BusinessType, "restaurant">,
     { eyebrow: string; title: string; description: string; cards: string[] }
@@ -2210,7 +2606,8 @@ function BusinessWorkspaceLegacy({
     "travel-agency": {
       eyebrow: "TRAVEL CONTROL TOWER",
       title: "Every journey, under control.",
-      description: "Requests, dossiers, departures and margin in one agency workspace.",
+      description:
+        "Requests, dossiers, departures and margin in one agency workspace.",
       cards: [
         "New client requests",
         "Open dossiers",
@@ -2221,27 +2618,47 @@ function BusinessWorkspaceLegacy({
     transport: {
       eyebrow: "DISPATCH CONTROL TOWER",
       title: "Keep every journey moving.",
-      description: "Drivers, vehicles and transfers coordinated from one dispatch room.",
-      cards: ["Today's trips", "Drivers working today", "Available vehicles", "Maintenance alerts"],
+      description:
+        "Drivers, vehicles and transfers coordinated from one dispatch room.",
+      cards: [
+        "Today's trips",
+        "Drivers working today",
+        "Available vehicles",
+        "Maintenance alerts",
+      ],
     },
     activities: {
       eyebrow: "ACTIVITY CONTROL TOWER",
       title: "Make every session count.",
-      description: "Bookings, participants, guides and equipment aligned for the day.",
-      cards: ["Today's sessions", "Available places", "Active guides", "Open incidents"],
+      description:
+        "Bookings, participants, guides and equipment aligned for the day.",
+      cards: [
+        "Today's sessions",
+        "Available places",
+        "Active guides",
+        "Open incidents",
+      ],
     },
     accommodation: {
       eyebrow: "PROPERTY CONTROL TOWER",
       title: "A better stay starts here.",
-      description: "Arrivals, departures, occupancy and housekeeping in one calm workspace.",
-      cards: ["Today's arrivals", "Today's departures", "Occupancy", "Rooms to clean"],
+      description:
+        "Arrivals, departures, occupancy and housekeeping in one calm workspace.",
+      cards: [
+        "Today's arrivals",
+        "Today's departures",
+        "Occupancy",
+        "Rooms to clean",
+      ],
     },
   };
   const text = copy[business.type as Exclude<BusinessType, "restaurant">];
   return (
     <div className="business-workspace">
       <aside className="business-mini-nav">
-        <span className="eyebrow">{businessTypeLabels[business.type].toUpperCase()}</span>
+        <span className="eyebrow">
+          {businessTypeLabels[business.type].toUpperCase()}
+        </span>
         <nav>
           {nav.map((item, i) => (
             <button
@@ -2278,7 +2695,8 @@ function BusinessWorkspaceLegacy({
                   <small>{card}</small>
                   <strong>{["12", "24", "18,420 MAD", "08"][i]}</strong>
                   <span>
-                    {i === 0 ? "Needs attention" : "Updated today"} <ArrowRight size={13} />
+                    {i === 0 ? "Needs attention" : "Updated today"}{" "}
+                    <ArrowRight size={13} />
                   </span>
                 </div>
               ))}
@@ -2312,8 +2730,8 @@ function BusinessWorkspaceLegacy({
                 <span className="eyebrow">ATTENTION REQUIRED</span>
                 <h3>3 items need your review.</h3>
                 <p>
-                  Open alerts are isolated to {business.name}. Nothing from another business is
-                  shown here.
+                  Open alerts are isolated to {business.name}. Nothing from
+                  another business is shown here.
                 </p>
                 <button className="primary">
                   Open alerts <ArrowRight size={14} />
@@ -2323,13 +2741,16 @@ function BusinessWorkspaceLegacy({
           </>
         ) : (
           <div className="module-empty">
-            <span className="business-logo" style={{ background: business.accent }}>
+            <span
+              className="business-logo"
+              style={{ background: business.accent }}
+            >
               {businessTypeIcons[business.type]}
             </span>
             <h3>{page}</h3>
             <p>
-              This specialized module is ready for business-scoped records, role permissions and
-              audit history.
+              This specialized module is ready for business-scoped records, role
+              permissions and audit history.
             </p>
             <button className="primary">
               Create first record <Plus size={14} />
@@ -2341,8 +2762,9 @@ function BusinessWorkspaceLegacy({
   );
 }
 function LegacyPlatform() {
+  const navigate = useNavigate();
   const [session, setSession] = useState(
-    () => sessionStorage.getItem("allneeds.authenticated") === "true",
+    () => sessionStorage.getItem("allneeds.authenticated") === "true"
   );
   const [account, setAccount] = useState<DemoAccount | null>(() => {
     try {
@@ -2352,12 +2774,14 @@ function LegacyPlatform() {
     }
   });
   const [activeId, setActiveId] = useState<string | null>(
-    () => sessionStorage.getItem("allneeds.business") || null,
+    () => sessionStorage.getItem("allneeds.business") || null
   );
   const active = businesses.find((b) => b.id === activeId) || null;
   const login = (email: string, password: string) => {
     const found =
-      demoAccounts.find((item) => item.email.toLowerCase() === email.trim().toLowerCase()) || null;
+      demoAccounts.find(
+        (item) => item.email.toLowerCase() === email.trim().toLowerCase()
+      ) || null;
     if (!found || password !== "demo-owner") return false;
     sessionStorage.setItem("allneeds.authenticated", "true");
     sessionStorage.setItem("allneeds.account", JSON.stringify(found));
@@ -2367,12 +2791,11 @@ function LegacyPlatform() {
       sessionStorage.setItem("allneeds.business", found.businessId);
       setActiveId(found.businessId);
       const business = businesses.find((b) => b.id === found.businessId);
-      history.replaceState(
-        {},
-        "",
+      navigate(
         business ? `/business/${business.type}/dashboard` : "/businesses",
+        { replace: true }
       );
-    } else history.replaceState({}, "", "/businesses");
+    } else navigate("/businesses", { replace: true });
     return true;
   };
   const logout = () => {
@@ -2382,29 +2805,37 @@ function LegacyPlatform() {
     setSession(false);
     setAccount(null);
     setActiveId(null);
-    history.replaceState({}, "", "/login");
+    navigate("/login", { replace: true });
   };
   if (!session) return <LoginPage onLogin={login} />;
   const select = (business: Business) => {
     sessionStorage.setItem("allneeds.business", business.id);
     setActiveId(business.id);
-    history.replaceState({}, "", `/business/${business.type}/dashboard`);
+    navigate(`/business/${business.type}/dashboard`, { replace: true });
   };
   const all = () => {
     sessionStorage.removeItem("allneeds.business");
     setActiveId(null);
-    history.replaceState({}, "", "/businesses");
+    navigate("/businesses", { replace: true });
   };
   return (
     <div className="platform-shell">
       <header className="platform-header">
         <div className="platform-brand">
-          <span className="brand-mark">M</span>
+          <img
+            className="brand-mark"
+            src="/logo.jpg"
+            alt="ALLNEEDS - TOURISM logo"
+          />
           <span>
             ALLNEEDS - TOURISM<small>UNIFIED BUSINESS PLATFORM</small>
           </span>
         </div>
-        <ArchivedBusinessSelector active={active} onSelect={select} onAll={all} />
+        <ArchivedBusinessSelector
+          active={active}
+          onSelect={select}
+          onAll={all}
+        />
         <div className="platform-actions">
           <span className="platform-user">
             <span className="avatar">
@@ -2437,8 +2868,9 @@ function LegacyPlatform() {
   );
 }
 function Platform() {
+  const navigate = useNavigate();
   const [session, setSession] = useState(
-    () => sessionStorage.getItem("allneeds.authenticated") === "true",
+    () => sessionStorage.getItem("allneeds.authenticated") === "true"
   );
   const [account, setAccount] = useState<DemoAccount | null>(() => {
     try {
@@ -2448,14 +2880,19 @@ function Platform() {
     }
   });
   const [activeId, setActiveId] = useState<string | null>(
-    () => sessionStorage.getItem("allneeds.business") || null,
+    () => sessionStorage.getItem("allneeds.business") || null
   );
   const active = businesses.find((b) => b.id === activeId) || null;
   const login = (email: string, password: string) => {
     const found =
-      demoAccounts.find((item) => item.email.toLowerCase() === email.trim().toLowerCase()) || null;
+      demoAccounts.find(
+        (item) => item.email.toLowerCase() === email.trim().toLowerCase()
+      ) || null;
     if (!found || password !== "demo-owner") return false;
-    const next = { ...found, permissions: found.permissions || permissionsFor(found.role) };
+    const next = {
+      ...found,
+      permissions: found.permissions || permissionsFor(found.role),
+    };
     sessionStorage.setItem("allneeds.authenticated", "true");
     sessionStorage.setItem("allneeds.account", JSON.stringify(next));
     setAccount(next);
@@ -2464,12 +2901,11 @@ function Platform() {
       sessionStorage.setItem("allneeds.business", next.businessId);
       setActiveId(next.businessId);
       const business = businesses.find((b) => b.id === next.businessId);
-      history.replaceState(
-        {},
-        "",
+      navigate(
         business ? `/business/${business.type}/dashboard` : "/businesses",
+        { replace: true }
       );
-    } else history.replaceState({}, "", "/businesses");
+    } else navigate("/businesses", { replace: true });
     return true;
   };
   const logout = () => {
@@ -2477,7 +2913,7 @@ function Platform() {
     setSession(false);
     setAccount(null);
     setActiveId(null);
-    history.replaceState({}, "", "/login");
+    navigate("/login", { replace: true });
   };
   if (!session) return <LoginPage onLogin={login} />;
   const select = (business: Business) => {
@@ -2486,24 +2922,32 @@ function Platform() {
     }
     sessionStorage.setItem("allneeds.business", business.id);
     setActiveId(business.id);
-    history.replaceState({}, "", `/business/${business.type}/dashboard`);
+    navigate(`/business/${business.type}/dashboard`, { replace: true });
   };
   const all = () => {
     if (account?.businessId) return;
     sessionStorage.removeItem("allneeds.business");
     setActiveId(null);
-    history.replaceState({}, "", "/businesses");
+    navigate("/businesses", { replace: true });
   };
   return (
     <div className="platform-shell">
       <header className="platform-header">
         <div className="platform-brand">
-          <span className="brand-mark">M</span>
+          <img
+            className="brand-mark"
+            src="/logo.jpg"
+            alt="ALLNEEDS - TOURISM logo"
+          />
           <span>
             ALLNEEDS - TOURISM<small>UNIFIED BUSINESS PLATFORM</small>
           </span>
         </div>
-        <ArchivedBusinessSelector active={active} onSelect={select} onAll={all} />
+        <ArchivedBusinessSelector
+          active={active}
+          onSelect={select}
+          onAll={all}
+        />
         <div className="platform-actions">
           <span className="platform-user">
             <span className="avatar">
@@ -2535,4 +2979,8 @@ function Platform() {
     </div>
   );
 }
-createRoot(document.getElementById("root")!).render(<Platform />);
+createRoot(document.getElementById("root")!).render(
+  <BrowserRouter>
+    <Platform />
+  </BrowserRouter>
+);

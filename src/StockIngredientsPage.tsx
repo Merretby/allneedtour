@@ -73,9 +73,9 @@ const UNITS = ["kg", "g", "L", "ml", "pc", "box"];
 
 export const StockIngredientsPage: React.FC = () => {
   const [stock, setStock] = useState<StockItem[]>(INITIAL_STOCK);
-  const [activeTab, setActiveTab] = useState<"Current stock" | "Low stock" | "Movements">(
-    "Current stock",
-  );
+  const [activeTab, setActiveTab] = useState<
+    "Current stock" | "Low stock" | "Movements"
+  >("Current stock");
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAdjustModalOpen, setIsAdjustModalOpen] = useState(false);
@@ -92,11 +92,18 @@ export const StockIngredientsPage: React.FC = () => {
 
   // Form State for Adjust
   const [adjustAmount, setAdjustAmount] = useState(0);
-  const [adjustType, setAdjustType] = useState<"add" | "remove" | "waste">("add");
+  const [adjustType, setAdjustType] = useState<"add" | "remove" | "waste">(
+    "add"
+  );
 
   // Computed
-  const totalValue = stock.reduce((sum, item) => sum + item.quantity * item.unitCost, 0);
-  const lowStockItems = stock.filter((item) => item.quantity <= item.minThreshold);
+  const totalValue = stock.reduce(
+    (sum, item) => sum + item.quantity * item.unitCost,
+    0
+  );
+  const lowStockItems = stock.filter(
+    (item) => item.quantity <= item.minThreshold
+  );
   const totalItems = stock.length;
 
   const filteredStock = stock.filter((item) => {
@@ -110,8 +117,10 @@ export const StockIngredientsPage: React.FC = () => {
   });
 
   const getStatus = (quantity: number, minThreshold: number) => {
-    if (quantity === 0) return { label: "Out of Stock", color: "#ef4444", bg: "#fef2f2" };
-    if (quantity <= minThreshold) return { label: "Low Stock", color: "#f59e0b", bg: "#fffbeb" };
+    if (quantity === 0)
+      return { label: "Out of Stock", color: "#ef4444", bg: "#fef2f2" };
+    if (quantity <= minThreshold)
+      return { label: "Low Stock", color: "#f59e0b", bg: "#fffbeb" };
     return { label: "Healthy", color: "#10b981", bg: "#ecfdf5" };
   };
 
@@ -176,7 +185,8 @@ export const StockIngredientsPage: React.FC = () => {
 
     let newQuantity = selectedItem.quantity;
     if (adjustType === "add") newQuantity += adjustAmount;
-    if (adjustType === "remove" || adjustType === "waste") newQuantity -= adjustAmount;
+    if (adjustType === "remove" || adjustType === "waste")
+      newQuantity -= adjustAmount;
 
     // Prevent negative stock for standard removals, but maybe allow it if strictly necessary? Let's bound to 0 for now.
     if (newQuantity < 0) newQuantity = 0;
@@ -199,7 +209,9 @@ export const StockIngredientsPage: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: "1.5rem", fontFamily: "Inter, system-ui, sans-serif" }}>
+    <div
+      style={{ padding: "1.5rem", fontFamily: "Inter, system-ui, sans-serif" }}
+    >
       {/* Header & Metrics */}
       <div style={{ marginBottom: "2rem" }}>
         <p
@@ -215,7 +227,12 @@ export const StockIngredientsPage: React.FC = () => {
           Inventory Control
         </p>
         <h1
-          style={{ margin: "0 0 0.5rem 0", fontSize: "1.75rem", color: "#0f172a", fontWeight: 700 }}
+          style={{
+            margin: "0 0 0.5rem 0",
+            fontSize: "1.75rem",
+            color: "#0f172a",
+            fontWeight: 700,
+          }}
         >
           Stock & Ingredients
         </h1>
@@ -252,7 +269,9 @@ export const StockIngredientsPage: React.FC = () => {
           >
             Total Items
           </p>
-          <strong style={{ fontSize: "1.5rem", color: "#0f172a" }}>{totalItems}</strong>
+          <strong style={{ fontSize: "1.5rem", color: "#0f172a" }}>
+            {totalItems}
+          </strong>
         </div>
         <div
           style={{
@@ -275,7 +294,10 @@ export const StockIngredientsPage: React.FC = () => {
             Low Stock Alerts
           </p>
           <strong
-            style={{ fontSize: "1.5rem", color: lowStockItems.length > 0 ? "#ef4444" : "#0f172a" }}
+            style={{
+              fontSize: "1.5rem",
+              color: lowStockItems.length > 0 ? "#ef4444" : "#0f172a",
+            }}
           >
             {lowStockItems.length}
           </strong>
@@ -330,7 +352,10 @@ export const StockIngredientsPage: React.FC = () => {
               fontSize: "0.875rem",
               fontWeight: 600,
               color: activeTab === tab ? "#0f172a" : "#64748b",
-              borderBottom: activeTab === tab ? "2px solid #0f172a" : "2px solid transparent",
+              borderBottom:
+                activeTab === tab
+                  ? "2px solid #0f172a"
+                  : "2px solid transparent",
               cursor: "pointer",
               marginBottom: "-1px",
             }}
@@ -400,8 +425,16 @@ export const StockIngredientsPage: React.FC = () => {
                 boxShadow: "0 1px 2px rgba(0,0,0,0.02)",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
-                <span style={{ color: "#94a3b8", fontSize: "0.875rem", fontWeight: 500 }}>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}
+              >
+                <span
+                  style={{
+                    color: "#94a3b8",
+                    fontSize: "0.875rem",
+                    fontWeight: 500,
+                  }}
+                >
                   {String(index + 1).padStart(2, "0")}
                 </span>
 
@@ -416,29 +449,55 @@ export const StockIngredientsPage: React.FC = () => {
                   >
                     {item.name}
                   </h4>
-                  <p style={{ margin: 0, fontSize: "0.75rem", color: "#64748b" }}>
+                  <p
+                    style={{ margin: 0, fontSize: "0.75rem", color: "#64748b" }}
+                  >
                     {item.category} • Supplier: {item.supplier || "N/A"}
                   </p>
                 </div>
 
                 <div style={{ minWidth: "120px" }}>
-                  <div style={{ fontSize: "1.125rem", fontWeight: 700, color: "#0f172a" }}>
+                  <div
+                    style={{
+                      fontSize: "1.125rem",
+                      fontWeight: 700,
+                      color: "#0f172a",
+                    }}
+                  >
                     {item.quantity.toLocaleString()} {item.unit}
                   </div>
-                  <div style={{ fontSize: "0.75rem", color: "#64748b", marginTop: "0.125rem" }}>
+                  <div
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "#64748b",
+                      marginTop: "0.125rem",
+                    }}
+                  >
                     Min: {item.minThreshold} {item.unit}
                   </div>
                 </div>
 
                 <div style={{ minWidth: "100px" }}>
-                  <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "#0f172a" }}>
+                  <div
+                    style={{
+                      fontSize: "0.875rem",
+                      fontWeight: 600,
+                      color: "#0f172a",
+                    }}
+                  >
                     €
                     {value.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}
                   </div>
-                  <div style={{ fontSize: "0.75rem", color: "#64748b", marginTop: "0.125rem" }}>
+                  <div
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "#64748b",
+                      marginTop: "0.125rem",
+                    }}
+                  >
                     {item.unitCost.toFixed(2)} MAD / {item.unit}
                   </div>
                 </div>
@@ -736,7 +795,9 @@ export const StockIngredientsPage: React.FC = () => {
                     type="number"
                     step="0.01"
                     value={formMinThreshold}
-                    onChange={(e) => setFormMinThreshold(Number(e.target.value))}
+                    onChange={(e) =>
+                      setFormMinThreshold(Number(e.target.value))
+                    }
                     style={{
                       width: "100%",
                       padding: "0.6rem",
@@ -847,7 +908,13 @@ export const StockIngredientsPage: React.FC = () => {
               boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1)",
             }}
           >
-            <h2 style={{ margin: "0 0 1.5rem 0", fontSize: "1.25rem", color: "#0f172a" }}>
+            <h2
+              style={{
+                margin: "0 0 1.5rem 0",
+                fontSize: "1.25rem",
+                color: "#0f172a",
+              }}
+            >
               Adjust Stock: {selectedItem.name}
             </h2>
 
@@ -864,14 +931,23 @@ export const StockIngredientsPage: React.FC = () => {
                 >
                   Movement Type
                 </label>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem" }}>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr 1fr",
+                    gap: "0.5rem",
+                  }}
+                >
                   <button
                     type="button"
                     onClick={() => setAdjustType("add")}
                     style={{
                       padding: "0.5rem",
                       borderRadius: "6px",
-                      border: adjustType === "add" ? "2px solid #10b981" : "1px solid #cbd5e1",
+                      border:
+                        adjustType === "add"
+                          ? "2px solid #10b981"
+                          : "1px solid #cbd5e1",
                       background: adjustType === "add" ? "#ecfdf5" : "#fff",
                       color: adjustType === "add" ? "#047857" : "#475569",
                       fontWeight: 600,
@@ -887,7 +963,10 @@ export const StockIngredientsPage: React.FC = () => {
                     style={{
                       padding: "0.5rem",
                       borderRadius: "6px",
-                      border: adjustType === "remove" ? "2px solid #f59e0b" : "1px solid #cbd5e1",
+                      border:
+                        adjustType === "remove"
+                          ? "2px solid #f59e0b"
+                          : "1px solid #cbd5e1",
                       background: adjustType === "remove" ? "#fffbeb" : "#fff",
                       color: adjustType === "remove" ? "#b45309" : "#475569",
                       fontWeight: 600,
@@ -903,7 +982,10 @@ export const StockIngredientsPage: React.FC = () => {
                     style={{
                       padding: "0.5rem",
                       borderRadius: "6px",
-                      border: adjustType === "waste" ? "2px solid #ef4444" : "1px solid #cbd5e1",
+                      border:
+                        adjustType === "waste"
+                          ? "2px solid #ef4444"
+                          : "1px solid #cbd5e1",
                       background: adjustType === "waste" ? "#fef2f2" : "#fff",
                       color: adjustType === "waste" ? "#b91c1c" : "#475569",
                       fontWeight: 600,
@@ -943,7 +1025,13 @@ export const StockIngredientsPage: React.FC = () => {
                     boxSizing: "border-box",
                   }}
                 />
-                <p style={{ margin: "0.5rem 0 0 0", fontSize: "0.75rem", color: "#64748b" }}>
+                <p
+                  style={{
+                    margin: "0.5rem 0 0 0",
+                    fontSize: "0.75rem",
+                    color: "#64748b",
+                  }}
+                >
                   Current Stock:{" "}
                   <strong>
                     {selectedItem.quantity} {selectedItem.unit}
@@ -951,7 +1039,13 @@ export const StockIngredientsPage: React.FC = () => {
                 </p>
               </div>
 
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: "0.75rem",
+                }}
+              >
                 <button
                   type="button"
                   onClick={() => setIsAdjustModalOpen(false)}

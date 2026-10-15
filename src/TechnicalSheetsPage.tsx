@@ -31,11 +31,29 @@ const INITIAL_SHEETS: TechnicalSheet[] = [
     cookTime: 25,
     yieldPortions: 4,
     ingredients: [
-      { id: "i1", name: "Arborio Rice", quantity: 400, unit: "g", unitCost: 0.005 },
-      { id: "i2", name: "Black Truffle Paste", quantity: 50, unit: "g", unitCost: 0.15 },
+      {
+        id: "i1",
+        name: "Arborio Rice",
+        quantity: 400,
+        unit: "g",
+        unitCost: 0.005,
+      },
+      {
+        id: "i2",
+        name: "Black Truffle Paste",
+        quantity: 50,
+        unit: "g",
+        unitCost: 0.15,
+      },
       { id: "i3", name: "Parmesan", quantity: 100, unit: "g", unitCost: 0.02 },
       { id: "i4", name: "Butter", quantity: 50, unit: "g", unitCost: 0.01 },
-      { id: "i5", name: "Vegetable Stock", quantity: 1.2, unit: "L", unitCost: 1.5 },
+      {
+        id: "i5",
+        name: "Vegetable Stock",
+        quantity: 1.2,
+        unit: "L",
+        unitCost: 1.5,
+      },
     ],
     method:
       "1. Toast rice in butter.\n2. Gradually add warm stock while stirring.\n3. Fold in truffle paste and parmesan off heat.\n4. Serve immediately.",
@@ -51,8 +69,20 @@ const INITIAL_SHEETS: TechnicalSheet[] = [
     cookTime: 15,
     yieldPortions: 1,
     ingredients: [
-      { id: "i1", name: "Sea Bass Fillet", quantity: 180, unit: "g", unitCost: 0.04 },
-      { id: "i2", name: "Asparagus", quantity: 100, unit: "g", unitCost: 0.015 },
+      {
+        id: "i1",
+        name: "Sea Bass Fillet",
+        quantity: 180,
+        unit: "g",
+        unitCost: 0.04,
+      },
+      {
+        id: "i2",
+        name: "Asparagus",
+        quantity: 100,
+        unit: "g",
+        unitCost: 0.015,
+      },
       { id: "i3", name: "Lemon", quantity: 0.5, unit: "pc", unitCost: 0.4 },
       { id: "i4", name: "Butter", quantity: 20, unit: "g", unitCost: 0.01 },
     ],
@@ -86,7 +116,9 @@ const ALLERGEN_OPTIONS = [
 
 export const TechnicalSheetsPage: React.FC = () => {
   const [sheets, setSheets] = useState<TechnicalSheet[]>(INITIAL_SHEETS);
-  const [activeTab, setActiveTab] = useState<"Recipes" | "Costing" | "Allergens">("Recipes");
+  const [activeTab, setActiveTab] = useState<
+    "Recipes" | "Costing" | "Allergens"
+  >("Recipes");
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSheet, setEditingSheet] = useState<TechnicalSheet | null>(null);
@@ -104,22 +136,32 @@ export const TechnicalSheetsPage: React.FC = () => {
   const [formSellingPrice, setFormSellingPrice] = useState<number>(20);
 
   const calculateTotalCost = (ingredients: Ingredient[]) => {
-    return ingredients.reduce((sum, ing) => sum + ing.quantity * ing.unitCost, 0);
+    return ingredients.reduce(
+      (sum, ing) => sum + ing.quantity * ing.unitCost,
+      0
+    );
   };
 
-  const calculateCostPerPortion = (ingredients: Ingredient[], portions: number) => {
+  const calculateCostPerPortion = (
+    ingredients: Ingredient[],
+    portions: number
+  ) => {
     if (portions <= 0) return 0;
     return calculateTotalCost(ingredients) / portions;
   };
 
-  const calculateFoodCostPct = (ingredients: Ingredient[], portions: number, price: number) => {
+  const calculateFoodCostPct = (
+    ingredients: Ingredient[],
+    portions: number,
+    price: number
+  ) => {
     if (price <= 0) return 0;
     const costPerPortion = calculateCostPerPortion(ingredients, portions);
     return (costPerPortion / price) * 100;
   };
 
   const filteredSheets = sheets.filter((sheet) =>
-    sheet.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    sheet.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleOpenCreateModal = () => {
@@ -155,13 +197,25 @@ export const TechnicalSheetsPage: React.FC = () => {
   const handleAddIngredient = () => {
     setFormIngredients([
       ...formIngredients,
-      { id: Date.now().toString(), name: "", quantity: 0, unit: "g", unitCost: 0 },
+      {
+        id: Date.now().toString(),
+        name: "",
+        quantity: 0,
+        unit: "g",
+        unitCost: 0,
+      },
     ]);
   };
 
-  const handleUpdateIngredient = (id: string, field: keyof Ingredient, value: any) => {
+  const handleUpdateIngredient = (
+    id: string,
+    field: keyof Ingredient,
+    value: any
+  ) => {
     setFormIngredients(
-      formIngredients.map((ing) => (ing.id === id ? { ...ing, [field]: value } : ing)),
+      formIngredients.map((ing) =>
+        ing.id === id ? { ...ing, [field]: value } : ing
+      )
     );
   };
 
@@ -213,15 +267,23 @@ export const TechnicalSheetsPage: React.FC = () => {
   const avgCostPct =
     sheets.length > 0
       ? sheets.reduce(
-          (sum, s) => sum + calculateFoodCostPct(s.ingredients, s.yieldPortions, s.sellingPrice),
-          0,
+          (sum, s) =>
+            sum +
+            calculateFoodCostPct(
+              s.ingredients,
+              s.yieldPortions,
+              s.sellingPrice
+            ),
+          0
         ) / sheets.length
       : 0;
 
   const totalAllergens = new Set(sheets.flatMap((s) => s.allergens)).size;
 
   return (
-    <div style={{ padding: "1.5rem", fontFamily: "Inter, system-ui, sans-serif" }}>
+    <div
+      style={{ padding: "1.5rem", fontFamily: "Inter, system-ui, sans-serif" }}
+    >
       {/* Header & Metrics */}
       <div style={{ marginBottom: "2rem" }}>
         <p
@@ -237,7 +299,12 @@ export const TechnicalSheetsPage: React.FC = () => {
           Kitchen Control
         </p>
         <h1
-          style={{ margin: "0 0 0.5rem 0", fontSize: "1.75rem", color: "#0f172a", fontWeight: 700 }}
+          style={{
+            margin: "0 0 0.5rem 0",
+            fontSize: "1.75rem",
+            color: "#0f172a",
+            fontWeight: 700,
+          }}
         >
           Technical Sheets
         </h1>
@@ -274,7 +341,9 @@ export const TechnicalSheetsPage: React.FC = () => {
           >
             Recipes
           </p>
-          <strong style={{ fontSize: "1.5rem", color: "#0f172a" }}>{sheets.length}</strong>
+          <strong style={{ fontSize: "1.5rem", color: "#0f172a" }}>
+            {sheets.length}
+          </strong>
         </div>
         <div
           style={{
@@ -296,7 +365,9 @@ export const TechnicalSheetsPage: React.FC = () => {
           >
             Avg Food Cost
           </p>
-          <strong style={{ fontSize: "1.5rem", color: "#0f172a" }}>{avgCostPct.toFixed(1)}%</strong>
+          <strong style={{ fontSize: "1.5rem", color: "#0f172a" }}>
+            {avgCostPct.toFixed(1)}%
+          </strong>
         </div>
         <div
           style={{
@@ -318,7 +389,9 @@ export const TechnicalSheetsPage: React.FC = () => {
           >
             Tracked Allergens
           </p>
-          <strong style={{ fontSize: "1.5rem", color: "#0f172a" }}>{totalAllergens}</strong>
+          <strong style={{ fontSize: "1.5rem", color: "#0f172a" }}>
+            {totalAllergens}
+          </strong>
         </div>
       </div>
 
@@ -342,7 +415,10 @@ export const TechnicalSheetsPage: React.FC = () => {
               fontSize: "0.875rem",
               fontWeight: 600,
               color: activeTab === tab ? "#0f172a" : "#64748b",
-              borderBottom: activeTab === tab ? "2px solid #0f172a" : "2px solid transparent",
+              borderBottom:
+                activeTab === tab
+                  ? "2px solid #0f172a"
+                  : "2px solid transparent",
               cursor: "pointer",
               marginBottom: "-1px",
             }}
@@ -397,9 +473,12 @@ export const TechnicalSheetsPage: React.FC = () => {
           const costPct = calculateFoodCostPct(
             sheet.ingredients,
             sheet.yieldPortions,
-            sheet.sellingPrice,
+            sheet.sellingPrice
           );
-          const costPerPortion = calculateCostPerPortion(sheet.ingredients, sheet.yieldPortions);
+          const costPerPortion = calculateCostPerPortion(
+            sheet.ingredients,
+            sheet.yieldPortions
+          );
 
           return (
             <div
@@ -415,8 +494,16 @@ export const TechnicalSheetsPage: React.FC = () => {
                 boxShadow: "0 1px 2px rgba(0,0,0,0.02)",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
-                <span style={{ color: "#94a3b8", fontSize: "0.875rem", fontWeight: 500 }}>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}
+              >
+                <span
+                  style={{
+                    color: "#94a3b8",
+                    fontSize: "0.875rem",
+                    fontWeight: 500,
+                  }}
+                >
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 {sheet.imageUrl && (
@@ -441,11 +528,19 @@ export const TechnicalSheetsPage: React.FC = () => {
                     }}
                   >
                     {sheet.name}{" "}
-                    <span style={{ color: "#475569", fontWeight: 500, marginLeft: "0.5rem" }}>
+                    <span
+                      style={{
+                        color: "#475569",
+                        fontWeight: 500,
+                        marginLeft: "0.5rem",
+                      }}
+                    >
                       - {costPct.toFixed(1)}% cost
                     </span>
                   </h4>
-                  <p style={{ margin: 0, fontSize: "0.75rem", color: "#64748b" }}>
+                  <p
+                    style={{ margin: 0, fontSize: "0.75rem", color: "#64748b" }}
+                  >
                     {activeTab === "Recipes" &&
                       `Yield: ${sheet.yieldPortions} portions • Prep: ${sheet.prepTime}m • Cook: ${sheet.cookTime}m`}
                     {activeTab === "Costing" &&
@@ -724,7 +819,9 @@ export const TechnicalSheetsPage: React.FC = () => {
                     type="number"
                     step="0.5"
                     value={formSellingPrice}
-                    onChange={(e) => setFormSellingPrice(Number(e.target.value))}
+                    onChange={(e) =>
+                      setFormSellingPrice(Number(e.target.value))
+                    }
                     style={{
                       width: "100%",
                       padding: "0.6rem",
@@ -746,12 +843,27 @@ export const TechnicalSheetsPage: React.FC = () => {
                     marginBottom: "0.5rem",
                   }}
                 >
-                  <label style={{ fontSize: "0.875rem", fontWeight: 600, color: "#0f172a" }}>
+                  <label
+                    style={{
+                      fontSize: "0.875rem",
+                      fontWeight: 600,
+                      color: "#0f172a",
+                    }}
+                  >
                     Ingredients & Costing
                   </label>
-                  <span style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: 600 }}>
-                    Cost/Portion (MAD): 
-                    {calculateCostPerPortion(formIngredients, formYield).toFixed(2)}
+                  <span
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "#64748b",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Cost/Portion (MAD):
+                    {calculateCostPerPortion(
+                      formIngredients,
+                      formYield
+                    ).toFixed(2)}
                   </span>
                 </div>
 
@@ -796,7 +908,9 @@ export const TechnicalSheetsPage: React.FC = () => {
                         type="text"
                         placeholder="e.g. Flour"
                         value={ing.name}
-                        onChange={(e) => handleUpdateIngredient(ing.id, "name", e.target.value)}
+                        onChange={(e) =>
+                          handleUpdateIngredient(ing.id, "name", e.target.value)
+                        }
                         style={{
                           padding: "0.4rem",
                           borderRadius: "4px",
@@ -808,7 +922,11 @@ export const TechnicalSheetsPage: React.FC = () => {
                         step="0.01"
                         value={ing.quantity}
                         onChange={(e) =>
-                          handleUpdateIngredient(ing.id, "quantity", Number(e.target.value))
+                          handleUpdateIngredient(
+                            ing.id,
+                            "quantity",
+                            Number(e.target.value)
+                          )
                         }
                         style={{
                           padding: "0.4rem",
@@ -818,7 +936,9 @@ export const TechnicalSheetsPage: React.FC = () => {
                       />
                       <select
                         value={ing.unit}
-                        onChange={(e) => handleUpdateIngredient(ing.id, "unit", e.target.value)}
+                        onChange={(e) =>
+                          handleUpdateIngredient(ing.id, "unit", e.target.value)
+                        }
                         style={{
                           padding: "0.4rem",
                           borderRadius: "4px",
@@ -836,7 +956,11 @@ export const TechnicalSheetsPage: React.FC = () => {
                         step="0.001"
                         value={ing.unitCost}
                         onChange={(e) =>
-                          handleUpdateIngredient(ing.id, "unitCost", Number(e.target.value))
+                          handleUpdateIngredient(
+                            ing.id,
+                            "unitCost",
+                            Number(e.target.value)
+                          )
                         }
                         style={{
                           padding: "0.4rem",
@@ -928,7 +1052,9 @@ export const TechnicalSheetsPage: React.FC = () => {
                   >
                     Allergens
                   </label>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                  <div
+                    style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}
+                  >
                     {ALLERGEN_OPTIONS.map((a) => (
                       <button
                         key={a}
@@ -940,7 +1066,9 @@ export const TechnicalSheetsPage: React.FC = () => {
                           border: formAllergens.includes(a)
                             ? "1px solid #0f172a"
                             : "1px solid #cbd5e1",
-                          background: formAllergens.includes(a) ? "#0f172a" : "#fff",
+                          background: formAllergens.includes(a)
+                            ? "#0f172a"
+                            : "#fff",
                           color: formAllergens.includes(a) ? "#fff" : "#475569",
                           fontSize: "0.75rem",
                           cursor: "pointer",
@@ -980,8 +1108,11 @@ export const TechnicalSheetsPage: React.FC = () => {
                             padding: "2px 6px",
                             borderRadius: "4px",
                             border:
-                              formImageUrl === p.url ? "2px solid #0f172a" : "1px solid #cbd5e1",
-                            background: formImageUrl === p.url ? "#f1f5f9" : "#fff",
+                              formImageUrl === p.url
+                                ? "2px solid #0f172a"
+                                : "1px solid #cbd5e1",
+                            background:
+                              formImageUrl === p.url ? "#f1f5f9" : "#fff",
                             fontSize: "0.65rem",
                             cursor: "pointer",
                           }}

@@ -1,6 +1,17 @@
 import React, { useState } from "react";
-import { ArrowRight, Check, LockKeyhole, Plus, ShieldCheck } from "lucide-react";
-import { businessTypeIcons, businessTypeLabels, type Business, type BusinessType } from "./model";
+import {
+  ArrowRight,
+  Check,
+  LockKeyhole,
+  Plus,
+  ShieldCheck,
+} from "lucide-react";
+import {
+  businessTypeIcons,
+  businessTypeLabels,
+  type Business,
+  type BusinessType,
+} from "./model";
 
 type Account = { name?: string; role?: string; permissions?: string[] };
 const nav: Record<Exclude<BusinessType, "restaurant">, string[]> = {
@@ -77,7 +88,12 @@ const keyFor = (item: string) =>
       "Rooms & Units": "rooms",
       "Check-in & Check-out": "checkin",
     }) as Record<string, string>
-  )[item] || item.toLowerCase().replaceAll(" & ", "_").replaceAll(" ", "_").replaceAll("-", "_");
+  )[item] ||
+  item
+    .toLowerCase()
+    .replaceAll(" & ", "_")
+    .replaceAll(" ", "_")
+    .replaceAll("-", "_");
 const copy: Record<
   string,
   { eyebrow: string; title: string; description: string; cards: string[] }
@@ -85,7 +101,8 @@ const copy: Record<
   "travel-agency": {
     eyebrow: "TRAVEL CONTROL TOWER",
     title: "Every journey, under control.",
-    description: "Requests, dossiers, departures and margin in one agency workspace.",
+    description:
+      "Requests, dossiers, departures and margin in one agency workspace.",
     cards: [
       "New client requests",
       "Open dossiers",
@@ -96,20 +113,38 @@ const copy: Record<
   transport: {
     eyebrow: "DISPATCH CONTROL TOWER",
     title: "Keep every journey moving.",
-    description: "Drivers, vehicles and transfers coordinated from one dispatch room.",
-    cards: ["Today's trips", "Drivers working today", "Available vehicles", "Maintenance alerts"],
+    description:
+      "Drivers, vehicles and transfers coordinated from one dispatch room.",
+    cards: [
+      "Today's trips",
+      "Drivers working today",
+      "Available vehicles",
+      "Maintenance alerts",
+    ],
   },
   activities: {
     eyebrow: "ACTIVITY CONTROL TOWER",
     title: "Make every session count.",
-    description: "Bookings, participants, guides and equipment aligned for the day.",
-    cards: ["Today's sessions", "Available places", "Active guides", "Open incidents"],
+    description:
+      "Bookings, participants, guides and equipment aligned for the day.",
+    cards: [
+      "Today's sessions",
+      "Available places",
+      "Active guides",
+      "Open incidents",
+    ],
   },
   accommodation: {
     eyebrow: "PROPERTY CONTROL TOWER",
     title: "A better stay starts here.",
-    description: "Arrivals, departures, occupancy and housekeeping in one calm workspace.",
-    cards: ["Today's arrivals", "Today's departures", "Occupancy", "Rooms to clean"],
+    description:
+      "Arrivals, departures, occupancy and housekeeping in one calm workspace.",
+    cards: [
+      "Today's arrivals",
+      "Today's departures",
+      "Occupancy",
+      "Rooms to clean",
+    ],
   },
 };
 export function BusinessWorkspace({ business }: { business: Business }) {
@@ -130,7 +165,9 @@ export function BusinessWorkspace({ business }: { business: Business }) {
   return (
     <div className="business-workspace">
       <aside className="business-mini-nav">
-        <span className="eyebrow">{businessTypeLabels[business.type].toUpperCase()}</span>
+        <span className="eyebrow">
+          {businessTypeLabels[business.type].toUpperCase()}
+        </span>
         <nav>
           {available.map((item, index) => (
             <button
@@ -156,7 +193,8 @@ export function BusinessWorkspace({ business }: { business: Business }) {
             </p>
           </div>
           <span className="scoped-pill">
-            <ShieldCheck size={13} /> {account?.name || "Owner"} · {account?.role || "Super Admin"}
+            <ShieldCheck size={13} /> {account?.name || "Owner"} ·{" "}
+            {account?.role || "Super Admin"}
           </span>
         </div>
         {denied ? (
@@ -177,7 +215,8 @@ export function BusinessWorkspace({ business }: { business: Business }) {
                   <small>{card}</small>
                   <strong>{["12", "24", "18,420 MAD", "08"][index]}</strong>
                   <span>
-                    {index === 0 ? "Needs attention" : "Updated today"} <ArrowRight size={13} />
+                    {index === 0 ? "Needs attention" : "Updated today"}{" "}
+                    <ArrowRight size={13} />
                   </span>
                 </div>
               ))}
@@ -208,8 +247,8 @@ export function BusinessWorkspace({ business }: { business: Business }) {
                 <span className="eyebrow">ATTENTION REQUIRED</span>
                 <h3>3 items need your review.</h3>
                 <p>
-                  Open alerts are isolated to {business.name}. Nothing from another business is
-                  shown here.
+                  Open alerts are isolated to {business.name}. Nothing from
+                  another business is shown here.
                 </p>
                 <button className="primary">
                   Open alerts <ArrowRight size={14} />
@@ -219,14 +258,19 @@ export function BusinessWorkspace({ business }: { business: Business }) {
           </>
         ) : (
           <div className="module-empty">
-            <span className="business-logo" style={{ background: business.accent }}>
+            <span
+              className="business-logo"
+              style={{ background: business.accent }}
+            >
               {businessTypeIcons[business.type]}
             </span>
             <h3>{page}</h3>
             <p>
-              This module is scoped to {business.name} and authorized by {account?.role || "Owner"}.
+              This module is scoped to {business.name} and authorized by{" "}
+              {account?.role || "Owner"}.
             </p>
-            {(permissions.includes("*") || permissions.includes(`${keyFor(page)}.create`)) && (
+            {(permissions.includes("*") ||
+              permissions.includes(`${keyFor(page)}.create`)) && (
               <button className="primary">
                 Create first record <Plus size={14} />
               </button>
