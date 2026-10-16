@@ -436,6 +436,7 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
             <span className="live">
               <i /> Protected session
             </span>
+            <LanguageSelector />
             <button
               className="icon-btn"
               title="Refresh workspace"
@@ -3039,6 +3040,7 @@ function LegacyPlatform() {
           onAll={all}
         />
         <div className="platform-actions">
+          <LanguageSelector />
           <span className="platform-user">
             <span className="avatar">
               {account?.name
@@ -3151,6 +3153,7 @@ function Platform() {
           onAll={all}
         />
         <div className="platform-actions">
+          <LanguageSelector />
           <span className="platform-user">
             <span className="avatar">
               {account?.name

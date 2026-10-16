@@ -459,8 +459,12 @@ export const INVENTORY_SEED: InventoryCount[] = [
 /* -------------------------------------------------------------------------- */
 
 export function formatMAD(value: number, fractionDigits = 0): string {
+  const locale =
+    typeof document !== "undefined" && document.documentElement.lang === "fr"
+      ? "fr-FR"
+      : "en-GB";
   return (
-    value.toLocaleString("en-US", {
+    value.toLocaleString(locale, {
       minimumFractionDigits: fractionDigits,
       maximumFractionDigits: fractionDigits,
     }) + " MAD"

@@ -1966,6 +1966,28 @@
   align-items: center;
   gap: 14px;
 }
+.platform-actions .language-selector {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--brand-border);
+  border-radius: 8px;
+  background: var(--brand-bg);
+}
+.platform-actions .lang-btn {
+  min-width: 34px;
+  height: 27px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: var(--brand-text-muted);
+  font-size: 10px;
+}
+.platform-actions .lang-btn.lang-active {
+  background: var(--brand-white);
+  color: var(--brand-blue-hover);
+  box-shadow: 0 1px 3px rgba(11, 23, 57, 0.12);
+}
 .platform-user {
   display: flex;
   align-items: center;

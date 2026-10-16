@@ -1866,25 +1866,52 @@ const RESOURCES: Record<Lang, Record<string, Record<string, string>>> = {
   fr,
 };
 
+function flattenResources(
+  resource: Record<string, Record<string, string>>
+): Record<string, string> {
+  return Object.values(resource).reduce<Record<string, string>>(
+    (flat, section) => Object.assign(flat, section),
+    {}
+  );
+}
+
+const EN_TEXT = flattenResources(en);
+const FR_TEXT = flattenResources(fr);
+const FRENCH_BY_ENGLISH = Object.entries(EN_TEXT).reduce<
+  Record<string, string>
+>((map, [key, value]) => {
+  map[value] = FR_TEXT[key] || value;
+  return map;
+}, {});
+
 const TranslationContext = createContext<TranslationContextType | undefined>(
   undefined
 );
 
-export function TranslationProvider({ children }: { children: ReactNode }) {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  const browserLang = navigator.language.startsWith("fr") ? "fr" : "en";
-  const initialLang: Lang =
-    stored === "en" || stored === "fr"
-      ? (stored as Lang)
-      : browserLang === "fr"
-        ? "fr"
-        : "en";
+function getInitialLanguage(): Lang {
+  let stored: string | null = null;
+  try {
+    stored = localStorage.getItem(STORAGE_KEY);
+  } catch {
+    stored = null;
+  }
+  const browserLang =
+    typeof navigator !== "undefined" && navigator.language.startsWith("fr")
+      ? "fr"
+      : "en";
+  return stored === "en" || stored === "fr" ? stored : browserLang;
+}
 
-  const [lang, setLangState] = useState<Lang>(initialLang);
+export function TranslationProvider({ children }: { children: ReactNode }) {
+  const [lang, setLangState] = useState<Lang>(getInitialLanguage);
 
   const setLang = useCallback((next: Lang) => {
     setLangState(next);
-    localStorage.setItem(STORAGE_KEY, next);
+    try {
+      localStorage.setItem(STORAGE_KEY, next);
+    } catch {
+      // The in-memory language state still updates when storage is unavailable.
+    }
   }, []);
 
   const resources = RESOURCES[lang];
@@ -1906,6 +1933,108 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.lang = lang;
+  }, [lang]);
+
+  useEffect(() => {
+    const originalText = new WeakMap<Text, string>();
+    const renderedText = new WeakMap<Text, string>();
+    const originalAttributes = new WeakMap<
+      HTMLElement,
+      Map<string, string>
+    >();
+    let updating = false;
+
+    const translate = (value: string) => {
+      const trimmed = value.trim();
+      if (!trimmed) return value;
+      const translated =
+        lang === "fr" ? FRENCH_BY_ENGLISH[trimmed] || trimmed : trimmed;
+      return value.replace(trimmed, translated);
+    };
+
+    const scan = (root: Node) => {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const textNodes: Text[] = [];
+      let textNode: Node | null;
+      while ((textNode = walker.nextNode())) textNodes.push(textNode as Text);
+
+      for (const node of textNodes) {
+        if (
+          node.parentElement?.closest(
+            "script, style, textarea, input, select, option"
+          )
+        )
+          continue;
+        const current = node.nodeValue ?? "";
+        const source =
+          renderedText.get(node) === current
+            ? originalText.get(node) ?? current
+            : current;
+        if (!originalText.has(node)) originalText.set(node, source);
+        const next = translate(source);
+        if (node.nodeValue !== next) node.nodeValue = next;
+        renderedText.set(node, next);
+      }
+
+      const elements =
+        root instanceof Element
+          ? [root, ...Array.from(root.querySelectorAll("*"))]
+          : Array.from((root as Document).querySelectorAll("*"));
+      for (const element of elements) {
+        const htmlElement = element as HTMLElement;
+        if (!originalAttributes.has(htmlElement)) {
+          originalAttributes.set(htmlElement, new Map());
+        }
+        const attributes = originalAttributes.get(htmlElement)!;
+        for (const name of ["placeholder", "title", "aria-label", "alt"]) {
+          const current = htmlElement.getAttribute(name);
+          if (current == null) continue;
+          const source = attributes.get(name) ?? current;
+          if (!attributes.has(name)) attributes.set(name, source);
+          const next = translate(source);
+          if (current !== next) htmlElement.setAttribute(name, next);
+        }
+      }
+    };
+
+    const update = () => {
+      updating = true;
+      scan(document.body);
+      updating = false;
+    };
+
+    update();
+    const observer = new MutationObserver((mutations) => {
+      if (updating) return;
+      updating = true;
+      for (const mutation of mutations) {
+        if (mutation.type === "characterData") {
+          const node = mutation.target as Text;
+          const current = node.nodeValue ?? "";
+          const source =
+            renderedText.get(node) === current
+              ? originalText.get(node) ?? current
+              : current;
+          originalText.set(node, source);
+          const next = translate(source);
+          node.nodeValue = next;
+          renderedText.set(node, next);
+        } else if (mutation.type === "attributes") {
+          scan(mutation.target);
+        } else {
+          mutation.addedNodes.forEach((node) => scan(node));
+        }
+      }
+      updating = false;
+    });
+    observer.observe(document.body, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ["placeholder", "title", "aria-label", "alt"],
+    });
+    return () => observer.disconnect();
   }, [lang]);
 
   const ctxValue: TranslationContextType = { lang, setLang, t };
