@@ -392,23 +392,12 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
           </section>
         </nav>
         <div className="sidebar-bottom">
-          <div className="sidebar-language">
-            <LanguageSelector />
-          </div>
           <div className="secure">
             <ShieldCheck size={14} />
             <span>
               <strong>Secure workspace</strong>
               <small>RBAC enforced on every action</small>
             </span>
-          </div>
-          <div className="me">
-            <span className="avatar">SB</span>
-            <span>
-              <strong>{user.name}</strong>
-              <small>{role.name}</small>
-            </span>
-            <MoreHorizontal size={16} />
           </div>
         </div>
       </aside>

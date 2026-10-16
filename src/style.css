@@ -2648,12 +2648,28 @@ h3 {
   width: 252px;
   position: fixed;
   inset: 0 auto 0 0;
+  height: 100vh;
+  height: 100dvh;
   background: #0b1739;
   color: #eaf4ff;
   padding: 29px 18px;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #64748b transparent;
   z-index: 10;
+}
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: #64748b;
+  border-radius: 999px;
 }
 .brand {
   display: flex;
@@ -2699,7 +2715,6 @@ h3 {
   color: #a9d4ff;
 }
 .restaurant small,
-.me small,
 .secure small {
   display: block;
   color: #64748b;
@@ -2762,10 +2777,6 @@ nav a:hover:not(.active):not([aria-disabled="true"]) {
 .sidebar-bottom {
   margin-top: auto;
 }
-.sidebar-language {
-  padding: 12px 0;
-  border-bottom: 1px solid #ffffff12;
-}
 .language-selector {
   display: flex;
   gap: 8px;
@@ -2811,17 +2822,6 @@ nav a:hover:not(.active):not([aria-disabled="true"]) {
   display: block;
   color: #eaf4ff;
   font-size: 10px;
-}
-.me {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding-top: 16px;
-  font-size: 10px;
-}
-.me > svg {
-  margin-left: auto;
-  color: #64748b;
 }
 .avatar {
   display: grid;
