@@ -214,7 +214,7 @@ function getModuleFromPath(pathname: string): string {
   const match = pathname.match(/\/business\/restaurant\/(.+)/);
   if (!match) return "dashboard";
   const last = match[1].split("/").pop() || "dashboard";
-  return routeToModule[last] || last;
+  return routeToModule[last] || "dashboard";
 }
 
 function RestaurantApp({ account }: { account?: DemoAccount }) {
@@ -331,7 +331,14 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
                     key={id}
                     to={getPathForModule(id)}
                     className={({ isActive }) => (isActive ? "active" : "")}
-                    onClick={() => setMobile(false)}
+                    onClick={(event) => {
+                      if (!permitted) {
+                        event.preventDefault();
+                        notify(`Access denied: ${moduleLabels[id as ModuleId]}`);
+                        return;
+                      }
+                      setMobile(false);
+                    }}
                     aria-disabled={!permitted}
                   >
                     <Icon size={16} />
@@ -353,7 +360,14 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
             <NavLink
               to={getPathForModule("roles")}
               className={({ isActive }) => (isActive ? "active" : "")}
-              onClick={() => setMobile(false)}
+              onClick={(event) => {
+                if (!allowed("users", "edit")) {
+                  event.preventDefault();
+                  notify("Access denied: Role management");
+                  return;
+                }
+                setMobile(false);
+              }}
               aria-disabled={!allowed("users", "edit")}
             >
               <SlidersHorizontal size={16} />
@@ -362,7 +376,14 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
             <NavLink
               to={getPathForModule("audit")}
               className={({ isActive }) => (isActive ? "active" : "")}
-              onClick={() => setMobile(false)}
+              onClick={(event) => {
+                if (!allowed("users")) {
+                  event.preventDefault();
+                  notify("Access denied: Audit log");
+                  return;
+                }
+                setMobile(false);
+              }}
               aria-disabled={!allowed("users")}
             >
               <ShieldCheck size={16} />
@@ -461,7 +482,7 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
           </div>
           {currentModule === "dashboard" ? (
             <Dashboard state={state} user={user} allowed={allowed} go={go} />
-          ) : currentModule === "users" ? (
+          ) : currentModule === "users" && allowed("users") ? (
             <UsersPage
               state={state}
               setState={setState}
@@ -475,7 +496,7 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
               sensitive={sensitive}
               commit={commit}
             />
-          ) : currentModule === "roles" ? (
+          ) : currentModule === "roles" && allowed("users", "edit") ? (
             <RolesPage
               state={state}
               setState={setState}
@@ -486,8 +507,10 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
               }}
               commit={commit}
             />
-          ) : currentModule === "audit" ? (
+          ) : currentModule === "audit" && allowed("users") ? (
             <AuditPage state={state} query={query} setQuery={setQuery} />
+          ) : !allowed(currentModule as ModuleId) ? (
+            <RestrictedModule page={currentModule as ModuleId} go={go} />
           ) : (
             <ModulePage
               page={currentModule as ModuleId}
@@ -545,6 +568,30 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
         </div>
       )}
     </div>
+  );
+}
+function RestrictedModule({
+  page,
+  go,
+}: {
+  page: ModuleId;
+  go: (page: string) => void;
+}) {
+  return (
+    <section className="module-page">
+      <div className="blocked" role="alert">
+        <LockKeyhole size={26} />
+        <span className="eyebrow">ACCESS RESTRICTED</span>
+        <h2>This module is protected.</h2>
+        <p>
+          Your role does not include access to{" "}
+          {moduleLabels[page]?.toLowerCase() || "this module"}.
+        </p>
+        <button className="primary" onClick={() => go("dashboard")}>
+          Back to dashboard <ArrowRight size={14} />
+        </button>
+      </div>
+    </section>
   );
 }
 function Dashboard({
