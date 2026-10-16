@@ -9,84 +9,26 @@ import {
   Trash2,
 } from "lucide-react";
 import { useToast } from "./components/ToastProvider";
+import {
+  KEYS,
+  TEAM_SEED,
+  downloadCsv,
+  useEscape,
+  useStore,
+  type TeamMember,
+} from "./store";
 
-interface TeamMember {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  department: string;
-  shift: string;
-  nextShift: string;
-  status: "On Shift" | "Off Shift" | "Leave";
-  hoursThisWeek: number;
-}
-
-const MOCK_TEAM: TeamMember[] = [
-  {
-    id: "1",
-    name: "Karim Haddad",
-    email: "karim@allneeds.com",
-    role: "Head Chef",
-    department: "Kitchen",
-    shift: "Morning (06:00 - 15:00)",
-    nextShift: "Tomorrow 06:00",
-    status: "On Shift",
-    hoursThisWeek: 42,
-  },
-  {
-    id: "2",
-    name: "Sara Majid",
-    email: "sara.m@allneeds.com",
-    role: "Waitress",
-    department: "Service",
-    shift: "Evening (16:00 - 00:00)",
-    nextShift: "Today 16:00",
-    status: "Off Shift",
-    hoursThisWeek: 28,
-  },
-  {
-    id: "3",
-    name: "Youssef Bennani",
-    email: "youssef.b@allneeds.com",
-    role: "Bartender",
-    department: "Bar",
-    shift: "Night (18:00 - 02:00)",
-    nextShift: "Tomorrow 18:00",
-    status: "On Shift",
-    hoursThisWeek: 35,
-  },
-  {
-    id: "4",
-    name: "Lina Farah",
-    email: "lina@allneeds.com",
-    role: "Sous Chef",
-    department: "Kitchen",
-    shift: "Off",
-    nextShift: "Monday 08:00",
-    status: "Leave",
-    hoursThisWeek: 0,
-  },
-  {
-    id: "5",
-    name: "Thomas Roy",
-    email: "thomas@allneeds.com",
-    role: "Cashier",
-    department: "Front of house",
-    shift: "Morning (08:00 - 16:00)",
-    nextShift: "Tomorrow 08:00",
-    status: "On Shift",
-    hoursThisWeek: 38,
-  },
-];
+export type { TeamMember };
 
 export const TeamSchedulesPage: React.FC = () => {
   const { showToast } = useToast();
-  const [team, setTeam] = useState<TeamMember[]>(MOCK_TEAM);
+  const [team, setTeam] = useStore<TeamMember[]>(KEYS.team, TEAM_SEED);
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("All");
   const [isAddStaffOpen, setIsAddStaffOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form state
   const [formFirstName, setFormFirstName] = useState("");
@@ -94,14 +36,34 @@ export const TeamSchedulesPage: React.FC = () => {
   const [formEmail, setFormEmail] = useState("");
   const [formRole, setFormRole] = useState("Head Chef");
   const [formDepartment, setFormDepartment] = useState("Kitchen");
+  const [formShift, setFormShift] = useState("Morning (06:00 - 15:00)");
+  const [formStatus, setFormStatus] =
+    useState<TeamMember["status"]>("Off Shift");
+
+  const closeAddStaff = () => {
+    setIsAddStaffOpen(false);
+    setEditingId(null);
+    setFormFirstName("");
+    setFormLastName("");
+    setFormEmail("");
+    setFormRole("Head Chef");
+    setFormDepartment("Kitchen");
+    setFormShift("Morning (06:00 - 15:00)");
+    setFormStatus("Off Shift");
+  };
+  const closeExport = () => setIsExportOpen(false);
+
+  useEscape(isAddStaffOpen, closeAddStaff);
+  useEscape(isExportOpen, closeExport);
 
   const filtered = team.filter((m) => {
     const matchesSearch =
       m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       m.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       m.role.toLowerCase().includes(searchQuery.toLowerCase());
-    if (filter === "All") return matchesSearch;
-    return matchesSearch && m.department === filter;
+    if (filter !== "All" && m.department !== filter) return false;
+    if (statusFilter !== "All" && m.status !== statusFilter) return false;
+    return matchesSearch;
   });
 
   const activeStaffCount = team.filter((m) => m.status !== "Leave").length;
@@ -110,18 +72,39 @@ export const TeamSchedulesPage: React.FC = () => {
   const getStatusBadge = (status: string) => {
     if (status === "On Shift")
       return { bg: "var(--success-bg)", color: "var(--success)" };
-    if (status === "Off Shift") return { bg: "#F3F4F6", color: "#6B7280" };
+    if (status === "Off Shift")
+      return { bg: "var(--brand-bg)", color: "var(--brand-text-muted)" };
     return { bg: "var(--warning-bg)", color: "var(--warning)" };
   };
 
-  const handleAddStaff = (e: React.FormEvent) => {
+  const handleSaveStaff = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formFirstName || !formLastName || !formEmail) {
       showToast({ type: "error", title: "Missing required fields" });
       return;
     }
+    if (editingId) {
+      setTeam((prev) =>
+        prev.map((m) =>
+          m.id === editingId
+            ? {
+                ...m,
+                name: `${formFirstName} ${formLastName}`,
+                email: formEmail,
+                role: formRole,
+                department: formDepartment,
+                shift: formShift,
+                status: formStatus,
+              }
+            : m
+        )
+      );
+      showToast({ type: "success", title: "Staff member updated" });
+      closeAddStaff();
+      return;
+    }
     const newMember: TeamMember = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       name: `${formFirstName} ${formLastName}`,
       email: formEmail,
       role: formRole,
@@ -131,18 +114,30 @@ export const TeamSchedulesPage: React.FC = () => {
       status: "Off Shift",
       hoursThisWeek: 0,
     };
-    setTeam([newMember, ...team]);
-    setIsAddStaffOpen(false);
-    setFormFirstName("");
-    setFormLastName("");
-    setFormEmail("");
-    setFormRole("Head Chef");
-    setFormDepartment("Kitchen");
+    setTeam((prev) => [newMember, ...prev]);
+    closeAddStaff();
     showToast({
       type: "success",
       title: "Staff member added",
       message: newMember.name,
     });
+  };
+
+  const handleEdit = (member: TeamMember) => {
+    const [first, ...rest] = member.name.split(" ");
+    setEditingId(member.id);
+    setFormFirstName(first);
+    setFormLastName(rest.join(" "));
+    setFormEmail(member.email);
+    setFormRole(member.role);
+    setFormDepartment(member.department);
+    setFormShift(member.shift);
+    setFormStatus(member.status);
+    setIsAddStaffOpen(true);
+  };
+
+  const handleSchedule = (member: TeamMember) => {
+    handleEdit(member);
   };
 
   const handleDelete = (id: string) => {
@@ -153,10 +148,23 @@ export const TeamSchedulesPage: React.FC = () => {
 
   const handleExport = () => {
     setIsExportOpen(false);
+    downloadCsv("allneed-team-schedule.csv", [
+      ["Name", "Email", "Role", "Department", "Shift", "Next shift", "Status", "Hours/week"],
+      ...filtered.map((m) => [
+        m.name,
+        m.email,
+        m.role,
+        m.department,
+        m.shift,
+        m.nextShift,
+        m.status,
+        m.hoursThisWeek,
+      ]),
+    ]);
     showToast({
       type: "success",
       title: "Schedule exported",
-      message: "CSV download started",
+      message: `${filtered.length} member(s) downloaded as CSV`,
     });
   };
 
@@ -220,7 +228,17 @@ export const TeamSchedulesPage: React.FC = () => {
             <option value="Bar">Bar</option>
             <option value="Front of house">Front of house</option>
           </select>
-          <input type="date" className="an-input" style={{ width: 140 }} />
+          <select
+            className="an-select"
+            style={{ width: 150 }}
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="All">All statuses</option>
+            <option value="On Shift">On Shift</option>
+            <option value="Off Shift">Off Shift</option>
+            <option value="Leave">Leave</option>
+          </select>
           <button
             className="an-btn an-btn-secondary an-btn-sm"
             onClick={() => setIsExportOpen(true)}
@@ -305,25 +323,16 @@ export const TeamSchedulesPage: React.FC = () => {
                       <div className="row-actions">
                         <button
                           className="an-btn an-btn-sm an-btn-secondary"
-                          onClick={() => {
-                            showToast({
-                              type: "info",
-                              title: `Schedule for ${member.name}`,
-                            });
-                          }}
+                          onClick={() => handleSchedule(member)}
                           style={{ padding: "4px 8px", fontSize: 11 }}
                         >
                           Schedule
                         </button>
                         <button
                           className="an-btn an-btn-sm an-btn-secondary"
-                          onClick={() => {
-                            showToast({
-                              type: "info",
-                              title: `Editing ${member.name}`,
-                            });
-                          }}
+                          onClick={() => handleEdit(member)}
                           style={{ padding: "4px 8px", fontSize: 11 }}
+                          aria-label={`Edit ${member.name}`}
                         >
                           <Edit3 size={12} />
                         </button>
@@ -362,26 +371,23 @@ export const TeamSchedulesPage: React.FC = () => {
       {isAddStaffOpen && (
         <div
           className="modal-backdrop"
-          onClick={() => setIsAddStaffOpen(false)}
+          onClick={closeAddStaff}
         >
           <section className="modal" onClick={(e) => e.stopPropagation()}>
             <button
+              type="button"
               className="close"
-              onClick={() => {
-                setIsAddStaffOpen(false);
-                setFormFirstName("");
-                setFormLastName("");
-                setFormEmail("");
-                setFormRole("Head Chef");
-                setFormDepartment("Kitchen");
-              }}
+              onClick={closeAddStaff}
+              aria-label="Close"
             >
               <X size={17} />
             </button>
-            <span className="eyebrow">Add New Staff Member</span>
-            <h2>Add New Staff Member</h2>
+            <span className="eyebrow">
+              {editingId ? "Edit Staff Member" : "Add New Staff Member"}
+            </span>
+            <h2>{editingId ? "Edit Staff Member" : "Add New Staff Member"}</h2>
             <p>Enter the staff member details below.</p>
-            <form onSubmit={handleAddStaff}>
+            <form onSubmit={handleSaveStaff}>
               <div className="form-grid">
                 <div className="an-form-group">
                   <label className="an-label">First Name</label>
@@ -444,21 +450,46 @@ export const TeamSchedulesPage: React.FC = () => {
                     <option>Front of house</option>
                   </select>
                 </div>
+                {editingId && (
+                  <>
+                    <div className="an-form-group">
+                      <label className="an-label">Shift</label>
+                      <select
+                        value={formShift}
+                        onChange={(e) => setFormShift(e.target.value)}
+                        className="an-select"
+                      >
+                        <option>Not assigned</option>
+                        <option>Morning (06:00 - 15:00)</option>
+                        <option>Morning (08:00 - 16:00)</option>
+                        <option>Evening (16:00 - 00:00)</option>
+                        <option>Night (18:00 - 02:00)</option>
+                        <option>Off</option>
+                      </select>
+                    </div>
+                    <div className="an-form-group">
+                      <label className="an-label">Status</label>
+                      <select
+                        value={formStatus}
+                        onChange={(e) =>
+                          setFormStatus(e.target.value as TeamMember["status"])
+                        }
+                        className="an-select"
+                      >
+                        <option value="On Shift">On Shift</option>
+                        <option value="Off Shift">Off Shift</option>
+                        <option value="Leave">Leave</option>
+                      </select>
+                    </div>
+                  </>
+                )}
               </div>
               <div className="modal-actions">
-                <button
-                  className="secondary"
-                  onClick={() => {
-                    setIsAddStaffOpen(false);
-                    setFormFirstName("");
-                    setFormLastName("");
-                    setFormEmail("");
-                  }}
-                >
+                <button type="button" className="secondary" onClick={closeAddStaff}>
                   Cancel
                 </button>
                 <button className="primary" type="submit">
-                  Save Staff
+                  {editingId ? "Save Changes" : "Save Staff"}
                 </button>
               </div>
             </form>
@@ -468,34 +499,27 @@ export const TeamSchedulesPage: React.FC = () => {
 
       {/* Export Modal */}
       {isExportOpen && (
-        <div className="modal-backdrop" onClick={() => setIsExportOpen(false)}>
+        <div className="modal-backdrop" onClick={closeExport}>
           <section className="modal" onClick={(e) => e.stopPropagation()}>
-            <button className="close" onClick={() => setIsExportOpen(false)}>
+            <button
+              type="button"
+              className="close"
+              onClick={closeExport}
+              aria-label="Close"
+            >
               <X size={17} />
             </button>
             <span className="eyebrow">Export Schedule</span>
             <h2>Export Schedule</h2>
-            <p>Select the format and date range for your export.</p>
+            <p>Export the current filtered staff list as a CSV file.</p>
             <div style={{ marginBottom: "20px" }}>
               <label className="an-label">Format</label>
-              <select className="an-select">
+              <select className="an-select" defaultValue="CSV (Excel)">
                 <option>CSV (Excel)</option>
-                <option>PDF Document</option>
-              </select>
-            </div>
-            <div className="an-form-group">
-              <label className="an-label">Date Range</label>
-              <select className="an-select">
-                <option>This Week</option>
-                <option>Next Week</option>
-                <option>This Month</option>
               </select>
             </div>
             <div className="modal-actions">
-              <button
-                className="secondary"
-                onClick={() => setIsExportOpen(false)}
-              >
+              <button type="button" className="secondary" onClick={closeExport}>
                 Cancel
               </button>
               <button className="primary" onClick={handleExport}>

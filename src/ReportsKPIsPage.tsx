@@ -9,6 +9,7 @@ import {
   Plus,
 } from "lucide-react";
 import { useToast } from "./components/ToastProvider";
+import { downloadCsv, useEscape } from "./store";
 
 interface KPIReport {
   id: string;
@@ -79,8 +80,10 @@ export const ReportsKPIsPage: React.FC = () => {
   const [reports, setReports] = useState<KPIReport[]>(MOCK_REPORTS);
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("All");
   const [isNewReportOpen, setIsNewReportOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<KPIReport | null>(null);
 
   // Form state
   const [formType, setFormType] = useState("Financial Summary");
@@ -89,12 +92,28 @@ export const ReportsKPIsPage: React.FC = () => {
   const [formDashboard, setFormDashboard] = useState(true);
   const [formEmail, setFormEmail] = useState(false);
 
+  const closeNewReport = () => {
+    setIsNewReportOpen(false);
+    setFormType("Financial Summary");
+    setFormStartDate("");
+    setFormEndDate("");
+    setFormDashboard(true);
+    setFormEmail(false);
+  };
+  const closeExport = () => setIsExportOpen(false);
+  const closeDetail = () => setSelectedReport(null);
+
+  useEscape(isNewReportOpen, closeNewReport);
+  useEscape(isExportOpen, closeExport);
+  useEscape(selectedReport !== null, closeDetail);
+
   const filtered = reports.filter((r) => {
     const matchesSearch =
       r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       r.category.toLowerCase().includes(searchQuery.toLowerCase());
-    if (filter === "All") return matchesSearch;
-    return matchesSearch && r.category === filter;
+    if (filter !== "All" && r.category !== filter) return false;
+    if (statusFilter !== "All" && r.status !== statusFilter) return false;
+    return matchesSearch;
   });
 
   const reportsGenerated = reports.filter(
@@ -106,11 +125,12 @@ export const ReportsKPIsPage: React.FC = () => {
       return { bg: "var(--success-bg)", color: "var(--success)" };
     if (trend === "down")
       return { bg: "var(--warning-bg)", color: "var(--warning)" };
-    return { bg: "#F3F4F6", color: "#6B7280" };
+    return { bg: "var(--brand-bg)", color: "var(--brand-text-muted)" };
   };
 
   const getStatusBadge = (status: string) => {
-    if (status === "Generated") return { bg: "#F3F4F6", color: "#6B7280" };
+    if (status === "Generated")
+      return { bg: "var(--brand-bg)", color: "var(--brand-text-muted)" };
     return { bg: "var(--brand-surface)", color: "var(--brand-blue)" };
   };
 
@@ -126,7 +146,7 @@ export const ReportsKPIsPage: React.FC = () => {
       comparison: "No data yet",
       status: "Scheduled",
     };
-    setReports([newReport, ...reports]);
+    setReports((prev) => [newReport, ...prev]);
     setIsNewReportOpen(false);
     setFormType("Financial Summary");
     setFormStartDate("");
@@ -142,19 +162,45 @@ export const ReportsKPIsPage: React.FC = () => {
 
   const handleExport = () => {
     setIsExportOpen(false);
+    downloadCsv("allneed-reports.csv", [
+      ["Title", "Category", "Period", "Value", "Comparison", "Status"],
+      ...filtered.map((r) => [
+        r.title,
+        r.category,
+        r.period,
+        r.value,
+        r.comparison,
+        r.status,
+      ]),
+    ]);
     showToast({
       type: "success",
       title: "Reports exported",
-      message: "CSV download started",
+      message: `${filtered.length} report(s) downloaded as CSV`,
     });
   };
 
-  const handleViewData = (title: string) => {
-    showToast({ type: "info", title: `Viewing ${title}` });
+  const handleViewData = (report: KPIReport) => {
+    setSelectedReport(report);
   };
 
-  const handleDownloadPDF = (title: string) => {
-    showToast({ type: "success", title: `${title} PDF downloaded` });
+  const handleExportReport = (report: KPIReport) => {
+    downloadCsv(`${report.title.replace(/\s+/g, "-").toLowerCase()}.csv`, [
+      ["Title", "Category", "Period", "Key metric", "Comparison", "Status"],
+      [
+        report.title,
+        report.category,
+        report.period,
+        report.value,
+        report.comparison,
+        report.status,
+      ],
+    ]);
+    showToast({
+      type: "success",
+      title: "Report exported",
+      message: `${report.title} (CSV)`,
+    });
   };
 
   return (
@@ -216,10 +262,15 @@ export const ReportsKPIsPage: React.FC = () => {
             <option value="HR">HR</option>
             <option value="Marketing">Marketing</option>
           </select>
-          <select className="an-select" style={{ width: 150 }}>
-            <option>Last 30 days</option>
-            <option>This Quarter</option>
-            <option>This Year</option>
+          <select
+            className="an-select"
+            style={{ width: 150 }}
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="All">All statuses</option>
+            <option value="Generated">Generated</option>
+            <option value="Scheduled">Scheduled</option>
           </select>
         </div>
 
@@ -278,15 +329,19 @@ export const ReportsKPIsPage: React.FC = () => {
                       <div className="row-actions">
                         <button
                           className="an-btn an-btn-sm an-btn-secondary"
-                          onClick={() => handleViewData(report.title)}
+                          onClick={() => handleViewData(report)}
                           style={{ padding: "4px 8px", fontSize: 11 }}
+                          title="View report"
+                          aria-label={`View ${report.title}`}
                         >
                           <BarChart2 size={12} />
                         </button>
                         <button
                           className="an-btn an-btn-sm an-btn-secondary"
-                          onClick={() => handleDownloadPDF(report.title)}
+                          onClick={() => handleExportReport(report)}
                           style={{ padding: "4px 8px", fontSize: 11 }}
+                          title="Export report"
+                          aria-label={`Export ${report.title}`}
                         >
                           <Download size={13} />
                         </button>
@@ -318,19 +373,14 @@ export const ReportsKPIsPage: React.FC = () => {
       {isNewReportOpen && (
         <div
           className="modal-backdrop"
-          onClick={() => setIsNewReportOpen(false)}
+          onClick={closeNewReport}
         >
           <section className="modal" onClick={(e) => e.stopPropagation()}>
             <button
+              type="button"
               className="close"
-              onClick={() => {
-                setIsNewReportOpen(false);
-                setFormType("Financial Summary");
-                setFormStartDate("");
-                setFormEndDate("");
-                setFormDashboard(true);
-                setFormEmail(false);
-              }}
+              onClick={closeNewReport}
+              aria-label="Close"
             >
               <X size={17} />
             </button>
@@ -413,17 +463,7 @@ export const ReportsKPIsPage: React.FC = () => {
                 </div>
               </div>
               <div className="modal-actions">
-                <button
-                  className="secondary"
-                  onClick={() => {
-                    setIsNewReportOpen(false);
-                    setFormType("Financial Summary");
-                    setFormStartDate("");
-                    setFormEndDate("");
-                    setFormDashboard(true);
-                    setFormEmail(false);
-                  }}
-                >
+                <button type="button" className="secondary" onClick={closeNewReport}>
                   Cancel
                 </button>
                 <button className="primary" type="submit">
@@ -437,31 +477,86 @@ export const ReportsKPIsPage: React.FC = () => {
 
       {/* Export Modal */}
       {isExportOpen && (
-        <div className="modal-backdrop" onClick={() => setIsExportOpen(false)}>
+        <div className="modal-backdrop" onClick={closeExport}>
           <section className="modal" onClick={(e) => e.stopPropagation()}>
-            <button className="close" onClick={() => setIsExportOpen(false)}>
+            <button
+              type="button"
+              className="close"
+              onClick={closeExport}
+              aria-label="Close"
+            >
               <X size={17} />
             </button>
             <span className="eyebrow">Export Reports</span>
             <h2>Export Reports</h2>
-            <p>Export the current filtered list of reports.</p>
+            <p>Export the current filtered list of reports as a CSV file.</p>
             <div style={{ marginBottom: "20px" }}>
               <label className="an-label">Format</label>
-              <select className="an-select">
+              <select className="an-select" defaultValue="CSV (Excel)">
                 <option>CSV (Excel)</option>
-                <option>PDF Document</option>
-                <option>JSON</option>
               </select>
             </div>
             <div className="modal-actions">
-              <button
-                className="secondary"
-                onClick={() => setIsExportOpen(false)}
-              >
+              <button type="button" className="secondary" onClick={closeExport}>
                 Cancel
               </button>
               <button className="primary" onClick={handleExport}>
                 Download All
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {/* Report Detail Modal */}
+      {selectedReport && (
+        <div className="modal-backdrop" onClick={closeDetail}>
+          <section className="modal" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className="close"
+              onClick={closeDetail}
+              aria-label="Close"
+            >
+              <X size={17} />
+            </button>
+            <span className="eyebrow">{selectedReport.category} report</span>
+            <h2>{selectedReport.title}</h2>
+            <p>{selectedReport.period}</p>
+            <div style={{ display: "grid", gap: 12, marginTop: 8 }}>
+              <div className="an-metric">
+                <span className="an-metric-label">Key metric</span>
+                <span className="an-metric-value">{selectedReport.value}</span>
+                <span className="an-metric-sub">
+                  {selectedReport.comparison}
+                </span>
+              </div>
+              <div className="an-metric">
+                <span className="an-metric-label">Trend</span>
+                <span className="an-metric-value">
+                  {selectedReport.trend === "up"
+                    ? "Increasing"
+                    : selectedReport.trend === "down"
+                      ? "Decreasing"
+                      : "Stable"}
+                </span>
+                <span className="an-metric-sub">
+                  Status: {selectedReport.status}
+                </span>
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button type="button" className="secondary" onClick={closeDetail}>
+                Close
+              </button>
+              <button
+                className="primary"
+                onClick={() => {
+                  handleExportReport(selectedReport);
+                  closeDetail();
+                }}
+              >
+                <Download size={14} /> Export CSV
               </button>
             </div>
           </section>

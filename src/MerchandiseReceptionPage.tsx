@@ -1,56 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Search, Plus, Trash2, Edit3, X } from "lucide-react";
 import { useToast } from "./components/ToastProvider";
+import {
+  KEYS,
+  PURCHASE_ORDER_SEED,
+  RECEPTION_SEED,
+  useStore,
+  type PurchaseOrder,
+  type Reception,
+} from "./store";
 
-export interface Reception {
-  id: string;
-  poRef: string;
-  supplier: string;
-  status: "Pending" | "Validated" | "Discrepancy";
-  date: string;
-  amount: number;
-}
-
-const STORAGE_KEY = "allneeds.receptions";
-
-const INITIAL_RECEPTIONS: Reception[] = [
-  {
-    id: "MR-1048",
-    poRef: "PO-1048",
-    supplier: "Fresh Market",
-    status: "Pending",
-    date: new Date().toISOString(),
-    amount: 2480,
-  },
-  {
-    id: "MR-1047",
-    poRef: "PO-1047",
-    supplier: "Ocean Foods",
-    status: "Validated",
-    date: new Date(Date.now() - 86400000).toISOString(),
-    amount: 1920,
-  },
-  {
-    id: "MR-1045",
-    poRef: "PO-1045",
-    supplier: "Atlas Drinks",
-    status: "Validated",
-    date: new Date(Date.now() - 172800000).toISOString(),
-    amount: 950,
-  },
-  {
-    id: "MR-1042",
-    poRef: "PO-1042",
-    supplier: "Maison Pro",
-    status: "Discrepancy",
-    date: new Date(Date.now() - 259200000).toISOString(),
-    amount: 3100,
-  },
-];
+export type { Reception };
 
 export const MerchandiseReceptionPage: React.FC = () => {
   const { showToast } = useToast();
-  const [receptions, setReceptions] = useState<Reception[]>(INITIAL_RECEPTIONS);
+  const [receptions, setReceptions] = useStore<Reception[]>(
+    KEYS.receptions,
+    RECEPTION_SEED
+  );
+  const [orders, setOrders] = useStore<PurchaseOrder[]>(
+    KEYS.purchaseOrders,
+    PURCHASE_ORDER_SEED
+  );
   const [activeTab, setActiveTab] = useState<
     "All" | "Pending" | "Discrepancies"
   >("All");
@@ -61,23 +32,6 @@ export const MerchandiseReceptionPage: React.FC = () => {
   // Validation Form State
   const [formStatus, setFormStatus] = useState<Reception["status"]>("Pending");
   const [notes, setNotes] = useState("");
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        setReceptions(JSON.parse(stored));
-      }
-    } catch {}
-  }, []);
-
-  // Persist to localStorage on change
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(receptions));
-    } catch {}
-  }, [receptions]);
 
   const filtered = receptions.filter((item) => {
     const matchesSearch =
@@ -111,7 +65,7 @@ export const MerchandiseReceptionPage: React.FC = () => {
       return { bg: "var(--warning-bg)", color: "var(--warning)" };
     if (status === "Discrepancy")
       return { bg: "var(--error-bg)", color: "var(--error)" };
-    return { bg: "#F3F4F6", color: "#6B7280" };
+    return { bg: "var(--brand-bg)", color: "var(--brand-text-muted)" };
   };
 
   const openValidateModal = (reception: Reception) => {
@@ -125,20 +79,22 @@ export const MerchandiseReceptionPage: React.FC = () => {
     e.preventDefault();
     if (!selectedItem) return;
 
-    const updated = {
-      ...selectedItem,
-      status: formStatus,
-    };
-
-    setReceptions(
-      receptions.map((r) => (r.id === selectedItem.id ? updated : r))
+    const updated: Reception = { ...selectedItem, status: formStatus, notes };
+    setReceptions((prev) =>
+      prev.map((r) => (r.id === selectedItem.id ? updated : r))
     );
 
     if (formStatus === "Validated") {
+      // Business rule: a validated reception closes its linked purchase order.
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === selectedItem.poRef ? { ...o, status: "Received" } : o
+        )
+      );
       showToast({
         type: "success",
         title: "Reception validated",
-        message: `${selectedItem.id} — stock updated in Inventory`,
+        message: `${selectedItem.id} — order ${selectedItem.poRef} marked as received`,
       });
     } else if (formStatus === "Discrepancy") {
       showToast({
@@ -210,9 +166,7 @@ export const MerchandiseReceptionPage: React.FC = () => {
         </div>
       </div>
 
-      <div
-        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}
-      >
+      <div className="an-grid-2">
         {filtered.map((item) => {
           const status = getStatusColor(item.status);
           return (
@@ -300,6 +254,12 @@ export const MerchandiseReceptionPage: React.FC = () => {
             </div>
           );
         })}
+        {filtered.length === 0 && (
+          <div className="an-empty">
+            <strong>No receptions found</strong>
+            <span>Try a different search, or send a purchase order.</span>
+          </div>
+        )}
       </div>
 
       {isModalOpen && selectedItem && (
@@ -320,11 +280,12 @@ export const MerchandiseReceptionPage: React.FC = () => {
           >
             <div
               style={{
-                background: "#fff",
+                background: "var(--brand-white)",
                 borderRadius: "16px",
                 width: "100%",
                 maxWidth: "500px",
                 padding: "2rem",
+                position: "relative",
               }}
             >
               <button
@@ -347,7 +308,7 @@ export const MerchandiseReceptionPage: React.FC = () => {
               <p
                 style={{
                   fontSize: "0.875rem",
-                  color: "#475569",
+                  color: "var(--brand-text-muted)",
                   marginBottom: "1.5rem",
                 }}
               >
@@ -383,7 +344,7 @@ export const MerchandiseReceptionPage: React.FC = () => {
                         width: "100%",
                         padding: "0.6rem",
                         borderRadius: "6px",
-                        border: "1px solid #cbd5e1",
+                        border: "1px solid var(--brand-border)",
                         boxSizing: "border-box",
                       }}
                     >
@@ -415,7 +376,7 @@ export const MerchandiseReceptionPage: React.FC = () => {
                           width: "100%",
                           padding: "0.6rem",
                           borderRadius: "6px",
-                          border: "1px solid #cbd5e1",
+                          border: "1px solid var(--brand-border)",
                           boxSizing: "border-box",
                           minHeight: "80px",
                         }}
@@ -436,7 +397,7 @@ export const MerchandiseReceptionPage: React.FC = () => {
                     style={{
                       padding: "0.6rem 1.25rem",
                       borderRadius: "8px",
-                      border: "1px solid #cbd5e1",
+                      border: "1px solid var(--brand-border)",
                       background: "#fff",
                       cursor: "pointer",
                       fontWeight: 600,
@@ -450,7 +411,7 @@ export const MerchandiseReceptionPage: React.FC = () => {
                       padding: "0.6rem 1.25rem",
                       borderRadius: "8px",
                       border: "none",
-                      background: "#0f172a",
+                      background: "var(--brand-navy)",
                       color: "#fff",
                       cursor: "pointer",
                       fontWeight: 600,

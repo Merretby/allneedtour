@@ -1,51 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Search, Plus, Trash2, Edit3, X } from "lucide-react";
 import { useToast } from "./components/ToastProvider";
+import {
+  KEYS,
+  PURCHASE_ORDER_SEED,
+  RECEPTION_SEED,
+  SUPPLIER_SEED,
+  useStore,
+  type PurchaseOrder,
+  type Reception,
+  type Supplier,
+} from "./store";
 
-export interface PurchaseOrder {
-  id: string;
-  supplier: string;
-  amount: number;
-  status: "Draft" | "Approval" | "Sent" | "Received" | "Cancelled";
-  date: string;
-}
-
-const STORAGE_KEY = "allneeds.purchase_orders";
-
-const INITIAL_POS: PurchaseOrder[] = [
-  {
-    id: "PO-1048",
-    supplier: "Fresh Market",
-    amount: 2480,
-    status: "Sent",
-    date: new Date().toISOString(),
-  },
-  {
-    id: "PO-1047",
-    supplier: "Ocean Foods",
-    amount: 1920,
-    status: "Received",
-    date: new Date(Date.now() - 86400000).toISOString(),
-  },
-  {
-    id: "PO-1049",
-    supplier: "Maison Pro",
-    amount: 740,
-    status: "Draft",
-    date: new Date().toISOString(),
-  },
-  {
-    id: "PO-1050",
-    supplier: "Atlas Drinks",
-    amount: 1140,
-    status: "Approval",
-    date: new Date().toISOString(),
-  },
-];
+export type { PurchaseOrder };
 
 export const PurchasesPage: React.FC = () => {
   const { showToast } = useToast();
-  const [orders, setOrders] = useState<PurchaseOrder[]>(INITIAL_POS);
+  const [orders, setOrders] = useStore<PurchaseOrder[]>(
+    KEYS.purchaseOrders,
+    PURCHASE_ORDER_SEED
+  );
+  const [, setReceptions] = useStore<Reception[]>(
+    KEYS.receptions,
+    RECEPTION_SEED
+  );
+  const [suppliers] = useStore<Supplier[]>(KEYS.suppliers, SUPPLIER_SEED);
   const [activeTab, setActiveTab] = useState<"Orders" | "Drafts" | "Approvals">(
     "Orders"
   );
@@ -58,23 +37,6 @@ export const PurchasesPage: React.FC = () => {
   const [formAmount, setFormAmount] = useState("");
   const [formStatus, setFormStatus] =
     useState<PurchaseOrder["status"]>("Draft");
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        setOrders(JSON.parse(stored));
-      }
-    } catch {}
-  }, []);
-
-  // Persist to localStorage on change
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
-    } catch {}
-  }, [orders]);
 
   const filtered = orders.filter((item) => {
     const matchesSearch =
@@ -107,7 +69,7 @@ export const PurchasesPage: React.FC = () => {
       return { bg: "var(--warning-bg)", color: "var(--warning)" };
     if (status === "Cancelled")
       return { bg: "var(--error-bg)", color: "var(--error)" };
-    return { bg: "#F3F4F6", color: "#6B7280" };
+    return { bg: "var(--brand-bg)", color: "var(--brand-text-muted)" };
   };
 
   const openModal = (order?: PurchaseOrder) => {
@@ -127,30 +89,60 @@ export const PurchasesPage: React.FC = () => {
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formSupplier || !formAmount) {
-      showToast({ type: "error", title: "Missing required fields" });
+    const amount = parseFloat(formAmount);
+    if (!formSupplier || !formAmount || Number.isNaN(amount) || amount <= 0) {
+      showToast({
+        type: "error",
+        title: "Supplier and a positive amount are required",
+      });
       return;
     }
+    const highestId = orders.reduce((max, o) => {
+      const n = Number(o.id.replace(/\D/g, ""));
+      return Number.isFinite(n) && n > max ? n : max;
+    }, 1050);
     const newItem: PurchaseOrder = {
-      id: selectedItem
-        ? selectedItem.id
-        : `PO-${Math.floor(1000 + Math.random() * 9000)}`,
+      id: selectedItem ? selectedItem.id : `PO-${highestId + 1}`,
       supplier: formSupplier,
-      amount: parseFloat(formAmount) || 0,
+      amount,
       status: formStatus,
       date: selectedItem ? selectedItem.date : new Date().toISOString(),
     };
-    if (selectedItem) {
-      setOrders(orders.map((o) => (o.id === selectedItem.id ? newItem : o)));
-      showToast({ type: "success", title: "Purchase order updated" });
-    } else {
-      setOrders([newItem, ...orders]);
-      showToast({
-        type: "success",
-        title: "Purchase order created",
-        message: `${newItem.id} is now available in Merchandise Reception`,
-      });
+    setOrders((prev) =>
+      selectedItem
+        ? prev.map((o) => (o.id === selectedItem.id ? newItem : o))
+        : [newItem, ...prev]
+    );
+
+    // Business rule: a Sent purchase order becomes receivable.
+    if (newItem.status === "Sent") {
+      setReceptions((prev) =>
+        prev.some((r) => r.poRef === newItem.id)
+          ? prev
+          : [
+              {
+                id: newItem.id.replace("PO-", "MR-"),
+                poRef: newItem.id,
+                supplier: newItem.supplier,
+                status: "Pending",
+                date: new Date().toISOString(),
+                amount: newItem.amount,
+              },
+              ...prev,
+            ]
+      );
     }
+
+    showToast({
+      type: "success",
+      title: selectedItem
+        ? "Purchase order updated"
+        : "Purchase order created",
+      message:
+        newItem.status === "Sent"
+          ? `${newItem.id} is now waiting in Merchandise Reception`
+          : newItem.id,
+    });
     setIsModalOpen(false);
   };
 
@@ -218,9 +210,7 @@ export const PurchasesPage: React.FC = () => {
         </div>
       </div>
 
-      <div
-        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}
-      >
+      <div className="an-grid-2">
         {filtered.map((item) => {
           const status = getStatusColor(item.status);
           return (
@@ -321,6 +311,12 @@ export const PurchasesPage: React.FC = () => {
             </div>
           );
         })}
+        {filtered.length === 0 && (
+          <div className="an-empty">
+            <strong>No purchase orders found</strong>
+            <span>Try a different search, or create a new order.</span>
+          </div>
+        )}
       </div>
 
       {/* Modal */}
@@ -340,14 +336,24 @@ export const PurchasesPage: React.FC = () => {
             <form onSubmit={handleSave}>
               <div className="form-grid">
                 <div className="an-form-group" style={{ gridColumn: "1 / -1" }}>
-                  <label className="an-label">Supplier Name</label>
-                  <input
-                    type="text"
+                  <label className="an-label">Supplier</label>
+                  <select
                     required
                     value={formSupplier}
                     onChange={(e) => setFormSupplier(e.target.value)}
-                    className="an-input"
-                  />
+                    className="an-select"
+                  >
+                    <option value="">Select a supplier…</option>
+                    {suppliers.map((s) => (
+                      <option key={s.id} value={s.name}>
+                        {s.name}
+                      </option>
+                    ))}
+                    {formSupplier &&
+                      !suppliers.some((s) => s.name === formSupplier) && (
+                        <option value={formSupplier}>{formSupplier}</option>
+                      )}
+                  </select>
                 </div>
                 <div className="an-form-group">
                   <label className="an-label">Amount (MAD)</label>
@@ -377,6 +383,7 @@ export const PurchasesPage: React.FC = () => {
               </div>
               <div className="modal-actions">
                 <button
+                  type="button"
                   className="secondary"
                   onClick={() => setIsModalOpen(false)}
                 >

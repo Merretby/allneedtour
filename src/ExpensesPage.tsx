@@ -1,55 +1,22 @@
 import React, { useState } from "react";
 import { Search, Plus, Trash2, Edit3, X } from "lucide-react";
 import { useToast } from "./components/ToastProvider";
+import {
+  EXPENSE_SEED,
+  KEYS,
+  useEscape,
+  useStore,
+  type Expense,
+} from "./store";
 
-interface Expense {
-  id: string;
-  supplier: string;
-  reference: string;
-  date: string;
-  amount: number;
-  category:
-    | "Utilities"
-    | "Payroll"
-    | "Maintenance"
-    | "Marketing"
-    | "Supplies"
-    | "Other";
-  status: "Paid" | "Pending";
-  paymentMethod: "Transfer" | "Card" | "Check" | "Cash";
-  notes?: string;
-}
-
-const MOCK_EXPENSES: Expense[] = [
-  {
-    id: "1",
-    supplier: "Redal",
-    reference: "EXP-23-1104",
-    date: "2026-10-08",
-    amount: 3500.0,
-    category: "Utilities",
-    status: "Paid",
-    paymentMethod: "Transfer",
-    notes: "Monthly bill",
-  },
-  {
-    id: "2",
-    supplier: "FixIt Co.",
-    reference: "EXP-23-1103",
-    date: "2026-10-08",
-    amount: 1200.0,
-    category: "Maintenance",
-    status: "Pending",
-    paymentMethod: "Check",
-    notes: "AC Repair",
-  },
-];
+const MOCK_EXPENSES: Expense[] = EXPENSE_SEED;
 
 export const ExpensesPage: React.FC = () => {
   const { showToast } = useToast();
-  const [expenses, setExpenses] = useState<Expense[]>(MOCK_EXPENSES);
+  const [expenses, setExpenses] = useStore<Expense[]>(KEYS.expenses, EXPENSE_SEED);
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<"All" | "Paid" | "Pending">("All");
+  const [dateFilter, setDateFilter] = useState("");
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -64,10 +31,22 @@ export const ExpensesPage: React.FC = () => {
     useState<Expense["paymentMethod"]>("Transfer");
   const [formNotes, setFormNotes] = useState("");
 
+  const closeModal = () => {
+    setIsAddOpen(false);
+    setEditingId(null);
+    setFormSupplier("");
+    setFormReference("");
+    setFormAmount("");
+    setFormNotes("");
+  };
+
+  useEscape(isAddOpen, closeModal);
+
   const filtered = expenses.filter((e) => {
     const matchesSearch =
       e.supplier.toLowerCase().includes(searchQuery.toLowerCase()) ||
       e.reference.toLowerCase().includes(searchQuery.toLowerCase());
+    if (dateFilter && e.date !== dateFilter) return false;
     if (filter === "Paid") return matchesSearch && e.status === "Paid";
     if (filter === "Pending") return matchesSearch && e.status === "Pending";
     return matchesSearch;
@@ -96,7 +75,7 @@ export const ExpensesPage: React.FC = () => {
       paymentMethod: formPaymentMethod,
       notes: formNotes,
     };
-    setExpenses([newExpense, ...expenses]);
+    setExpenses((prev) => [newExpense, ...prev]);
     setIsAddOpen(false);
     setFormSupplier("");
     setFormReference("");
@@ -217,7 +196,14 @@ export const ExpensesPage: React.FC = () => {
             <option value="Paid">Paid</option>
             <option value="Pending">Pending</option>
           </select>
-          <input type="date" className="an-input" style={{ width: 140 }} />
+          <input
+            type="date"
+            className="an-input"
+            style={{ width: 160 }}
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+            aria-label="Filter by date"
+          />
         </div>
 
         <div className="table-scroll">
@@ -326,19 +312,9 @@ export const ExpensesPage: React.FC = () => {
 
       {/* Add/Edit Expense Modal */}
       {isAddOpen && (
-        <div className="modal-backdrop" onClick={() => setIsAddOpen(false)}>
+        <div className="modal-backdrop" onClick={closeModal}>
           <section className="modal" onClick={(e) => e.stopPropagation()}>
-            <button
-              className="close"
-              onClick={() => {
-                setIsAddOpen(false);
-                setEditingId(null);
-                setFormSupplier("");
-                setFormReference("");
-                setFormAmount("");
-                setFormNotes("");
-              }}
-            >
+            <button type="button" className="close" onClick={closeModal} aria-label="Close">
               <X size={17} />
             </button>
             <span className="eyebrow">
@@ -436,17 +412,7 @@ export const ExpensesPage: React.FC = () => {
                 </div>
               </div>
               <div className="modal-actions">
-                <button
-                  className="secondary"
-                  onClick={() => {
-                    setIsAddOpen(false);
-                    setEditingId(null);
-                    setFormSupplier("");
-                    setFormReference("");
-                    setFormAmount("");
-                    setFormNotes("");
-                  }}
-                >
+                <button type="button" className="secondary" onClick={closeModal}>
                   Cancel
                 </button>
                 <button className="primary" type="submit">

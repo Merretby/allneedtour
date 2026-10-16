@@ -14,6 +14,21 @@ import { ReportsKPIsPage } from "./ReportsKPIsPage";
 import { DocumentsPage } from "./DocumentsPage";
 import { SystemSettingsPage } from "./SystemSettingsPage";
 
+import {
+  KEYS,
+  PAYMENT_SEED,
+  RESERVATION_SEED,
+  STOCK_SEED,
+  TEAM_SEED,
+  downloadCsv,
+  useEscape,
+  useStore,
+  type Payment,
+  type Reservation,
+  type StockItem,
+  type TeamMember,
+} from "./store";
+
 import React, { useMemo, useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import {
@@ -68,6 +83,7 @@ import {
   type Business,
   type BusinessType,
   type ModuleId,
+  type Permission,
   type PermissionAction,
   type Role,
   type State,
@@ -77,6 +93,8 @@ import { BusinessWorkspace } from "./BusinessWorkspace";
 import { ReservationsPage } from "./ReservationsPage";
 import { TablesServicePage } from "./FloorPlanPage";
 import { ToastProvider, useToast } from "./components/ToastProvider";
+import { LanguageSelector } from "./components/LanguageSelector";
+import { TranslationProvider } from "./i18n";
 import "./style.css";
 const storageKey = "allneeds.restaurant.rbac.v1";
 const readState = (): State => {
@@ -223,6 +241,13 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [mobile]);
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = mobile ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobile]);
   const user =
     state.users.find((u) => u.id === account?.userId) ||
     state.users.find((u) => u.id === state.sessionId)!;
@@ -346,12 +371,23 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
           </section>
         </nav>
         <div className="sidebar-bottom">
+          <div className="sidebar-language">
+            <LanguageSelector />
+          </div>
           <div className="secure">
             <ShieldCheck size={14} />
             <span>
               <strong>Secure workspace</strong>
               <small>RBAC enforced on every action</small>
             </span>
+          </div>
+          <div className="me">
+            <span className="avatar">SB</span>
+            <span>
+              <strong>{user.name}</strong>
+              <small>{role.name}</small>
+            </span>
+            <MoreHorizontal size={16} />
           </div>
         </div>
       </aside>
@@ -522,11 +558,48 @@ function Dashboard({
   allowed: (m: ModuleId, a?: PermissionAction) => boolean;
   go: (p: string) => void;
 }) {
+  const [reservations] = useStore<Reservation[]>(
+    KEYS.reservations,
+    RESERVATION_SEED
+  );
+  const [payments] = useStore<Payment[]>(KEYS.payments, PAYMENT_SEED);
+  const [stock] = useStore<StockItem[]>(KEYS.stockItems, STOCK_SEED);
+  const [team] = useStore<TeamMember[]>(KEYS.team, TEAM_SEED);
+
+  const activeReservations = reservations.filter(
+    (r) => r.status !== "Finished"
+  ).length;
+  const collectedToday = payments
+    .filter((p) => p.status === "Completed")
+    .reduce((sum, p) => sum + p.amount, 0);
+  const stockAlerts = stock.filter((s) => s.quantity <= s.minThreshold).length;
+  const onShift = team.filter((m) => m.status === "On Shift").length;
+
   const cards = [
-    ["reservations", "Reservations", "24 tonight", "8 tables open"],
-    ["payments", "Collections", "8,420 MAD", "Today, +12.4%"],
-    ["stock", "Stock alerts", "7 items", "2 need approval"],
-    ["team", "Team on shift", "18 people", "3 services"],
+    [
+      "reservations",
+      "Reservations",
+      `${activeReservations} active`,
+      `${reservations.length} booked today`,
+    ],
+    [
+      "payments",
+      "Collections",
+      `${Math.round(collectedToday).toLocaleString()} MAD`,
+      "completed payments",
+    ],
+    [
+      "stock",
+      "Stock alerts",
+      `${stockAlerts} item${stockAlerts === 1 ? "" : "s"}`,
+      "below minimum threshold",
+    ],
+    [
+      "team",
+      "Team on shift",
+      `${onShift} people`,
+      `${team.length} in the team`,
+    ],
   ];
   return (
     <>
@@ -1174,12 +1247,35 @@ function UsersPage({
   sensitive: (a: string, t: string, r: () => void) => void;
   commit: (s: State, m: string) => void;
 }) {
-  const rows = state.users.filter((u) =>
-    `${u.name} ${u.email} ${u.department}`
+  const { showToast } = useToast();
+  const [statusFilter, setStatusFilter] = useState("all");
+  const rows = state.users.filter((u) => {
+    const matchesQuery = `${u.name} ${u.email} ${u.department}`
       .toLowerCase()
-      .includes(query.toLowerCase())
-  );
+      .includes(query.toLowerCase());
+    if (statusFilter === "active") return matchesQuery && u.active;
+    if (statusFilter === "inactive") return matchesQuery && !u.active;
+    return matchesQuery;
+  });
   const canEdit = can(state, user, "users", "edit");
+  const exportUsers = () => {
+    downloadCsv("allneed-users.csv", [
+      ["Name", "Email", "Role", "Department", "Status", "Last login"],
+      ...rows.map((u) => [
+        u.name,
+        u.email,
+        state.roles.find((r) => r.id === u.roleId)?.name ?? "",
+        u.department,
+        u.active ? "Active" : "Inactive",
+        new Date(u.lastLogin).toLocaleDateString("en-GB"),
+      ]),
+    ]);
+    showToast({
+      type: "success",
+      title: "Users exported",
+      message: `${rows.length} row(s) downloaded as CSV`,
+    });
+  };
   return (
     <section className="admin-page">
       <div className="admin-intro">
@@ -1212,21 +1308,16 @@ function UsersPage({
               placeholder="Search users, email or department..."
             />
           </div>
-          <select className="filter">
-            <option>All statuses</option>
-            <option>Active</option>
-            <option>Inactive</option>
-          </select>
-          <button
-            className="secondary"
-            onClick={() =>
-              window.dispatchEvent(
-                new CustomEvent("allneeds:toast", {
-                  detail: "Export prepared — front-end demo",
-                })
-              )
-            }
+          <select
+            className="filter"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
           >
+            <option value="all">All statuses</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+          <button className="secondary" onClick={exportUsers}>
             <Download size={14} /> Export
           </button>
         </div>
@@ -1270,7 +1361,11 @@ function UsersPage({
                         <i /> {u.active ? "Active" : "Inactive"}
                       </span>
                     </td>
-                    <td>{new Date(u.lastLogin).toLocaleDateString("en-GB")}</td>
+                    <td>
+                      {u.lastLogin === "Never"
+                        ? "Never"
+                        : new Date(u.lastLogin).toLocaleDateString("en-GB")}
+                    </td>
                     <td>{new Date(u.createdAt).toLocaleDateString("en-GB")}</td>
                     <td>
                       <div className="row-actions">
@@ -1475,11 +1570,30 @@ function AuditPage({
   query: string;
   setQuery: (s: string) => void;
 }) {
+  const { showToast } = useToast();
   const rows = state.audit.filter((a) =>
     `${a.actorName} ${a.action} ${a.target}`
       .toLowerCase()
       .includes(query.toLowerCase())
   );
+  const exportLog = () => {
+    downloadCsv("allneed-audit-log.csv", [
+      ["Time", "Actor", "Action", "Target", "Level", "Result"],
+      ...rows.map((a) => [
+        new Date(a.at).toLocaleString("en-GB"),
+        a.actorName,
+        a.action,
+        a.target,
+        a.level,
+        a.result,
+      ]),
+    ]);
+    showToast({
+      type: "success",
+      title: "Audit log exported",
+      message: `${rows.length} event(s) downloaded as CSV`,
+    });
+  };
   return (
     <section className="admin-page">
       <div className="admin-intro">
@@ -1491,7 +1605,7 @@ function AuditPage({
             actor, time and result.
           </p>
         </div>
-        <button className="secondary">
+        <button className="secondary" onClick={exportLog}>
           <Download size={14} /> Export log
         </button>
       </div>
@@ -1539,10 +1653,12 @@ function UserModal({
   const [email, setEmail] = useState(user?.email || "");
   const [department, setDepartment] = useState(user?.department || "");
   const [roleId, setRoleId] = useState(user?.roleId || "restaurant-manager");
+  useEscape(true, onClose);
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   return (
-    <div className="modal-backdrop">
-      <section className="modal">
-        <button className="close" onClick={onClose}>
+    <div className="modal-backdrop" onClick={onClose}>
+      <section className="modal" onClick={(e) => e.stopPropagation()}>
+        <button type="button" className="close" onClick={onClose} aria-label="Close">
           <X size={17} />
         </button>
         <span className="eyebrow">{user ? "EDIT USER" : "NEW USER"}</span>
@@ -1591,12 +1707,12 @@ function UserModal({
           </select>
         </label>
         <div className="modal-actions">
-          <button className="secondary" onClick={onClose}>
+          <button type="button" className="secondary" onClick={onClose}>
             Cancel
           </button>
           <button
             className="primary"
-            disabled={!name || !email}
+            disabled={!name || !emailValid}
             onClick={() =>
               onSave({
                 ...state,
@@ -1646,10 +1762,33 @@ function RoleModal({
     role?.description || "Custom access profile"
   );
   const base = role || defaultRoles[2];
+  const matrixActions: PermissionAction[] = [
+    "view",
+    "create",
+    "edit",
+    "validate",
+    "export",
+  ];
+  const [perms, setPerms] = useState<Record<string, Record<string, boolean>>>(
+    () => {
+      const out: Record<string, Record<string, boolean>> = {};
+      moduleOrder.forEach((m) => {
+        out[m] = { ...base.permissions[m] };
+      });
+      return out;
+    }
+  );
+  const togglePerm = (m: ModuleId, a: PermissionAction) =>
+    setPerms((prev) => ({
+      ...prev,
+      [m]: { ...prev[m], [a]: !prev[m][a] },
+    }));
+
+  useEscape(true, onClose);
   return (
-    <div className="modal-backdrop">
-      <section className="modal">
-        <button className="close" onClick={onClose}>
+    <div className="modal-backdrop" onClick={onClose}>
+      <section className="modal" onClick={(e) => e.stopPropagation()}>
+        <button type="button" className="close" onClick={onClose} aria-label="Close">
           <X size={17} />
         </button>
         <span className="eyebrow">ROLE BUILDER</span>
@@ -1686,19 +1825,12 @@ function RoleModal({
               {moduleOrder.slice(0, 8).map((m) => (
                 <tr key={m}>
                   <td>{moduleLabels[m]}</td>
-                  {(
-                    [
-                      "view",
-                      "create",
-                      "edit",
-                      "validate",
-                      "export",
-                    ] as PermissionAction[]
-                  ).map((a) => (
+                  {matrixActions.map((a) => (
                     <td key={a}>
                       <input
                         type="checkbox"
-                        defaultChecked={base.permissions[m][a]}
+                        checked={perms[m][a]}
+                        onChange={() => togglePerm(m, a)}
                       />
                     </td>
                   ))}
@@ -1708,7 +1840,7 @@ function RoleModal({
           </table>
         </div>
         <div className="modal-actions">
-          <button className="secondary" onClick={onClose}>
+          <button type="button" className="secondary" onClick={onClose}>
             Cancel
           </button>
           <button
@@ -1725,6 +1857,12 @@ function RoleModal({
                     name,
                     description,
                     active: true,
+                    permissions: Object.fromEntries(
+                      moduleOrder.map((m) => [
+                        m,
+                        { ...base.permissions[m], ...perms[m] },
+                      ])
+                    ) as Record<ModuleId, Permission>,
                   },
                 ],
               })
@@ -1746,9 +1884,10 @@ function ConfirmModal({
   onClose: () => void;
   onConfirm: () => void;
 }) {
+  useEscape(true, onClose);
   return (
-    <div className="modal-backdrop">
-      <section className="modal confirm-modal">
+    <div className="modal-backdrop" onClick={onClose}>
+      <section className="modal confirm-modal" onClick={(e) => e.stopPropagation()}>
         <div className="confirm-icon">
           <AlertTriangle size={21} />
         </div>
@@ -1760,7 +1899,7 @@ function ConfirmModal({
           audit log.
         </p>
         <div className="modal-actions">
-          <button className="secondary" onClick={onClose}>
+          <button type="button" className="secondary" onClick={onClose}>
             Cancel
           </button>
           <button className="primary" onClick={onConfirm}>
@@ -2340,7 +2479,7 @@ function ArchivedBusinessSelector({
       <button className="business-trigger" onClick={() => setOpen(!open)}>
         <span
           className="business-logo"
-          style={{ background: active?.accent || "#d9eee6" }}
+          style={{ background: active?.accent || "#dce7f5" }}
         >
           {active ? businessTypeIcons[active.type] : "◈"}
         </span>
@@ -2997,8 +3136,10 @@ function Platform() {
 }
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
-    <ToastProvider>
-      <Platform />
-    </ToastProvider>
+    <TranslationProvider>
+      <ToastProvider>
+        <Platform />
+      </ToastProvider>
+    </TranslationProvider>
   </BrowserRouter>
 );

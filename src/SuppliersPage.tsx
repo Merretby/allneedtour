@@ -1,60 +1,9 @@
 import React, { useState } from "react";
 import { Search, Plus, Trash2, Edit3, X } from "lucide-react";
 import { useToast } from "./components/ToastProvider";
+import { KEYS, SUPPLIER_SEED, useStore, type Supplier } from "./store";
 
-export interface Supplier {
-  id: string;
-  name: string;
-  category: string;
-  contactName: string;
-  phone: string;
-  email: string;
-  performance: number;
-  status: "Preferred" | "Active" | "Inactive";
-}
-
-const INITIAL_SUPPLIERS: Supplier[] = [
-  {
-    id: "1",
-    name: "Fresh Market",
-    category: "Produce",
-    contactName: "Ahmed B.",
-    phone: "+212 600 112233",
-    email: "orders@freshmarket.ma",
-    performance: 98,
-    status: "Preferred",
-  },
-  {
-    id: "2",
-    name: "Ocean Foods",
-    category: "Seafood",
-    contactName: "Sara K.",
-    phone: "+212 600 445566",
-    email: "sales@oceanfoods.ma",
-    performance: 96,
-    status: "Preferred",
-  },
-  {
-    id: "3",
-    name: "Atlas Drinks",
-    category: "Beverage",
-    contactName: "Youssef M.",
-    phone: "+212 600 778899",
-    email: "contact@atlasdrinks.ma",
-    performance: 92,
-    status: "Active",
-  },
-  {
-    id: "4",
-    name: "Maison Pro",
-    category: "Dry Goods",
-    contactName: "Nadia R.",
-    phone: "+212 600 111222",
-    email: "pro@maison.ma",
-    performance: 89,
-    status: "Active",
-  },
-];
+export type { Supplier };
 
 const CATEGORIES = [
   "Produce",
@@ -69,7 +18,10 @@ const CATEGORIES = [
 
 export const SuppliersPage: React.FC = () => {
   const { showToast } = useToast();
-  const [suppliers, setSuppliers] = useState<Supplier[]>(INITIAL_SUPPLIERS);
+  const [suppliers, setSuppliers] = useStore<Supplier[]>(
+    KEYS.suppliers,
+    SUPPLIER_SEED
+  );
   const [activeTab, setActiveTab] = useState<
     "All suppliers" | "Preferred" | "Performance"
   >("All suppliers");
@@ -87,14 +39,21 @@ export const SuppliersPage: React.FC = () => {
     "Preferred" | "Active" | "Inactive"
   >("Active");
 
-  const filtered = suppliers.filter((item) => {
-    const matchesSearch =
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.category.toLowerCase().includes(searchQuery.toLowerCase());
-    if (activeTab === "Preferred")
-      return matchesSearch && item.status === "Preferred";
-    return matchesSearch;
-  });
+  const filtered = suppliers
+    .filter((item) => {
+      const q = searchQuery.toLowerCase();
+      const matchesSearch = `${item.name} ${item.category} ${item.contactName} ${item.email}`
+        .toLowerCase()
+        .includes(q);
+      if (activeTab === "Preferred")
+        return matchesSearch && item.status === "Preferred";
+      return matchesSearch;
+    })
+    .sort((a, b) =>
+      activeTab === "Performance"
+        ? b.performance - a.performance
+        : a.name.localeCompare(b.name)
+    );
 
   const preferredCount = suppliers.filter(
     (s) => s.status === "Preferred"
@@ -112,7 +71,7 @@ export const SuppliersPage: React.FC = () => {
       return { bg: "var(--success-bg)", color: "var(--success)" };
     if (status === "Active")
       return { bg: "var(--brand-surface)", color: "var(--brand-blue)" };
-    return { bg: "#F3F4F6", color: "#6B7280" };
+    return { bg: "var(--brand-bg)", color: "var(--brand-text-muted)" };
   };
 
   const openModal = (supplier?: Supplier) => {
@@ -232,9 +191,7 @@ export const SuppliersPage: React.FC = () => {
         </div>
       </div>
 
-      <div
-        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}
-      >
+      <div className="an-grid-2">
         {filtered.map((item, index) => {
           const status = getStatusColor(item.status);
           return (
@@ -347,6 +304,12 @@ export const SuppliersPage: React.FC = () => {
             </div>
           );
         })}
+        {filtered.length === 0 && (
+          <div className="an-empty">
+            <strong>No suppliers found</strong>
+            <span>Try a different search, or create a new supplier.</span>
+          </div>
+        )}
       </div>
 
       {/* Modal */}
@@ -429,6 +392,7 @@ export const SuppliersPage: React.FC = () => {
               </div>
               <div className="modal-actions">
                 <button
+                  type="button"
                   className="secondary"
                   onClick={() => setIsModalOpen(false)}
                 >

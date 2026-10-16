@@ -1,95 +1,61 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Search, Download, Trash2, Eye, X, Upload, Plus } from "lucide-react";
 import { useToast } from "./components/ToastProvider";
+import {
+  DOCUMENT_SEED,
+  KEYS,
+  useEscape,
+  useStore,
+  type DocumentRecord,
+} from "./store";
 
-interface DocumentRecord {
-  id: string;
-  name: string;
-  type: string;
-  category: string;
-  size: string;
-  uploadedBy: string;
-  date: string;
-  expiryDate?: string;
-  status: "Valid" | "Expiring Soon" | "Expired" | "No Expiry";
-}
-
-const MOCK_DOCS: DocumentRecord[] = [
-  {
-    id: "1",
-    name: "Hygiene_Certificate_2023.pdf",
-    type: "PDF",
-    category: "Certificates",
-    size: "2.4 MB",
-    uploadedBy: "Sofia Benali",
-    date: "2023-01-15",
-    expiryDate: "2024-01-15",
-    status: "Valid",
-  },
-  {
-    id: "2",
-    name: "Supplier_Contracts_Q4.zip",
-    type: "ZIP",
-    category: "Contracts",
-    size: "14.1 MB",
-    uploadedBy: "Karim Haddad",
-    date: "2023-10-01",
-    status: "No Expiry",
-  },
-  {
-    id: "3",
-    name: "Employee_Handbook.docx",
-    type: "DOCX",
-    category: "HR",
-    size: "845 KB",
-    uploadedBy: "HR Dept",
-    date: "2022-11-20",
-    status: "No Expiry",
-  },
-  {
-    id: "4",
-    name: "Fire_Safety_Inspection.pdf",
-    type: "PDF",
-    category: "Certificates",
-    size: "3.1 MB",
-    uploadedBy: "Sofia Benali",
-    date: "2022-11-05",
-    expiryDate: "2023-11-05",
-    status: "Expiring Soon",
-  },
-  {
-    id: "5",
-    name: "Liquor_License_Old.pdf",
-    type: "PDF",
-    category: "Licenses",
-    size: "1.2 MB",
-    uploadedBy: "Admin",
-    date: "2021-05-12",
-    expiryDate: "2022-05-12",
-    status: "Expired",
-  },
-];
+export type { DocumentRecord };
 
 export const DocumentsPage: React.FC = () => {
   const { showToast } = useToast();
-  const [docs, setDocs] = useState<DocumentRecord[]>(MOCK_DOCS);
+  const [docs, setDocs] = useStore<DocumentRecord[]>(
+    KEYS.documents,
+    DOCUMENT_SEED
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("Any");
   const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [selectedDoc, setSelectedDoc] = useState<DocumentRecord | null>(null);
 
   // Form state
   const [formName, setFormName] = useState("");
   const [formCategory, setFormCategory] = useState("Certificates");
   const [formExpiry, setFormExpiry] = useState("");
   const [formNotes, setFormNotes] = useState("");
+  const [formFile, setFormFile] = useState<{
+    name: string;
+    size: string;
+    type: string;
+    url?: string;
+  } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const closeUpload = () => {
+    setIsUploadOpen(false);
+    setFormName("");
+    setFormCategory("Certificates");
+    setFormExpiry("");
+    setFormNotes("");
+    setFormFile(null);
+  };
+
+  useEscape(isUploadOpen, closeUpload);
+  useEscape(selectedDoc !== null, () => setSelectedDoc(null));
 
   const filtered = docs.filter((doc) => {
     const matchesSearch =
       doc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       doc.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
       doc.category.toLowerCase().includes(searchQuery.toLowerCase());
-    if (filter === "All") return matchesSearch;
-    return matchesSearch && doc.category === filter;
+    if (filter !== "All" && doc.category !== filter) return false;
+    if (statusFilter !== "Any" && doc.status !== statusFilter) return false;
+    return matchesSearch;
   });
 
   const expiringDocsCount = docs.filter(
@@ -104,7 +70,30 @@ export const DocumentsPage: React.FC = () => {
       return { bg: "var(--warning-bg)", color: "var(--warning)" };
     if (status === "Expired")
       return { bg: "var(--error-bg)", color: "var(--error)" };
-    return { bg: "#F3F4F6", color: "#6B7280" };
+    return { bg: "var(--brand-bg)", color: "var(--brand-text-muted)" };
+  };
+
+  const onPickFile = (file: File | null) => {
+    if (!file) {
+      setFormFile(null);
+      return;
+    }
+    const sizeKb = file.size / 1024;
+    const size =
+      sizeKb > 1024
+        ? `${(sizeKb / 1024).toFixed(1)} MB`
+        : `${Math.max(1, Math.round(sizeKb))} KB`;
+    const ext = (file.name.split(".").pop() || "file").toUpperCase();
+    const reader = new FileReader();
+    reader.onload = () =>
+      setFormFile({
+        name: file.name,
+        size,
+        type: ext,
+        url: typeof reader.result === "string" ? reader.result : undefined,
+      });
+    reader.readAsDataURL(file);
+    if (!formName) setFormName(file.name.replace(/\.[^.]+$/, ""));
   };
 
   const handleUpload = (e: React.FormEvent) => {
@@ -114,26 +103,24 @@ export const DocumentsPage: React.FC = () => {
       return;
     }
     const newDoc: DocumentRecord = {
-      id: Date.now().toString(),
-      name: formName,
-      type: "PDF",
+      id: crypto.randomUUID(),
+      name: formName.trim(),
+      type: formFile?.type || "PDF",
       category: formCategory,
-      size: "0 KB",
+      size: formFile?.size || "0 KB",
       uploadedBy: "Current User",
       date: new Date().toISOString().split("T")[0],
       expiryDate: formExpiry || undefined,
       status: formExpiry ? "Valid" : "No Expiry",
+      notes: formNotes || undefined,
+      fileUrl: formFile?.url,
     };
-    setDocs([newDoc, ...docs]);
-    setIsUploadOpen(false);
-    setFormName("");
-    setFormCategory("Certificates");
-    setFormExpiry("");
-    setFormNotes("");
+    setDocs((prev) => [newDoc, ...prev]);
+    closeUpload();
     showToast({
       type: "success",
       title: "Document uploaded",
-      message: formName,
+      message: newDoc.name,
     });
   };
 
@@ -143,12 +130,26 @@ export const DocumentsPage: React.FC = () => {
     showToast({ type: "success", title: "Document deleted" });
   };
 
-  const handleDownload = (name: string) => {
-    showToast({ type: "info", title: `Downloading ${name}` });
+  const handleDownload = (doc: DocumentRecord) => {
+    if (!doc.fileUrl) {
+      showToast({
+        type: "info",
+        title: "Demo record",
+        message: `${doc.name} is a sample record with no file attached.`,
+      });
+      return;
+    }
+    const link = document.createElement("a");
+    link.href = doc.fileUrl;
+    link.download = doc.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast({ type: "success", title: "Download started", message: doc.name });
   };
 
-  const handleView = (name: string) => {
-    showToast({ type: "info", title: `Viewing ${name}` });
+  const handleView = (doc: DocumentRecord) => {
+    setSelectedDoc(doc);
   };
 
   return (
@@ -205,11 +206,17 @@ export const DocumentsPage: React.FC = () => {
             <option value="HR">HR</option>
             <option value="Licenses">Licenses</option>
           </select>
-          <select className="an-select" style={{ width: 150 }}>
-            <option>Any Status</option>
-            <option>Valid</option>
-            <option>Expiring Soon</option>
-            <option>Expired</option>
+          <select
+            className="an-select"
+            style={{ width: 150 }}
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="Any">Any Status</option>
+            <option value="Valid">Valid</option>
+            <option value="Expiring Soon">Expiring Soon</option>
+            <option value="Expired">Expired</option>
+            <option value="No Expiry">No Expiry</option>
           </select>
         </div>
 
@@ -259,17 +266,19 @@ export const DocumentsPage: React.FC = () => {
                       <div className="row-actions">
                         <button
                           className="an-btn an-btn-sm an-btn-secondary"
-                          onClick={() => handleView(doc.name)}
+                          onClick={() => handleView(doc)}
                           style={{ padding: "4px 8px", fontSize: 11 }}
                           title="View"
+                          aria-label={`View ${doc.name}`}
                         >
                           <Eye size={13} />
                         </button>
                         <button
                           className="an-btn an-btn-sm an-btn-secondary"
-                          onClick={() => handleDownload(doc.name)}
+                          onClick={() => handleDownload(doc)}
                           style={{ padding: "4px 8px", fontSize: 11 }}
                           title="Download"
+                          aria-label={`Download ${doc.name}`}
                         >
                           <Download size={13} />
                         </button>
@@ -307,17 +316,13 @@ export const DocumentsPage: React.FC = () => {
 
       {/* Upload File Modal */}
       {isUploadOpen && (
-        <div className="modal-backdrop" onClick={() => setIsUploadOpen(false)}>
+        <div className="modal-backdrop" onClick={closeUpload}>
           <section className="modal" onClick={(e) => e.stopPropagation()}>
             <button
+              type="button"
               className="close"
-              onClick={() => {
-                setIsUploadOpen(false);
-                setFormName("");
-                setFormCategory("Certificates");
-                setFormExpiry("");
-                setFormNotes("");
-              }}
+              onClick={closeUpload}
+              aria-label="Close"
             >
               <X size={17} />
             </button>
@@ -326,6 +331,7 @@ export const DocumentsPage: React.FC = () => {
             <p>Upload a new document to the document center.</p>
             <form onSubmit={handleUpload}>
               <div
+                onClick={() => fileInputRef.current?.click()}
                 style={{
                   border: "2px dashed var(--brand-border)",
                   borderRadius: "var(--radius)",
@@ -336,6 +342,13 @@ export const DocumentsPage: React.FC = () => {
                   cursor: "pointer",
                 }}
               >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  hidden
+                  accept=".pdf,.zip,.docx,.doc,.jpg,.jpeg,.png,.csv,.xlsx"
+                  onChange={(e) => onPickFile(e.target.files?.[0] ?? null)}
+                />
                 <Upload
                   size={28}
                   style={{ color: "var(--brand-text-muted)", marginBottom: 12 }}
@@ -348,7 +361,7 @@ export const DocumentsPage: React.FC = () => {
                     color: "var(--brand-navy)",
                   }}
                 >
-                  Click to upload or drag and drop
+                  {formFile ? formFile.name : "Click to upload a file"}
                 </p>
                 <p
                   style={{
@@ -357,7 +370,9 @@ export const DocumentsPage: React.FC = () => {
                     color: "var(--brand-text-muted)",
                   }}
                 >
-                  PDF, ZIP, DOCX, JPG (Max 50MB)
+                  {formFile
+                    ? `${formFile.size} · ${formFile.type}`
+                    : "PDF, ZIP, DOCX, JPG (Max 50MB) — optional for demo"}
                 </p>
               </div>
 
@@ -408,16 +423,7 @@ export const DocumentsPage: React.FC = () => {
                 </div>
               </div>
               <div className="modal-actions">
-                <button
-                  className="secondary"
-                  onClick={() => {
-                    setIsUploadOpen(false);
-                    setFormName("");
-                    setFormCategory("Certificates");
-                    setFormExpiry("");
-                    setFormNotes("");
-                  }}
-                >
+                <button type="button" className="secondary" onClick={closeUpload}>
                   Cancel
                 </button>
                 <button className="primary" type="submit">
@@ -425,6 +431,70 @@ export const DocumentsPage: React.FC = () => {
                 </button>
               </div>
             </form>
+          </section>
+        </div>
+      )}
+
+      {/* Document Detail Modal */}
+      {selectedDoc && (
+        <div className="modal-backdrop" onClick={() => setSelectedDoc(null)}>
+          <section className="modal" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className="close"
+              onClick={() => setSelectedDoc(null)}
+              aria-label="Close"
+            >
+              <X size={17} />
+            </button>
+            <span className="eyebrow">{selectedDoc.category}</span>
+            <h2>{selectedDoc.name}</h2>
+            <div style={{ display: "grid", gap: 12, marginTop: 8 }}>
+              <div className="an-metric">
+                <span className="an-metric-label">Size / type</span>
+                <span className="an-metric-value">{selectedDoc.size}</span>
+                <span className="an-metric-sub">{selectedDoc.type}</span>
+              </div>
+              <div className="an-metric">
+                <span className="an-metric-label">Uploaded by</span>
+                <span className="an-metric-value">
+                  {selectedDoc.uploadedBy}
+                </span>
+                <span className="an-metric-sub">{selectedDoc.date}</span>
+              </div>
+              <p style={{ margin: 0, color: "var(--brand-text-muted)" }}>
+                Expiry: {selectedDoc.expiryDate || "N/A"} · Status:{" "}
+                {selectedDoc.status}
+              </p>
+              {selectedDoc.notes && <p>{selectedDoc.notes}</p>}
+              {selectedDoc.fileUrl && selectedDoc.type.startsWith("PNG") && (
+                <img
+                  src={selectedDoc.fileUrl}
+                  alt={selectedDoc.name}
+                  style={{ maxWidth: "100%", borderRadius: 8 }}
+                />
+              )}
+              {!selectedDoc.fileUrl && (
+                <p style={{ color: "var(--brand-text-muted)", fontSize: 12 }}>
+                  This is a sample record with no file attached.
+                </p>
+              )}
+            </div>
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="secondary"
+                onClick={() => setSelectedDoc(null)}
+              >
+                Close
+              </button>
+              <button
+                className="primary"
+                onClick={() => handleDownload(selectedDoc)}
+              >
+                <Download size={14} /> Download
+              </button>
+            </div>
           </section>
         </div>
       )}

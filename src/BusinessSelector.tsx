@@ -38,7 +38,7 @@ export function BusinessSelector({
       >
         <span
           className="business-logo"
-          style={{ background: active?.accent || "#d9eee6" }}
+          style={{ background: active?.accent || "#dce7f5" }}
         >
           {active ? businessTypeIcons[active.type] : "◈"}
         </span>

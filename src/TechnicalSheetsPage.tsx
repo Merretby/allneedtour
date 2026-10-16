@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useEscape } from "./store";
 
 export interface Ingredient {
   id: string;
@@ -135,6 +136,13 @@ export const TechnicalSheetsPage: React.FC = () => {
   const [formImageUrl, setFormImageUrl] = useState("");
   const [formSellingPrice, setFormSellingPrice] = useState<number>(20);
 
+  useEscape(isModalOpen, () => setIsModalOpen(false));
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingSheet(null);
+  };
+
   const calculateTotalCost = (ingredients: Ingredient[]) => {
     return ingredients.reduce(
       (sum, ing) => sum + ing.quantity * ing.unitCost,
@@ -250,16 +258,18 @@ export const TechnicalSheetsPage: React.FC = () => {
     };
 
     if (editingSheet) {
-      setSheets(sheets.map((s) => (s.id === editingSheet.id ? newSheet : s)));
+      setSheets((prev) =>
+        prev.map((s) => (s.id === editingSheet.id ? newSheet : s))
+      );
     } else {
-      setSheets([...sheets, newSheet]);
+      setSheets((prev) => [...prev, newSheet]);
     }
     setIsModalOpen(false);
   };
 
   const handleDeleteSheet = (id: string) => {
     if (confirm("Delete this technical sheet?")) {
-      setSheets(sheets.filter((s) => s.id !== id));
+      setSheets((prev) => prev.filter((s) => s.id !== id));
     }
   };
 
@@ -302,13 +312,13 @@ export const TechnicalSheetsPage: React.FC = () => {
           style={{
             margin: "0 0 0.5rem 0",
             fontSize: "1.75rem",
-            color: "#0f172a",
+            color: "#0b1739",
             fontWeight: 700,
           }}
         >
           Technical Sheets
         </h1>
-        <p style={{ margin: 0, color: "#475569", fontSize: "0.875rem" }}>
+        <p style={{ margin: 0, color: "#64748b", fontSize: "0.875rem" }}>
           Recipes, yields, allergens and food-cost details for every item.
         </p>
       </div>
@@ -326,7 +336,7 @@ export const TechnicalSheetsPage: React.FC = () => {
             background: "#fff",
             padding: "1.25rem",
             borderRadius: "12px",
-            border: "1px solid #e2e8f0",
+            border: "1px solid #dce7f5",
             boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
           }}
         >
@@ -341,7 +351,7 @@ export const TechnicalSheetsPage: React.FC = () => {
           >
             Recipes
           </p>
-          <strong style={{ fontSize: "1.5rem", color: "#0f172a" }}>
+          <strong style={{ fontSize: "1.5rem", color: "#0b1739" }}>
             {sheets.length}
           </strong>
         </div>
@@ -350,7 +360,7 @@ export const TechnicalSheetsPage: React.FC = () => {
             background: "#fff",
             padding: "1.25rem",
             borderRadius: "12px",
-            border: "1px solid #e2e8f0",
+            border: "1px solid #dce7f5",
             boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
           }}
         >
@@ -365,7 +375,7 @@ export const TechnicalSheetsPage: React.FC = () => {
           >
             Avg Food Cost
           </p>
-          <strong style={{ fontSize: "1.5rem", color: "#0f172a" }}>
+          <strong style={{ fontSize: "1.5rem", color: "#0b1739" }}>
             {avgCostPct.toFixed(1)}%
           </strong>
         </div>
@@ -374,7 +384,7 @@ export const TechnicalSheetsPage: React.FC = () => {
             background: "#fff",
             padding: "1.25rem",
             borderRadius: "12px",
-            border: "1px solid #e2e8f0",
+            border: "1px solid #dce7f5",
             boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
           }}
         >
@@ -389,7 +399,7 @@ export const TechnicalSheetsPage: React.FC = () => {
           >
             Tracked Allergens
           </p>
-          <strong style={{ fontSize: "1.5rem", color: "#0f172a" }}>
+          <strong style={{ fontSize: "1.5rem", color: "#0b1739" }}>
             {totalAllergens}
           </strong>
         </div>
@@ -399,7 +409,7 @@ export const TechnicalSheetsPage: React.FC = () => {
       <div
         style={{
           display: "flex",
-          borderBottom: "1px solid #e2e8f0",
+          borderBottom: "1px solid #dce7f5",
           marginBottom: "1.5rem",
           gap: "2rem",
         }}
@@ -414,10 +424,10 @@ export const TechnicalSheetsPage: React.FC = () => {
               padding: "0.75rem 0",
               fontSize: "0.875rem",
               fontWeight: 600,
-              color: activeTab === tab ? "#0f172a" : "#64748b",
+              color: activeTab === tab ? "#0b1739" : "#64748b",
               borderBottom:
                 activeTab === tab
-                  ? "2px solid #0f172a"
+                  ? "2px solid #0b1739"
                   : "2px solid transparent",
               cursor: "pointer",
               marginBottom: "-1px",
@@ -445,7 +455,7 @@ export const TechnicalSheetsPage: React.FC = () => {
           style={{
             padding: "0.6rem 1rem",
             borderRadius: "8px",
-            border: "1px solid #cbd5e1",
+            border: "1px solid #dce7f5",
             width: "300px",
             fontSize: "0.875rem",
           }}
@@ -456,7 +466,7 @@ export const TechnicalSheetsPage: React.FC = () => {
             padding: "0.6rem 1.25rem",
             borderRadius: "8px",
             border: "none",
-            background: "#0f172a",
+            background: "#0b1739",
             color: "#fff",
             fontWeight: 600,
             cursor: "pointer",
@@ -485,7 +495,7 @@ export const TechnicalSheetsPage: React.FC = () => {
               key={sheet.id}
               style={{
                 background: "#fff",
-                border: "1px solid #e2e8f0",
+                border: "1px solid #dce7f5",
                 borderRadius: "12px",
                 padding: "1rem 1.5rem",
                 display: "flex",
@@ -499,7 +509,7 @@ export const TechnicalSheetsPage: React.FC = () => {
               >
                 <span
                   style={{
-                    color: "#94a3b8",
+                    color: "#a9d4ff",
                     fontSize: "0.875rem",
                     fontWeight: 500,
                   }}
@@ -522,7 +532,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                   <h4
                     style={{
                       margin: "0 0 0.25rem 0",
-                      color: "#0f172a",
+                      color: "#0b1739",
                       fontSize: "1rem",
                       fontWeight: 600,
                     }}
@@ -530,7 +540,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                     {sheet.name}{" "}
                     <span
                       style={{
-                        color: "#475569",
+                        color: "#64748b",
                         fontWeight: 500,
                         marginLeft: "0.5rem",
                       }}
@@ -558,9 +568,9 @@ export const TechnicalSheetsPage: React.FC = () => {
                   style={{
                     padding: "0.4rem 1rem",
                     borderRadius: "6px",
-                    border: "1px solid #cbd5e1",
-                    background: "#f8fafc",
-                    color: "#0f172a",
+                    border: "1px solid #dce7f5",
+                    background: "#f5f9ff",
+                    color: "#0b1739",
                     fontSize: "0.75rem",
                     fontWeight: 600,
                     cursor: "pointer",
@@ -578,9 +588,9 @@ export const TechnicalSheetsPage: React.FC = () => {
               padding: "3rem",
               textAlign: "center",
               color: "#64748b",
-              background: "#f8fafc",
+              background: "#f5f9ff",
               borderRadius: "12px",
-              border: "1px dashed #cbd5e1",
+              border: "1px dashed #dce7f5",
             }}
           >
             No technical sheets found.
@@ -591,13 +601,14 @@ export const TechnicalSheetsPage: React.FC = () => {
       {/* Modal */}
       {isModalOpen && (
         <div
+          onClick={closeModal}
           style={{
             position: "fixed",
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            background: "rgba(15,23,42,0.6)",
+            background: "rgba(11,23,57,0.6)",
             backdropFilter: "blur(4px)",
             display: "flex",
             alignItems: "center",
@@ -607,6 +618,7 @@ export const TechnicalSheetsPage: React.FC = () => {
           }}
         >
           <div
+            onClick={(e) => e.stopPropagation()}
             style={{
               background: "#fff",
               borderRadius: "16px",
@@ -615,7 +627,7 @@ export const TechnicalSheetsPage: React.FC = () => {
               maxHeight: "90vh",
               overflowY: "auto",
               padding: "2rem",
-              boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1)",
+              boxShadow: "var(--shadow-lg)",
             }}
           >
             <div
@@ -626,7 +638,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                 marginBottom: "1.5rem",
               }}
             >
-              <h2 style={{ margin: 0, fontSize: "1.25rem", color: "#0f172a" }}>
+              <h2 style={{ margin: 0, fontSize: "1.25rem", color: "#0b1739" }}>
                 {editingSheet ? "Edit Technical Sheet" : "New Technical Sheet"}
               </h2>
               {editingSheet && (
@@ -634,7 +646,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                   type="button"
                   onClick={() => {
                     handleDeleteSheet(editingSheet.id);
-                    setIsModalOpen(false);
+                    closeModal();
                   }}
                   style={{
                     background: "none",
@@ -667,7 +679,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                       fontSize: "0.75rem",
                       fontWeight: 600,
                       marginBottom: "0.25rem",
-                      color: "#475569",
+                      color: "#64748b",
                     }}
                   >
                     Recipe Name *
@@ -681,7 +693,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                       width: "100%",
                       padding: "0.6rem",
                       borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
+                      border: "1px solid #dce7f5",
                       boxSizing: "border-box",
                     }}
                   />
@@ -693,7 +705,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                       fontSize: "0.75rem",
                       fontWeight: 600,
                       marginBottom: "0.25rem",
-                      color: "#475569",
+                      color: "#64748b",
                     }}
                   >
                     Category
@@ -705,7 +717,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                       width: "100%",
                       padding: "0.6rem",
                       borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
+                      border: "1px solid #dce7f5",
                       boxSizing: "border-box",
                     }}
                   >
@@ -734,7 +746,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                       fontSize: "0.75rem",
                       fontWeight: 600,
                       marginBottom: "0.25rem",
-                      color: "#475569",
+                      color: "#64748b",
                     }}
                   >
                     Prep Time (m)
@@ -747,7 +759,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                       width: "100%",
                       padding: "0.6rem",
                       borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
+                      border: "1px solid #dce7f5",
                       boxSizing: "border-box",
                     }}
                   />
@@ -759,7 +771,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                       fontSize: "0.75rem",
                       fontWeight: 600,
                       marginBottom: "0.25rem",
-                      color: "#475569",
+                      color: "#64748b",
                     }}
                   >
                     Cook Time (m)
@@ -772,7 +784,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                       width: "100%",
                       padding: "0.6rem",
                       borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
+                      border: "1px solid #dce7f5",
                       boxSizing: "border-box",
                     }}
                   />
@@ -784,7 +796,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                       fontSize: "0.75rem",
                       fontWeight: 600,
                       marginBottom: "0.25rem",
-                      color: "#475569",
+                      color: "#64748b",
                     }}
                   >
                     Yield (Portions)
@@ -798,7 +810,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                       width: "100%",
                       padding: "0.6rem",
                       borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
+                      border: "1px solid #dce7f5",
                       boxSizing: "border-box",
                     }}
                   />
@@ -810,7 +822,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                       fontSize: "0.75rem",
                       fontWeight: 600,
                       marginBottom: "0.25rem",
-                      color: "#475569",
+                      color: "#64748b",
                     }}
                   >
                     Sell Price (MAD)
@@ -826,7 +838,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                       width: "100%",
                       padding: "0.6rem",
                       borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
+                      border: "1px solid #dce7f5",
                       boxSizing: "border-box",
                     }}
                   />
@@ -847,7 +859,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                     style={{
                       fontSize: "0.875rem",
                       fontWeight: 600,
-                      color: "#0f172a",
+                      color: "#0b1739",
                     }}
                   >
                     Ingredients & Costing
@@ -869,9 +881,9 @@ export const TechnicalSheetsPage: React.FC = () => {
 
                 <div
                   style={{
-                    background: "#f8fafc",
+                    background: "#f5f9ff",
                     borderRadius: "8px",
-                    border: "1px solid #e2e8f0",
+                    border: "1px solid #dce7f5",
                     padding: "1rem",
                   }}
                 >
@@ -914,7 +926,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                         style={{
                           padding: "0.4rem",
                           borderRadius: "4px",
-                          border: "1px solid #cbd5e1",
+                          border: "1px solid #dce7f5",
                         }}
                       />
                       <input
@@ -931,7 +943,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                         style={{
                           padding: "0.4rem",
                           borderRadius: "4px",
-                          border: "1px solid #cbd5e1",
+                          border: "1px solid #dce7f5",
                         }}
                       />
                       <select
@@ -942,7 +954,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                         style={{
                           padding: "0.4rem",
                           borderRadius: "4px",
-                          border: "1px solid #cbd5e1",
+                          border: "1px solid #dce7f5",
                         }}
                       >
                         <option value="g">g</option>
@@ -965,7 +977,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                         style={{
                           padding: "0.4rem",
                           borderRadius: "4px",
-                          border: "1px solid #cbd5e1",
+                          border: "1px solid #dce7f5",
                         }}
                       />
                       <button
@@ -989,11 +1001,11 @@ export const TechnicalSheetsPage: React.FC = () => {
                     style={{
                       marginTop: "0.5rem",
                       background: "none",
-                      border: "1px dashed #cbd5e1",
+                      border: "1px dashed #dce7f5",
                       borderRadius: "6px",
                       padding: "0.5rem",
                       width: "100%",
-                      color: "#475569",
+                      color: "#64748b",
                       fontSize: "0.75rem",
                       fontWeight: 600,
                       cursor: "pointer",
@@ -1020,7 +1032,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                       fontSize: "0.875rem",
                       fontWeight: 600,
                       marginBottom: "0.5rem",
-                      color: "#0f172a",
+                      color: "#0b1739",
                     }}
                   >
                     Preparation Method
@@ -1034,7 +1046,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                       width: "100%",
                       padding: "0.6rem",
                       borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
+                      border: "1px solid #dce7f5",
                       boxSizing: "border-box",
                       fontFamily: "inherit",
                     }}
@@ -1047,7 +1059,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                       fontSize: "0.875rem",
                       fontWeight: 600,
                       marginBottom: "0.5rem",
-                      color: "#0f172a",
+                      color: "#0b1739",
                     }}
                   >
                     Allergens
@@ -1064,12 +1076,12 @@ export const TechnicalSheetsPage: React.FC = () => {
                           padding: "0.3rem 0.6rem",
                           borderRadius: "20px",
                           border: formAllergens.includes(a)
-                            ? "1px solid #0f172a"
-                            : "1px solid #cbd5e1",
+                            ? "1px solid #0b1739"
+                            : "1px solid #dce7f5",
                           background: formAllergens.includes(a)
-                            ? "#0f172a"
+                            ? "#0b1739"
                             : "#fff",
-                          color: formAllergens.includes(a) ? "#fff" : "#475569",
+                          color: formAllergens.includes(a) ? "#fff" : "#64748b",
                           fontSize: "0.75rem",
                           cursor: "pointer",
                         }}
@@ -1086,7 +1098,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                         fontSize: "0.875rem",
                         fontWeight: 600,
                         marginBottom: "0.5rem",
-                        color: "#0f172a",
+                        color: "#0b1739",
                       }}
                     >
                       Finished Photo
@@ -1109,10 +1121,10 @@ export const TechnicalSheetsPage: React.FC = () => {
                             borderRadius: "4px",
                             border:
                               formImageUrl === p.url
-                                ? "2px solid #0f172a"
-                                : "1px solid #cbd5e1",
+                                ? "2px solid #0b1739"
+                                : "1px solid #dce7f5",
                             background:
-                              formImageUrl === p.url ? "#f1f5f9" : "#fff",
+                              formImageUrl === p.url ? "#f5f9ff" : "#fff",
                             fontSize: "0.65rem",
                             cursor: "pointer",
                           }}
@@ -1132,16 +1144,16 @@ export const TechnicalSheetsPage: React.FC = () => {
                   justifyContent: "flex-end",
                   gap: "0.75rem",
                   paddingTop: "1rem",
-                  borderTop: "1px solid #e2e8f0",
+                  borderTop: "1px solid #dce7f5",
                 }}
               >
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={closeModal}
                   style={{
                     padding: "0.6rem 1.25rem",
                     borderRadius: "8px",
-                    border: "1px solid #cbd5e1",
+                    border: "1px solid var(--brand-border)",
                     background: "#fff",
                     cursor: "pointer",
                     fontWeight: 600,
@@ -1155,7 +1167,7 @@ export const TechnicalSheetsPage: React.FC = () => {
                     padding: "0.6rem 1.25rem",
                     borderRadius: "8px",
                     border: "none",
-                    background: "#0f172a",
+                    background: "#0b1739",
                     color: "#fff",
                     cursor: "pointer",
                     fontWeight: 600,

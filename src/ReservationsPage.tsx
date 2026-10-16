@@ -14,80 +14,15 @@ import {
   Utensils,
   X,
 } from "lucide-react";
+import {
+  KEYS,
+  RESERVATION_SEED,
+  useEscape,
+  useStore,
+  type Reservation,
+  type ReservationStatus,
+} from "./store";
 
-type ReservationStatus = "Confirmed" | "Seated" | "Late" | "Finished";
-type Reservation = {
-  id: string;
-  name: string;
-  table: string;
-  time: string;
-  party: number;
-  status: ReservationStatus;
-  tags: string[];
-  note: string;
-};
-const seedReservations: Reservation[] = [
-  {
-    id: "r-1",
-    name: "Camille Martin",
-    table: "T12",
-    time: "18:00",
-    party: 4,
-    status: "Confirmed",
-    tags: ["VIP", "Birthday"],
-    note: "Window seat requested.",
-  },
-  {
-    id: "r-2",
-    name: "Karim Haddad",
-    table: "T04",
-    time: "18:15",
-    party: 2,
-    status: "Seated",
-    tags: ["First Visit"],
-    note: "Prefers sparkling water.",
-  },
-  {
-    id: "r-3",
-    name: "Sarah Benali",
-    table: "T08",
-    time: "18:30",
-    party: 3,
-    status: "Late",
-    tags: ["Nut Allergy", "High Priority"],
-    note: "Allergy confirmed with kitchen.",
-  },
-  {
-    id: "r-4",
-    name: "Thomas Laurent",
-    table: "T16",
-    time: "19:00",
-    party: 6,
-    status: "Confirmed",
-    tags: ["Anniversary"],
-    note: "Anniversary dessert requested.",
-  },
-  {
-    id: "r-5",
-    name: "Nora Martin",
-    table: "T03",
-    time: "19:15",
-    party: 2,
-    status: "Finished",
-    tags: ["Special Request"],
-    note: "Receipt emailed to guest.",
-  },
-  {
-    id: "r-6",
-    name: "Elena Rossi",
-    table: "T21",
-    time: "19:45",
-    party: 4,
-    status: "Confirmed",
-    tags: ["VIP"],
-    note: "Returning guest.",
-  },
-];
 const statusClass = (status: ReservationStatus) => status.toLowerCase();
 const tagClass = (tag: string) => tag.toLowerCase().replaceAll(" ", "-");
 
@@ -95,11 +30,20 @@ export function ReservationsPage() {
   const [tab, setTab] = useState("Today");
   const [shift, setShift] = useState("Dinner - 18:00");
   const [search, setSearch] = useState("");
-  const [items, setItems] = useState(seedReservations);
+  const [items, setItems] = useStore<Reservation[]>(
+    KEYS.reservations,
+    RESERVATION_SEED
+  );
   const [notice, setNotice] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
   const selected = items.find((item) => item.id === detailId) || null;
+  useEscape(detailId !== null, () => setDetailId(null));
+  const inShift = (time: string) => {
+    if (shift.startsWith("Lunch")) return time < "16:00";
+    if (shift.startsWith("Late")) return time >= "21:00";
+    return time >= "16:00" && time < "21:00";
+  };
   const filtered = useMemo(
     () =>
       items
@@ -110,12 +54,13 @@ export function ReservationsPage() {
               ? item.status === "Late"
               : true
         )
+        .filter((item) => inShift(item.time))
         .filter((item) =>
           `${item.name} ${item.table} ${item.tags.join(" ")}`
             .toLowerCase()
             .includes(search.toLowerCase())
         ),
-    [items, tab, search]
+    [items, tab, search, shift]
   );
   const notify = (message: string) => {
     setNotice(message);
@@ -126,6 +71,14 @@ export function ReservationsPage() {
       current.map((item) => (item.id === id ? { ...item, status } : item))
     );
     notify(`Reservation marked ${status.toLowerCase()}`);
+  };
+  const cancelReservation = (id: string) => {
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+    if (!confirm(`Cancel the reservation for ${item.name}?`)) return;
+    setItems((current) => current.filter((i) => i.id !== id));
+    if (detailId === id) setDetailId(null);
+    notify(`${item.name}'s reservation cancelled`);
   };
   const action = (id: string, message: string) => {
     setSelectedId(id);
@@ -197,9 +150,17 @@ export function ReservationsPage() {
               onSelect={() => setDetailId(item.id)}
               onStatus={update}
               onAction={action}
+              onCancel={() => cancelReservation(item.id)}
             />
           ))}
         </div>
+      )}
+      {selected && (
+        <ReservationDetail
+          reservation={selected}
+          onClose={() => setDetailId(null)}
+          onAction={notify}
+        />
       )}
     </section>
   );
@@ -227,12 +188,14 @@ function ReservationCard({
   onSelect,
   onStatus,
   onAction,
+  onCancel,
 }: {
   item: Reservation;
   selected: boolean;
   onSelect: () => void;
   onStatus: (id: string, status: ReservationStatus) => void;
   onAction: (id: string, message: string) => void;
+  onCancel: () => void;
 }) {
   return (
     <article
@@ -305,9 +268,7 @@ function ReservationCard({
             }
             onLate={() => onStatus(item.id, "Late")}
             onSeated={() => onStatus(item.id, "Seated")}
-            onCancel={() =>
-              onAction(item.id, `${item.name}'s reservation cancelled`)
-            }
+            onCancel={onCancel}
             onNote={() => onAction(item.id, `Note added for ${item.name}`)}
           />
         </div>
@@ -439,8 +400,16 @@ function ReservationDetail({
   onAction: (message: string) => void;
 }) {
   return (
-    <div className="reservation-detail-modal" role="dialog" aria-modal="true">
-      <div className="reservation-detail-panel">
+    <div
+      className="reservation-detail-modal"
+      role="dialog"
+      aria-modal="true"
+      onClick={onClose}
+    >
+      <div
+        className="reservation-detail-panel"
+        onClick={(e) => e.stopPropagation()}
+      >
         <button
           className="detail-close"
           onClick={onClose}

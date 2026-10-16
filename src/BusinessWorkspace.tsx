@@ -149,6 +149,11 @@ const copy: Record<
 };
 export function BusinessWorkspace({ business }: { business: Business }) {
   const [page, setPage] = useState("Today");
+  const [notice, setNotice] = useState("");
+  const notify = (message: string) => {
+    setNotice(message);
+    window.setTimeout(() => setNotice(""), 2400);
+  };
   let account: Account | null = null;
   try {
     account = JSON.parse(sessionStorage.getItem("allneeds.account") || "null");
@@ -250,7 +255,12 @@ export function BusinessWorkspace({ business }: { business: Business }) {
                   Open alerts are isolated to {business.name}. Nothing from
                   another business is shown here.
                 </p>
-                <button className="primary">
+                <button
+                  className="primary"
+                  onClick={() =>
+                    notify(`3 open alerts for ${business.name} — nothing else shown`)
+                  }
+                >
                   Open alerts <ArrowRight size={14} />
                 </button>
               </section>
@@ -271,10 +281,21 @@ export function BusinessWorkspace({ business }: { business: Business }) {
             </p>
             {(permissions.includes("*") ||
               permissions.includes(`${keyFor(page)}.create`)) && (
-              <button className="primary">
+              <button
+                className="primary"
+                onClick={() =>
+                  notify(`New ${page} record created for ${business.name}`)
+                }
+              >
                 Create first record <Plus size={14} />
               </button>
             )}
+          </div>
+        )}
+        {notice && (
+          <div className="inline-notice" role="status">
+            <Check size={14} />
+            {notice}
           </div>
         )}
       </section>

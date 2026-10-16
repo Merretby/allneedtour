@@ -1,49 +1,23 @@
 import React, { useState } from "react";
 import { Search, Plus, Trash2, Edit3, X } from "lucide-react";
 import { useToast } from "./components/ToastProvider";
-
-interface Payment {
-  id: string;
-  reference: string;
-  date: string;
-  amount: number;
-  method: "Cash" | "Card" | "Transfer" | "Check";
-  type: "Collection" | "Invoice" | "Settlement";
-  status: "Completed" | "Pending";
-  client?: string;
-  notes?: string;
-}
-
-const MOCK_PAYMENTS: Payment[] = [
-  {
-    id: "1",
-    client: "Salma R.",
-    reference: "REC-001",
-    date: "2026-10-08",
-    amount: 450.0,
-    method: "Card",
-    type: "Collection",
-    status: "Completed",
-    notes: "Settled",
-  },
-  {
-    id: "2",
-    client: "Omar B.",
-    reference: "REC-002",
-    date: "2026-10-08",
-    amount: 300.0,
-    method: "Cash",
-    type: "Collection",
-    status: "Pending",
-    notes: "Settled",
-  },
-];
+import {
+  KEYS,
+  PAYMENT_SEED,
+  useEscape,
+  useStore,
+  type Payment,
+} from "./store";
 
 export const PaymentsCollectionsPage: React.FC = () => {
   const { showToast } = useToast();
-  const [payments, setPayments] = useState<Payment[]>(MOCK_PAYMENTS);
+  const [payments, setPayments] = useStore<Payment[]>(
+    KEYS.payments,
+    PAYMENT_SEED
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<"All" | "Completed" | "Pending">("All");
+  const [dateFilter, setDateFilter] = useState("");
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -55,10 +29,21 @@ export const PaymentsCollectionsPage: React.FC = () => {
   const [formType, setFormType] = useState<Payment["type"]>("Collection");
   const [formStatus, setFormStatus] = useState<Payment["status"]>("Completed");
 
+  const closeModal = () => {
+    setIsAddOpen(false);
+    setEditingId(null);
+    setFormClient("");
+    setFormReference("");
+    setFormAmount("");
+  };
+
+  useEscape(isAddOpen, closeModal);
+
   const filtered = payments.filter((p) => {
     const matchesSearch =
       (p.client || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.reference.toLowerCase().includes(searchQuery.toLowerCase());
+    if (dateFilter && p.date !== dateFilter) return false;
     if (filter === "Completed")
       return matchesSearch && p.status === "Completed";
     if (filter === "Pending") return matchesSearch && p.status === "Pending";
@@ -89,7 +74,7 @@ export const PaymentsCollectionsPage: React.FC = () => {
       type: formType,
       status: formStatus,
     };
-    setPayments([newPayment, ...payments]);
+    setPayments((prev) => [newPayment, ...prev]);
     setIsAddOpen(false);
     setFormClient("");
     setFormReference("");
@@ -210,7 +195,14 @@ export const PaymentsCollectionsPage: React.FC = () => {
             <option value="Completed">Completed</option>
             <option value="Pending">Pending</option>
           </select>
-          <input type="date" className="an-input" style={{ width: 140 }} />
+          <input
+            type="date"
+            className="an-input"
+            style={{ width: 160 }}
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+            aria-label="Filter by date"
+          />
         </div>
 
         <div className="table-scroll">
@@ -321,18 +313,9 @@ export const PaymentsCollectionsPage: React.FC = () => {
 
       {/* Add/Edit Payment Modal */}
       {isAddOpen && (
-        <div className="modal-backdrop" onClick={() => setIsAddOpen(false)}>
+        <div className="modal-backdrop" onClick={closeModal}>
           <section className="modal" onClick={(e) => e.stopPropagation()}>
-            <button
-              className="close"
-              onClick={() => {
-                setIsAddOpen(false);
-                setEditingId(null);
-                setFormClient("");
-                setFormReference("");
-                setFormAmount("");
-              }}
-            >
+            <button type="button" className="close" onClick={closeModal} aria-label="Close">
               <X size={17} />
             </button>
             <span className="eyebrow">
@@ -416,16 +399,7 @@ export const PaymentsCollectionsPage: React.FC = () => {
                 </div>
               </div>
               <div className="modal-actions">
-                <button
-                  className="secondary"
-                  onClick={() => {
-                    setIsAddOpen(false);
-                    setEditingId(null);
-                    setFormClient("");
-                    setFormReference("");
-                    setFormAmount("");
-                  }}
-                >
+                <button type="button" className="secondary" onClick={closeModal}>
                   Cancel
                 </button>
                 <button className="primary" type="submit">

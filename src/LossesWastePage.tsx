@@ -1,54 +1,30 @@
 import React, { useState } from "react";
 import { Search, Plus, Trash2 } from "lucide-react";
 import { useToast } from "./components/ToastProvider";
+import {
+  KEYS,
+  STOCK_MOVEMENT_SEED,
+  STOCK_SEED,
+  WASTE_SEED,
+  useStore,
+  type StockItem,
+  type StockMovement,
+  type WasteLog,
+} from "./store";
 
-export interface WasteLog {
-  id: string;
-  date: string;
-  itemName: string;
-  quantity: number;
-  unit: string;
-  cost: number;
-  reason: "Expired" | "Prep Waste" | "Service Error" | "Dropped/Spilled";
-  loggedBy: string;
-}
-
-const INITIAL_WASTE: WasteLog[] = [
-  {
-    id: "WST-101",
-    date: new Date().toISOString(),
-    itemName: "Sea Bass Fillet",
-    quantity: 0.5,
-    unit: "kg",
-    cost: 140,
-    reason: "Prep Waste",
-    loggedBy: "Chef Ahmed",
-  },
-  {
-    id: "WST-102",
-    date: new Date().toISOString(),
-    itemName: "Heavy Cream",
-    quantity: 1,
-    unit: "L",
-    cost: 42,
-    reason: "Expired",
-    loggedBy: "Sous Chef Sara",
-  },
-  {
-    id: "WST-103",
-    date: new Date(Date.now() - 86400000).toISOString(),
-    itemName: "Truffle",
-    quantity: 0.1,
-    unit: "kg",
-    cost: 1500,
-    reason: "Dropped/Spilled",
-    loggedBy: "Commis Ali",
-  },
-];
+export type { WasteLog };
 
 export const LossesWastePage: React.FC = () => {
   const { showToast } = useToast();
-  const [wasteLogs, setWasteLogs] = useState<WasteLog[]>(INITIAL_WASTE);
+  const [wasteLogs, setWasteLogs] = useStore<WasteLog[]>(
+    KEYS.wasteLogs,
+    WASTE_SEED
+  );
+  const [, setStock] = useStore<StockItem[]>(KEYS.stockItems, STOCK_SEED);
+  const [, setMovements] = useStore<StockMovement[]>(
+    KEYS.stockMovements,
+    STOCK_MOVEMENT_SEED
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -87,7 +63,37 @@ export const LossesWastePage: React.FC = () => {
       reason: formReason,
       loggedBy: "Current User",
     };
-    setWasteLogs([newLog, ...wasteLogs]);
+    setWasteLogs((prev) => [newLog, ...prev]);
+
+    // Business rule: waste decrements the matching stock item (by name).
+    const name = formItem.trim().toLowerCase();
+    let linked = false;
+    setStock((prev) =>
+      prev.map((s) => {
+        if (s.name.toLowerCase() !== name) return s;
+        linked = true;
+        return {
+          ...s,
+          quantity: Math.max(0, s.quantity - formQuantity),
+          lastUpdated: new Date().toISOString(),
+        };
+      })
+    );
+    if (linked) {
+      setMovements((prev) => [
+        {
+          id: crypto.randomUUID(),
+          itemId: name,
+          itemName: formItem,
+          type: "waste",
+          amount: formQuantity,
+          unit: formUnit,
+          at: new Date().toISOString(),
+        },
+        ...prev,
+      ]);
+    }
+
     setIsModalOpen(false);
     setFormItem("");
     setFormQuantity(0);
@@ -97,7 +103,7 @@ export const LossesWastePage: React.FC = () => {
     showToast({
       type: "warning",
       title: "Waste logged",
-      message: `${formItem} — ${formCost} MAD`,
+      message: `${formItem} — ${formCost} MAD${linked ? " · stock updated" : ""}`,
     });
   };
 
@@ -122,7 +128,7 @@ export const LossesWastePage: React.FC = () => {
           <span className="an-metric-label">Logs Today</span>
           <span
             className="an-metric-value"
-            style={{ color: todayCount > 0 ? "#EF4444" : "#0B1739" }}
+            style={{ color: todayCount > 0 ? "var(--error)" : "var(--brand-navy)" }}
           >
             {todayCount}
           </span>
@@ -135,7 +141,7 @@ export const LossesWastePage: React.FC = () => {
         </div>
         <div className="an-metric" style={{ flex: 1, minWidth: 200 }}>
           <span className="an-metric-label">Total Waste Cost</span>
-          <span className="an-metric-value" style={{ color: "#EF4444" }}>
+          <span className="an-metric-value" style={{ color: "var(--error)" }}>
             {totalCost.toLocaleString()} MAD
           </span>
           <span className="an-metric-sub">total waste value</span>
@@ -143,7 +149,7 @@ export const LossesWastePage: React.FC = () => {
         <button
           className="an-btn an-btn-primary"
           onClick={() => setIsModalOpen(true)}
-          style={{ background: "#EF4444" }}
+          style={{ background: "var(--error)" }}
         >
           <Plus size={16} /> Log Waste
         </button>
@@ -161,7 +167,7 @@ export const LossesWastePage: React.FC = () => {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1rem" }}>
+      <div className="an-list">
         {filtered.map((item) => (
           <div
             key={item.id}
@@ -186,7 +192,7 @@ export const LossesWastePage: React.FC = () => {
                 <h4
                   style={{
                     margin: 0,
-                    color: "#0B1739",
+                    color: "var(--brand-navy)",
                     fontSize: "1rem",
                     fontWeight: 600,
                   }}
@@ -199,8 +205,8 @@ export const LossesWastePage: React.FC = () => {
                     borderRadius: "20px",
                     fontSize: "0.75rem",
                     fontWeight: 600,
-                    color: "#B91C1C",
-                    background: "#FEF2F2",
+                    color: "var(--error)",
+                    background: "var(--error-bg)",
                   }}
                 >
                   {item.reason}
@@ -210,7 +216,7 @@ export const LossesWastePage: React.FC = () => {
                 style={{
                   margin: "0 0 0.5rem 0",
                   fontSize: "0.75rem",
-                  color: "#64748B",
+                  color: "var(--brand-text-muted)",
                 }}
               >
                 {new Date(item.date).toLocaleString()} • Logged by:{" "}
@@ -219,14 +225,14 @@ export const LossesWastePage: React.FC = () => {
             </div>
             <div style={{ textAlign: "right" }}>
               <div
-                style={{ fontSize: "1rem", fontWeight: 700, color: "#0B1739" }}
+                style={{ fontSize: "1rem", fontWeight: 700, color: "var(--brand-navy)" }}
               >
                 {item.quantity} {item.unit}
               </div>
               <div
                 style={{
                   fontSize: "0.875rem",
-                  color: "#EF4444",
+                  color: "var(--error)",
                   fontWeight: 600,
                 }}
               >
@@ -252,6 +258,12 @@ export const LossesWastePage: React.FC = () => {
             </div>
           </div>
         ))}
+        {filtered.length === 0 && (
+          <div className="an-empty">
+            <strong>No waste logs found</strong>
+            <span>Try a different search, or log a new waste entry.</span>
+          </div>
+        )}
       </div>
 
       {isModalOpen && (
@@ -282,7 +294,7 @@ export const LossesWastePage: React.FC = () => {
               style={{
                 margin: "0 0 1.5rem 0",
                 fontSize: "1.25rem",
-                color: "#EF4444",
+                color: "var(--error)",
               }}
             >
               Log New Waste
@@ -316,7 +328,7 @@ export const LossesWastePage: React.FC = () => {
                       width: "100%",
                       padding: "0.6rem",
                       borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
+                      border: "1px solid var(--brand-border)",
                       boxSizing: "border-box",
                     }}
                   />
@@ -349,7 +361,7 @@ export const LossesWastePage: React.FC = () => {
                         width: "100%",
                         padding: "0.6rem",
                         borderRadius: "6px",
-                        border: "1px solid #cbd5e1",
+                        border: "1px solid var(--brand-border)",
                         boxSizing: "border-box",
                       }}
                     />
@@ -374,7 +386,7 @@ export const LossesWastePage: React.FC = () => {
                         width: "100%",
                         padding: "0.6rem",
                         borderRadius: "6px",
-                        border: "1px solid #cbd5e1",
+                        border: "1px solid var(--brand-border)",
                         boxSizing: "border-box",
                       }}
                     />
@@ -401,7 +413,7 @@ export const LossesWastePage: React.FC = () => {
                       width: "100%",
                       padding: "0.6rem",
                       borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
+                      border: "1px solid var(--brand-border)",
                       boxSizing: "border-box",
                     }}
                   />
@@ -424,7 +436,7 @@ export const LossesWastePage: React.FC = () => {
                       width: "100%",
                       padding: "0.6rem",
                       borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
+                      border: "1px solid var(--brand-border)",
                       boxSizing: "border-box",
                     }}
                   >
@@ -448,7 +460,7 @@ export const LossesWastePage: React.FC = () => {
                   style={{
                     padding: "0.6rem 1.25rem",
                     borderRadius: "8px",
-                    border: "1px solid #cbd5e1",
+                    border: "1px solid var(--brand-border)",
                     background: "#fff",
                     cursor: "pointer",
                     fontWeight: 600,
@@ -462,7 +474,7 @@ export const LossesWastePage: React.FC = () => {
                     padding: "0.6rem 1.25rem",
                     borderRadius: "8px",
                     border: "none",
-                    background: "#EF4444",
+                    background: "var(--error)",
                     color: "#fff",
                     cursor: "pointer",
                     fontWeight: 600,

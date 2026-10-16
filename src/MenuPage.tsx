@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useEscape } from "./store";
 
 export interface MenuItem {
   id: string;
@@ -96,11 +97,14 @@ export const MenuPage: React.FC = () => {
     "Side Dishes",
   ];
 
+  useEscape(isModalOpen, () => setIsModalOpen(false));
+
   const filteredItems = items.filter((item) => {
     const matchesCategory =
       activeCategory === "All" || item.category === activeCategory;
     const matchesSearch =
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
@@ -147,8 +151,12 @@ export const MenuPage: React.FC = () => {
         )
       );
     } else {
+      const highest = items.reduce(
+        (max, it) => Math.max(max, Number(it.id) || 0),
+        0
+      );
       const newItem: MenuItem = {
-        id: String(items.length + 1).padStart(2, "0"),
+        id: String(highest + 1).padStart(2, "0"),
         name: formName,
         category: formCategory,
         price: parsedPrice,
@@ -196,9 +204,9 @@ export const MenuPage: React.FC = () => {
               style={{
                 padding: "0.5rem 1rem",
                 borderRadius: "20px",
-                border: "1px solid #e0e0e0",
-                background: activeCategory === cat ? "#0f172a" : "#ffffff",
-                color: activeCategory === cat ? "#ffffff" : "#475569",
+                border: "1px solid var(--brand-border)",
+                background: activeCategory === cat ? "var(--brand-navy)" : "#ffffff",
+                color: activeCategory === cat ? "#ffffff" : "var(--brand-text-muted)",
                 cursor: "pointer",
                 fontWeight: 500,
                 fontSize: "0.875rem",
@@ -218,7 +226,7 @@ export const MenuPage: React.FC = () => {
             style={{
               padding: "0.5rem 1rem",
               borderRadius: "8px",
-              border: "1px solid #cbd5e1",
+              border: "1px solid var(--brand-border)",
               minWidth: "240px",
               fontSize: "0.875rem",
             }}
@@ -229,7 +237,7 @@ export const MenuPage: React.FC = () => {
               padding: "0.5rem 1.25rem",
               borderRadius: "8px",
               border: "none",
-              background: "#0f172a",
+              background: "var(--brand-navy)",
               color: "#ffffff",
               fontWeight: 600,
               fontSize: "0.875rem",
@@ -254,7 +262,7 @@ export const MenuPage: React.FC = () => {
             style={{
               background: "#ffffff",
               borderRadius: "12px",
-              border: "1px solid #e2e8f0",
+              border: "1px solid var(--brand-border)",
               overflow: "hidden",
               boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
               display: "flex",
@@ -279,8 +287,8 @@ export const MenuPage: React.FC = () => {
                   position: "absolute",
                   top: "12px",
                   right: "12px",
-                  background: "rgba(15, 23, 42, 0.85)",
-                  color: "#38bdf8",
+                  background: "rgba(11, 23, 57, 0.85)",
+                  color: "var(--brand-cyan)",
                   padding: "4px 10px",
                   borderRadius: "20px",
                   fontWeight: 700,
@@ -295,7 +303,7 @@ export const MenuPage: React.FC = () => {
                   bottom: "12px",
                   left: "12px",
                   background: "rgba(255, 255, 255, 0.9)",
-                  color: "#0f172a",
+                  color: "var(--brand-navy)",
                   padding: "2px 8px",
                   borderRadius: "6px",
                   fontWeight: 600,
@@ -320,7 +328,7 @@ export const MenuPage: React.FC = () => {
                   margin: "0 0 0.5rem 0",
                   fontSize: "1.1rem",
                   fontWeight: 700,
-                  color: "#0f172a",
+                  color: "var(--brand-navy)",
                 }}
               >
                 {item.name}
@@ -329,7 +337,7 @@ export const MenuPage: React.FC = () => {
                 style={{
                   margin: 0,
                   fontSize: "0.875rem",
-                  color: "#64748b",
+                  color: "var(--brand-text-muted)",
                   flex: 1,
                   lineHeight: "1.4",
                 }}
@@ -344,15 +352,15 @@ export const MenuPage: React.FC = () => {
                   alignItems: "center",
                   marginTop: "1.25rem",
                   paddingTop: "0.75rem",
-                  borderTop: "1px solid #f1f5f9",
+                  borderTop: "1px solid var(--brand-bg)",
                 }}
               >
                 <button
                   onClick={() => handleToggleAvailability(item.id)}
                   style={{
                     border: "none",
-                    background: item.available ? "#dcfce7" : "#fee2e2",
-                    color: item.available ? "#166534" : "#991b1b",
+                    background: item.available ? "var(--success-bg)" : "var(--error-bg)",
+                    color: item.available ? "var(--success)" : "var(--error)",
                     padding: "4px 10px",
                     borderRadius: "6px",
                     fontSize: "0.75rem",
@@ -367,9 +375,9 @@ export const MenuPage: React.FC = () => {
                   <button
                     onClick={() => handleOpenEditModal(item)}
                     style={{
-                      border: "1px solid #cbd5e1",
+                      border: "1px solid var(--brand-border)",
                       background: "#ffffff",
-                      color: "#334155",
+                      color: "var(--brand-navy)",
                       padding: "4px 10px",
                       borderRadius: "6px",
                       fontSize: "0.75rem",
@@ -383,8 +391,8 @@ export const MenuPage: React.FC = () => {
                     onClick={() => handleDeleteItem(item.id)}
                     style={{
                       border: "none",
-                      background: "#fef2f2",
-                      color: "#dc2626",
+                      background: "var(--error-bg)",
+                      color: "var(--error)",
                       padding: "4px 10px",
                       borderRadius: "6px",
                       fontSize: "0.75rem",
@@ -399,17 +407,37 @@ export const MenuPage: React.FC = () => {
             </div>
           </div>
         ))}
+        {filteredItems.length === 0 && (
+          <div
+            style={{
+              gridColumn: "1 / -1",
+              padding: "3rem",
+              textAlign: "center",
+              color: "var(--brand-text-muted)",
+              border: "1px dashed var(--brand-border)",
+              borderRadius: "12px",
+            }}
+          >
+            <strong style={{ color: "var(--brand-navy)" }}>
+              No dishes found
+            </strong>
+            <p style={{ margin: "0.5rem 0 0" }}>
+              Try another search or category, or create a new dish.
+            </p>
+          </div>
+        )}
       </div>
 
       {isModalOpen && (
         <div
+          onClick={() => setIsModalOpen(false)}
           style={{
             position: "fixed",
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            background: "rgba(15, 23, 42, 0.6)",
+            background: "rgba(11, 23, 57, 0.6)",
             backdropFilter: "blur(4px)",
             display: "flex",
             alignItems: "center",
@@ -419,13 +447,14 @@ export const MenuPage: React.FC = () => {
           }}
         >
           <div
+            onClick={(e) => e.stopPropagation()}
             style={{
-              background: "#ffffff",
+              background: "var(--brand-white)",
               borderRadius: "16px",
               padding: "2rem",
               width: "100%",
               maxWidth: "520px",
-              boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1)",
+              boxShadow: "var(--shadow-lg)",
             }}
           >
             <h2
@@ -433,7 +462,7 @@ export const MenuPage: React.FC = () => {
                 marginTop: 0,
                 marginBottom: "1.25rem",
                 fontSize: "1.25rem",
-                color: "#0f172a",
+                color: "var(--brand-navy)",
               }}
             >
               {editingItem ? "Edit Menu Dish" : "Add New Dish to Menu"}
@@ -461,7 +490,7 @@ export const MenuPage: React.FC = () => {
                     width: "100%",
                     padding: "0.6rem",
                     borderRadius: "6px",
-                    border: "1px solid #cbd5e1",
+                    border: "1px solid var(--brand-border)",
                     boxSizing: "border-box",
                   }}
                 />
@@ -493,7 +522,7 @@ export const MenuPage: React.FC = () => {
                       width: "100%",
                       padding: "0.6rem",
                       borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
+                      border: "1px solid var(--brand-border)",
                       boxSizing: "border-box",
                     }}
                   >
@@ -527,7 +556,7 @@ export const MenuPage: React.FC = () => {
                       width: "100%",
                       padding: "0.6rem",
                       borderRadius: "6px",
-                      border: "1px solid #cbd5e1",
+                      border: "1px solid var(--brand-border)",
                       boxSizing: "border-box",
                     }}
                   />
@@ -554,7 +583,7 @@ export const MenuPage: React.FC = () => {
                     width: "100%",
                     padding: "0.6rem",
                     borderRadius: "6px",
-                    border: "1px solid #cbd5e1",
+                    border: "1px solid var(--brand-border)",
                     boxSizing: "border-box",
                   }}
                 />
@@ -589,9 +618,9 @@ export const MenuPage: React.FC = () => {
                         borderRadius: "4px",
                         border:
                           formImageUrl === p.url
-                            ? "2px solid #0f172a"
-                            : "1px solid #cbd5e1",
-                        background: formImageUrl === p.url ? "#f1f5f9" : "#fff",
+                            ? "2px solid var(--brand-navy)"
+                            : "1px solid var(--brand-border)",
+                        background: formImageUrl === p.url ? "var(--brand-bg)" : "#fff",
                         fontSize: "0.75rem",
                         cursor: "pointer",
                       }}
@@ -609,7 +638,7 @@ export const MenuPage: React.FC = () => {
                     width: "100%",
                     padding: "0.6rem",
                     borderRadius: "6px",
-                    border: "1px solid #cbd5e1",
+                    border: "1px solid var(--brand-border)",
                     boxSizing: "border-box",
                   }}
                 />
@@ -628,7 +657,7 @@ export const MenuPage: React.FC = () => {
                   style={{
                     padding: "0.6rem 1.25rem",
                     borderRadius: "8px",
-                    border: "1px solid #cbd5e1",
+                    border: "1px solid var(--brand-border)",
                     background: "#ffffff",
                     cursor: "pointer",
                     fontWeight: 600,
@@ -642,7 +671,7 @@ export const MenuPage: React.FC = () => {
                     padding: "0.6rem 1.25rem",
                     borderRadius: "8px",
                     border: "none",
-                    background: "#0f172a",
+                    background: "var(--brand-navy)",
                     color: "#ffffff",
                     cursor: "pointer",
                     fontWeight: 600,

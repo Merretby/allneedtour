@@ -450,7 +450,7 @@ export const businesses: Business[] = [
     type: "restaurant",
     location: "Casablanca · Morocco",
     active: true,
-    accent: "#d9eee6",
+    accent: "#eaf4ff",
     description: "Restaurant ERP · service, stock and financial control",
   },
   {
@@ -459,7 +459,7 @@ export const businesses: Business[] = [
     type: "travel-agency",
     location: "Marrakech · Morocco",
     active: true,
-    accent: "#e5ecfa",
+    accent: "#eaf4ff",
     description: "Travel CRM · dossiers, quotes and departures",
   },
   {
@@ -468,7 +468,7 @@ export const businesses: Business[] = [
     type: "transport",
     location: "Casablanca · Morocco",
     active: true,
-    accent: "#f7ead8",
+    accent: "#eaf4ff",
     description: "Dispatch management · vehicles and drivers",
   },
   {
@@ -477,7 +477,7 @@ export const businesses: Business[] = [
     type: "activities",
     location: "Agadir · Morocco",
     active: true,
-    accent: "#f2e5f1",
+    accent: "#eaf4ff",
     description: "Activity bookings · sessions and participants",
   },
   {
@@ -486,7 +486,7 @@ export const businesses: Business[] = [
     type: "accommodation",
     location: "Essaouira · Morocco",
     active: true,
-    accent: "#e4edf0",
+    accent: "#eaf4ff",
     description: "Property management · rooms and housekeeping",
   },
 ];

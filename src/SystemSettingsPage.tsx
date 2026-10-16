@@ -19,19 +19,139 @@ import {
   MapPin,
   ChevronRight,
 } from "lucide-react";
+import { useToast } from "./components/ToastProvider";
+import { downloadCsv, useEscape } from "./store";
 
-const ICON_COLORS: Record<string, string> = {
-  Building2: "#0e7771",
-  ShieldAlert: "#c2410c",
-  Clock: "#7c3aed",
-  CreditCard: "#059669",
-  Bell: "#d97706",
+const SETTINGS_KEY = "allneeds.settings";
+
+const DEFAULT_TOGGLES: Record<string, boolean> = {
+  "pay-cash": true,
+  "pay-card": true,
+  "pay-mobile": false,
+  "pay-contactless": true,
+  "alert-low-stock": true,
+  "alert-daily-reports": true,
+  "alert-voided": false,
+  "alert-reservations": true,
+  "ch-inapp": true,
+  "ch-email": false,
+  "ch-sms": false,
+  "ch-push": true,
 };
 
 export function SystemSettingsPage() {
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState("General");
   const [searchQuery, setSearchQuery] = useState("");
   const [showEditModal, setShowEditModal] = useState<string | null>(null);
+  const [settings, setSettings] = useState<Record<string, string>>(() => {
+    try {
+      return JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
+    } catch {
+      return {};
+    }
+  });
+  const [toggles, setToggles] = useState<Record<string, boolean>>(() => {
+    try {
+      const raw = localStorage.getItem(SETTINGS_KEY);
+      const parsed = raw ? JSON.parse(raw) : {};
+      return { ...DEFAULT_TOGGLES, ...(parsed.toggles || {}) };
+    } catch {
+      return { ...DEFAULT_TOGGLES };
+    }
+  });
+
+  const closeModal = () => setShowEditModal(null);
+  useEscape(showEditModal !== null, closeModal);
+
+  const persist = (
+    nextSettings: Record<string, string>,
+    nextToggles: Record<string, boolean>
+  ) => {
+    try {
+      localStorage.setItem(
+        SETTINGS_KEY,
+        JSON.stringify({ settings: nextSettings, toggles: nextToggles })
+      );
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const toggle = (key: string, label: string) => {
+    setToggles((prev) => {
+      const next = { ...prev, [key]: !prev[key] };
+      persist(settings, next);
+      showToast({
+        type: "info",
+        title: `${label} ${next[key] ? "enabled" : "disabled"}`,
+      });
+      return next;
+    });
+  };
+
+  const handleExportConfig = () => {
+    downloadCsv("allneed-config.csv", [
+      ["Section", "Key", "Value"],
+      ...Object.entries(settings).map(([k, v]) => ["settings", k, v]),
+      ...Object.entries(toggles).map(([k, v]) => [
+        "toggle",
+        k,
+        v ? "on" : "off",
+      ]),
+    ]);
+    showToast({
+      type: "success",
+      title: "Configuration exported",
+      message: "allneed-config.csv",
+    });
+  };
+
+  const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    const next: Record<string, string> = { ...settings };
+    data.forEach((value, key) => {
+      next[key] = String(value);
+    });
+    // Compose combined display values from separate time inputs.
+    if (next["hours.weekOpen"] || next["hours.weekClose"]) {
+      next["hours.weekday"] = `${next["hours.weekOpen"] ?? "11:30"} – ${
+        next["hours.weekClose"] ?? "23:30"
+      }`;
+    }
+    if (next["hours.wkndOpen"] || next["hours.wkndClose"]) {
+      next["hours.weekend"] = `${next["hours.wkndOpen"] ?? "11:30"} – ${
+        next["hours.wkndClose"] ?? "00:30"
+      }`;
+    }
+    if (next["rules.turnover"]) next["rules.turnover"] = `${next["rules.turnover"]} minutes`;
+    if (next["rules.grace"]) next["rules.grace"] = `${next["rules.grace"]} minutes`;
+    if (next["rules.maxparty"]) next["rules.maxparty"] = `${next["rules.maxparty"]} guests`;
+    if (next["fin.vat"]) next["fin.vat"] = `${next["fin.vat"]}%`;
+    if (next["fin.reduced"]) next["fin.reduced"] = `${next["fin.reduced"]}%`;
+    setSettings(next);
+    persist(next, toggles);
+    closeModal();
+    showToast({ type: "success", title: "Settings saved" });
+  };
+
+  const initial = (key: string, fallback: string) => settings[key] ?? fallback;
+
+  const q = searchQuery.trim().toLowerCase();
+  const match = (text: string) => !q || text.toLowerCase().includes(q);
+
+  const Toggle = ({ k, label }: { k: string; label: string }) => (
+    <button
+      type="button"
+      className={`ss-toggle ${toggles[k] ? "ss-toggle-on" : "ss-toggle-off"}`}
+      onClick={() => toggle(k, label)}
+      aria-pressed={toggles[k]}
+      aria-label={`${label}: ${toggles[k] ? "on" : "off"}`}
+    >
+      {toggles[k] ? <ToggleRight size={16} /> : <ToggleLeft size={16} />}
+    </button>
+  );
 
   const tabs = [
     { key: "General", label: "General", icon: Settings },
@@ -56,10 +176,7 @@ export function SystemSettingsPage() {
           </div>
         </div>
         <div className="ss-header-actions">
-          <button
-            className="ss-btn ss-btn-outline"
-            onClick={() => alert("Exporting configuration...")}
-          >
+          <button className="ss-btn ss-btn-outline" onClick={handleExportConfig}>
             <Download size={14} /> Export Config
           </button>
           <button
@@ -102,7 +219,16 @@ export function SystemSettingsPage() {
       <div className="ss-content">
         {activeTab === "General" && (
           <div className="ss-grid">
-            <div className="ss-card">
+            <div
+              className="ss-card"
+              style={{
+                display: match(
+                  "restaurant profile name address phone email status identity"
+                )
+                  ? undefined
+                  : "none",
+              }}
+            >
               <div className="ss-card-header">
                 <div className="ss-card-icon building">
                   <Building2 size={18} />
@@ -121,19 +247,27 @@ export function SystemSettingsPage() {
               <div className="ss-card-body">
                 <div className="ss-row">
                   <span className="ss-label">Name</span>
-                  <span className="ss-value">Restaurant Casablanca</span>
+                  <span className="ss-value">
+                    {initial("profile.name", "Restaurant Casablanca")}
+                  </span>
                 </div>
                 <div className="ss-row">
                   <span className="ss-label">Address</span>
-                  <span className="ss-value">123 Marina Blvd, Casablanca</span>
+                  <span className="ss-value">
+                    {initial("profile.address", "123 Marina Blvd, Casablanca")}
+                  </span>
                 </div>
                 <div className="ss-row">
                   <span className="ss-label">Phone</span>
-                  <span className="ss-value">+212 522 123 456</span>
+                  <span className="ss-value">
+                    {initial("profile.phone", "+212 522 123 456")}
+                  </span>
                 </div>
                 <div className="ss-row">
                   <span className="ss-label">Email</span>
-                  <span className="ss-value">contact@casablanca.ma</span>
+                  <span className="ss-value">
+                    {initial("profile.email", "contact@casablanca.ma")}
+                  </span>
                 </div>
                 <div className="ss-row">
                   <span className="ss-label">Status</span>
@@ -142,7 +276,16 @@ export function SystemSettingsPage() {
               </div>
             </div>
 
-            <div className="ss-card">
+            <div
+              className="ss-card"
+              style={{
+                display: match(
+                  "legal registration tax id ice commercial registry rc company type sarl"
+                )
+                  ? undefined
+                  : "none",
+              }}
+            >
               <div className="ss-card-header">
                 <div className="ss-card-icon legal">
                   <ShieldAlert size={18} />
@@ -161,15 +304,19 @@ export function SystemSettingsPage() {
               <div className="ss-card-body">
                 <div className="ss-row">
                   <span className="ss-label">Tax ID (ICE)</span>
-                  <span className="ss-value">123456789000012</span>
+                  <span className="ss-value">
+                    {initial("legal.ice", "123456789000012")}
+                  </span>
                 </div>
                 <div className="ss-row">
                   <span className="ss-label">Commercial Registry</span>
-                  <span className="ss-value">RC 45678</span>
+                  <span className="ss-value">
+                    {initial("legal.rc", "RC 45678")}
+                  </span>
                 </div>
                 <div className="ss-row">
                   <span className="ss-label">Company Type</span>
-                  <span className="ss-value">SARL</span>
+                  <span className="ss-value">{initial("legal.type", "SARL")}</span>
                 </div>
               </div>
             </div>
@@ -178,7 +325,16 @@ export function SystemSettingsPage() {
 
         {activeTab === "Service & Hours" && (
           <div className="ss-grid">
-            <div className="ss-card">
+            <div
+              className="ss-card"
+              style={{
+                display: match(
+                  "operating hours schedule shifts weekday weekend holidays timezone"
+                )
+                  ? undefined
+                  : "none",
+              }}
+            >
               <div className="ss-card-header">
                 <div className="ss-card-icon hours">
                   <Clock size={18} />
@@ -197,11 +353,15 @@ export function SystemSettingsPage() {
               <div className="ss-card-body">
                 <div className="ss-row">
                   <span className="ss-label">Monday – Friday</span>
-                  <span className="ss-value">11:30 – 23:30</span>
+                  <span className="ss-value">
+                    {initial("hours.weekday", "11:30 – 23:30")}
+                  </span>
                 </div>
                 <div className="ss-row">
                   <span className="ss-label">Saturday – Sunday</span>
-                  <span className="ss-value">11:30 – 00:30</span>
+                  <span className="ss-value">
+                    {initial("hours.weekend", "11:30 – 00:30")}
+                  </span>
                 </div>
                 <div className="ss-row">
                   <span className="ss-label">Holidays</span>
@@ -211,12 +371,23 @@ export function SystemSettingsPage() {
                 </div>
                 <div className="ss-row">
                   <span className="ss-label">Timezone</span>
-                  <span className="ss-value">Africa/Casablanca</span>
+                  <span className="ss-value">
+                    {initial("hours.timezone", "Africa/Casablanca")}
+                  </span>
                 </div>
               </div>
             </div>
 
-            <div className="ss-card">
+            <div
+              className="ss-card"
+              style={{
+                display: match(
+                  "service rules table turnover grace period max party size seating"
+                )
+                  ? undefined
+                  : "none",
+              }}
+            >
               <div className="ss-card-header">
                 <div className="ss-card-icon rules">
                   <ShieldAlert size={18} />
@@ -235,15 +406,21 @@ export function SystemSettingsPage() {
               <div className="ss-card-body">
                 <div className="ss-row">
                   <span className="ss-label">Table Turnover</span>
-                  <span className="ss-value">90 minutes</span>
+                  <span className="ss-value">
+                    {initial("rules.turnover", "90 minutes")}
+                  </span>
                 </div>
                 <div className="ss-row">
                   <span className="ss-label">Grace Period</span>
-                  <span className="ss-value">15 minutes</span>
+                  <span className="ss-value">
+                    {initial("rules.grace", "15 minutes")}
+                  </span>
                 </div>
                 <div className="ss-row">
                   <span className="ss-label">Max Party Size</span>
-                  <span className="ss-value">10 guests</span>
+                  <span className="ss-value">
+                    {initial("rules.maxparty", "10 guests")}
+                  </span>
                 </div>
               </div>
             </div>
@@ -252,7 +429,16 @@ export function SystemSettingsPage() {
 
         {activeTab === "Financials" && (
           <div className="ss-grid">
-            <div className="ss-card">
+            <div
+              className="ss-card"
+              style={{
+                display: match(
+                  "currency taxes financial base vat rounding"
+                )
+                  ? undefined
+                  : "none",
+              }}
+            >
               <div className="ss-card-header">
                 <div className="ss-card-icon currency">
                   <CreditCard size={18} />
@@ -271,24 +457,39 @@ export function SystemSettingsPage() {
               <div className="ss-card-body">
                 <div className="ss-row">
                   <span className="ss-label">Base Currency</span>
-                  <span className="ss-value">MAD (Moroccan Dirham)</span>
+                  <span className="ss-value">
+                    {initial("fin.currency", "MAD (Moroccan Dirham)")}
+                  </span>
                 </div>
                 <div className="ss-row">
                   <span className="ss-label">Standard VAT</span>
-                  <span className="ss-value">20%</span>
+                  <span className="ss-value">{initial("fin.vat", "20%")}</span>
                 </div>
                 <div className="ss-row">
                   <span className="ss-label">Reduced VAT (Food)</span>
-                  <span className="ss-value">10%</span>
+                  <span className="ss-value">
+                    {initial("fin.reduced", "10%")}
+                  </span>
                 </div>
                 <div className="ss-row">
                   <span className="ss-label">Rounding Rule</span>
-                  <span className="ss-value">Nearest 0.05 MAD</span>
+                  <span className="ss-value">
+                    {initial("fin.rounding", "Nearest 0.05 MAD")}
+                  </span>
                 </div>
               </div>
             </div>
 
-            <div className="ss-card">
+            <div
+              className="ss-card"
+              style={{
+                display: match(
+                  "payment methods cash credit card mobile payment contactless"
+                )
+                  ? undefined
+                  : "none",
+              }}
+            >
               <div className="ss-card-header">
                 <div className="ss-card-icon payments">
                   <Bell size={18} />
@@ -307,27 +508,19 @@ export function SystemSettingsPage() {
               <div className="ss-card-body">
                 <div className="ss-row ss-row-toggle">
                   <span className="ss-label">Cash</span>
-                  <div className="ss-toggle ss-toggle-on">
-                    <ToggleRight size={16} />
-                  </div>
+                  <Toggle k="pay-cash" label="Cash" />
                 </div>
                 <div className="ss-row ss-row-toggle">
                   <span className="ss-label">Credit Card</span>
-                  <div className="ss-toggle ss-toggle-on">
-                    <ToggleRight size={16} />
-                  </div>
+                  <Toggle k="pay-card" label="Credit Card" />
                 </div>
                 <div className="ss-row ss-row-toggle">
                   <span className="ss-label">Mobile Payment</span>
-                  <div className="ss-toggle ss-toggle-off">
-                    <ToggleLeft size={16} />
-                  </div>
+                  <Toggle k="pay-mobile" label="Mobile Payment" />
                 </div>
                 <div className="ss-row ss-row-toggle">
                   <span className="ss-label">Contactless</span>
-                  <div className="ss-toggle ss-toggle-on">
-                    <ToggleRight size={16} />
-                  </div>
+                  <Toggle k="pay-contactless" label="Contactless" />
                 </div>
               </div>
             </div>
@@ -336,7 +529,16 @@ export function SystemSettingsPage() {
 
         {activeTab === "Notifications" && (
           <div className="ss-grid">
-            <div className="ss-card">
+            <div
+              className="ss-card"
+              style={{
+                display: match(
+                  "system alerts low stock daily reports voided items reservation reminders notifications"
+                )
+                  ? undefined
+                  : "none",
+              }}
+            >
               <div className="ss-card-header">
                 <div className="ss-card-icon alerts">
                   <Bell size={18} />
@@ -355,32 +557,33 @@ export function SystemSettingsPage() {
               <div className="ss-card-body">
                 <div className="ss-row ss-row-toggle">
                   <span className="ss-label">Low Stock Alerts</span>
-                  <div className="ss-toggle ss-toggle-on">
-                    <ToggleRight size={16} />
-                  </div>
+                  <Toggle k="alert-low-stock" label="Low Stock Alerts" />
                 </div>
                 <div className="ss-row ss-row-toggle">
                   <span className="ss-label">Daily Reports</span>
-                  <div className="ss-toggle ss-toggle-on">
-                    <ToggleRight size={16} />
-                  </div>
+                  <Toggle k="alert-daily-reports" label="Daily Reports" />
                 </div>
                 <div className="ss-row ss-row-toggle">
                   <span className="ss-label">Voided Items</span>
-                  <div className="ss-toggle ss-toggle-off">
-                    <ToggleLeft size={16} />
-                  </div>
+                  <Toggle k="alert-voided" label="Voided Items" />
                 </div>
                 <div className="ss-row ss-row-toggle">
                   <span className="ss-label">Reservation Reminders</span>
-                  <div className="ss-toggle ss-toggle-on">
-                    <ToggleRight size={16} />
-                  </div>
+                  <Toggle k="alert-reservations" label="Reservation Reminders" />
                 </div>
               </div>
             </div>
 
-            <div className="ss-card">
+            <div
+              className="ss-card"
+              style={{
+                display: match(
+                  "notification channels in-app email sms push delivery"
+                )
+                  ? undefined
+                  : "none",
+              }}
+            >
               <div className="ss-card-header">
                 <div className="ss-card-icon channels">
                   <Mail size={18} />
@@ -399,27 +602,19 @@ export function SystemSettingsPage() {
               <div className="ss-card-body">
                 <div className="ss-row ss-row-toggle">
                   <span className="ss-label">In-App</span>
-                  <div className="ss-toggle ss-toggle-on">
-                    <ToggleRight size={16} />
-                  </div>
+                  <Toggle k="ch-inapp" label="In-App" />
                 </div>
                 <div className="ss-row ss-row-toggle">
                   <span className="ss-label">Email</span>
-                  <div className="ss-toggle ss-toggle-off">
-                    <ToggleLeft size={16} />
-                  </div>
+                  <Toggle k="ch-email" label="Email" />
                 </div>
                 <div className="ss-row ss-row-toggle">
                   <span className="ss-label">SMS</span>
-                  <div className="ss-toggle ss-toggle-off">
-                    <ToggleLeft size={16} />
-                  </div>
+                  <Toggle k="ch-sms" label="SMS" />
                 </div>
                 <div className="ss-row ss-row-toggle">
                   <span className="ss-label">Push</span>
-                  <div className="ss-toggle ss-toggle-on">
-                    <ToggleRight size={16} />
-                  </div>
+                  <Toggle k="ch-push" label="Push" />
                 </div>
               </div>
             </div>
@@ -454,27 +649,50 @@ export function SystemSettingsPage() {
               </button>
             </div>
 
-            <div className="ss-modal-body">
+            <form
+              id="ss-settings-form"
+              onSubmit={handleSave}
+              className="ss-modal-body"
+            >
               {showEditModal === "profile" && (
                 <div className="ss-form-grid">
                   <div className="ss-form-group ss-full-width">
                     <label>Restaurant Name</label>
-                    <input type="text" defaultValue="Restaurant Casablanca" />
+                    <input
+                      type="text"
+                      name="profile.name"
+                      defaultValue={initial("profile.name", "Restaurant Casablanca")}
+                    />
                   </div>
                   <div className="ss-form-group ss-full-width">
                     <label>Address</label>
                     <input
                       type="text"
-                      defaultValue="123 Marina Blvd, Casablanca"
+                      name="profile.address"
+                      defaultValue={initial(
+                        "profile.address",
+                        "123 Marina Blvd, Casablanca"
+                      )}
                     />
                   </div>
                   <div className="ss-form-group">
                     <label>Phone Number</label>
-                    <input type="tel" defaultValue="+212 522 123 456" />
+                    <input
+                      type="tel"
+                      name="profile.phone"
+                      defaultValue={initial("profile.phone", "+212 522 123 456")}
+                    />
                   </div>
                   <div className="ss-form-group">
                     <label>Public Email</label>
-                    <input type="email" defaultValue="contact@casablanca.ma" />
+                    <input
+                      type="email"
+                      name="profile.email"
+                      defaultValue={initial(
+                        "profile.email",
+                        "contact@casablanca.ma"
+                      )}
+                    />
                   </div>
                 </div>
               )}
@@ -483,15 +701,26 @@ export function SystemSettingsPage() {
                 <div className="ss-form-grid">
                   <div className="ss-form-group ss-full-width">
                     <label>Tax ID (ICE)</label>
-                    <input type="text" defaultValue="123456789000012" />
+                    <input
+                      type="text"
+                      name="legal.ice"
+                      defaultValue={initial("legal.ice", "123456789000012")}
+                    />
                   </div>
                   <div className="ss-form-group">
                     <label>Commercial Registry (RC)</label>
-                    <input type="text" defaultValue="RC 45678" />
+                    <input
+                      type="text"
+                      name="legal.rc"
+                      defaultValue={initial("legal.rc", "RC 45678")}
+                    />
                   </div>
                   <div className="ss-form-group">
                     <label>Company Type</label>
-                    <select defaultValue="SARL">
+                    <select
+                      name="legal.type"
+                      defaultValue={initial("legal.type", "SARL")}
+                    >
                       <option value="SARL">SARL</option>
                       <option value="SA">SA</option>
                       <option value="SNC">SNC</option>
@@ -504,19 +733,35 @@ export function SystemSettingsPage() {
                 <div className="ss-form-grid">
                   <div className="ss-form-group">
                     <label>Weekday Opening</label>
-                    <input type="time" defaultValue="11:30" />
+                    <input
+                      type="time"
+                      name="hours.weekOpen"
+                      defaultValue={initial("hours.weekOpen", "11:30")}
+                    />
                   </div>
                   <div className="ss-form-group">
                     <label>Weekday Closing</label>
-                    <input type="time" defaultValue="23:30" />
+                    <input
+                      type="time"
+                      name="hours.weekClose"
+                      defaultValue={initial("hours.weekClose", "23:30")}
+                    />
                   </div>
                   <div className="ss-form-group">
                     <label>Weekend Opening</label>
-                    <input type="time" defaultValue="11:30" />
+                    <input
+                      type="time"
+                      name="hours.wkndOpen"
+                      defaultValue={initial("hours.wkndOpen", "11:30")}
+                    />
                   </div>
                   <div className="ss-form-group">
                     <label>Weekend Closing</label>
-                    <input type="time" defaultValue="00:30" />
+                    <input
+                      type="time"
+                      name="hours.wkndClose"
+                      defaultValue={initial("hours.wkndClose", "00:30")}
+                    />
                   </div>
                 </div>
               )}
@@ -525,15 +770,36 @@ export function SystemSettingsPage() {
                 <div className="ss-form-grid">
                   <div className="ss-form-group">
                     <label>Table Turnover (minutes)</label>
-                    <input type="number" defaultValue="90" />
+                    <input
+                      type="number"
+                      name="rules.turnover"
+                      defaultValue={initial("rules.turnover", "90 minutes").replace(
+                        /[^0-9]/g,
+                        ""
+                      ) || "90"}
+                    />
                   </div>
                   <div className="ss-form-group">
                     <label>Grace Period (minutes)</label>
-                    <input type="number" defaultValue="15" />
+                    <input
+                      type="number"
+                      name="rules.grace"
+                      defaultValue={initial("rules.grace", "15 minutes").replace(
+                        /[^0-9]/g,
+                        ""
+                      ) || "15"}
+                    />
                   </div>
                   <div className="ss-form-group">
                     <label>Max Party Size</label>
-                    <input type="number" defaultValue="10" />
+                    <input
+                      type="number"
+                      name="rules.maxparty"
+                      defaultValue={initial("rules.maxparty", "10 guests").replace(
+                        /[^0-9]/g,
+                        ""
+                      ) || "10"}
+                    />
                   </div>
                 </div>
               )}
@@ -542,7 +808,10 @@ export function SystemSettingsPage() {
                 <div className="ss-form-grid">
                   <div className="ss-form-group ss-full-width">
                     <label>Base Currency</label>
-                    <select defaultValue="MAD">
+                    <select
+                      name="fin.currency"
+                      defaultValue={initial("fin.currency", "MAD")}
+                    >
                       <option value="MAD">MAD – Moroccan Dirham</option>
                       <option value="EUR">EUR – Euro</option>
                       <option value="USD">USD – US Dollar</option>
@@ -550,11 +819,19 @@ export function SystemSettingsPage() {
                   </div>
                   <div className="ss-form-group">
                     <label>Standard VAT (%)</label>
-                    <input type="number" defaultValue="20" />
+                    <input
+                      type="number"
+                      name="fin.vat"
+                      defaultValue={initial("fin.vat", "20%").replace(/[^0-9]/g, "") || "20"}
+                    />
                   </div>
                   <div className="ss-form-group">
                     <label>Reduced VAT (%)</label>
-                    <input type="number" defaultValue="10" />
+                    <input
+                      type="number"
+                      name="fin.reduced"
+                      defaultValue={initial("fin.reduced", "10%").replace(/[^0-9]/g, "") || "10"}
+                    />
                   </div>
                 </div>
               )}
@@ -627,18 +904,20 @@ export function SystemSettingsPage() {
                   </div>
                 </div>
               )}
-            </div>
+            </form>
 
             <div className="ss-modal-footer">
               <button
+                type="button"
                 className="ss-btn ss-btn-outline"
-                onClick={() => setShowEditModal(null)}
+                onClick={closeModal}
               >
                 Cancel
               </button>
               <button
+                type="submit"
+                form="ss-settings-form"
                 className="ss-btn ss-btn-primary"
-                onClick={() => setShowEditModal(null)}
               >
                 Save Changes
               </button>
@@ -649,16 +928,16 @@ export function SystemSettingsPage() {
 
       <style>{`
         :root {
-          --ss-primary: #0e7771;
-          --ss-primary-hover: #0c5f58;
-          --ss-bg: #f5f7f4;
+          --ss-primary: var(--brand-blue);
+          --ss-primary-hover: var(--brand-blue-hover);
+          --ss-bg: var(--brand-bg);
           --ss-card: #ffffff;
-          --ss-border: #dce6e2;
-          --ss-text: #18373d;
-          --ss-text-muted: #71858a;
-          --ss-success: #059669;
-          --ss-warning: #d97706;
-          --ss-danger: #c2410c;
+          --ss-border: var(--brand-border);
+          --ss-text: var(--brand-navy);
+          --ss-text-muted: var(--brand-text-muted);
+          --ss-success: var(--success);
+          --ss-warning: var(--warning);
+          --ss-danger: var(--error);
         }
 
         .ss-page {
@@ -687,7 +966,7 @@ export function SystemSettingsPage() {
           place-items: center;
           width: 44px;
           height: 44px;
-          background: #e8f4f2;
+          background: var(--brand-surface);
           color: var(--ss-primary);
           border-radius: 10px;
         }
@@ -730,7 +1009,7 @@ export function SystemSettingsPage() {
         .ss-btn:hover {
           border-color: var(--ss-primary);
           color: var(--ss-primary);
-          background: #eef6f5;
+          background: var(--brand-surface);
         }
 
         .ss-btn-outline {
@@ -782,13 +1061,13 @@ export function SystemSettingsPage() {
 
         .ss-tab:hover {
           color: var(--ss-primary);
-          background: #f3f9f8;
+          background: var(--brand-surface);
         }
 
         .ss-tab-active {
           color: var(--ss-primary);
           border-bottom: 2px solid var(--ss-primary);
-          background: #eef6f5;
+          background: var(--brand-surface);
         }
 
         .ss-search {
@@ -797,7 +1076,7 @@ export function SystemSettingsPage() {
           gap: 8px;
           height: 38px;
           padding: 0 14px;
-          background: #f3f9f8;
+          background: var(--brand-surface);
           border: 1px solid var(--ss-border);
           border-radius: 8px;
         }
@@ -830,8 +1109,8 @@ export function SystemSettingsPage() {
 
         .ss-card:hover {
           transform: translateY(-2px);
-          border-color: #b9d7d2;
-          box-shadow: 0 12px 32px rgba(24, 55, 61, 0.08);
+          border-color: var(--brand-border);
+          box-shadow: 0 12px 32px rgba(11, 23, 57, 0.08);
         }
 
         .ss-card-header {
@@ -839,7 +1118,7 @@ export function SystemSettingsPage() {
           align-items: center;
           gap: 14px;
           padding: 18px 20px;
-          background: #f4faf9;
+          background: var(--brand-bg);
           border-bottom: 1px solid var(--ss-border);
         }
 
@@ -852,14 +1131,14 @@ export function SystemSettingsPage() {
           font-size: 18px;
         }
 
-        .ss-card-icon.building { background: #e8f4f2; color: #0e7771; }
-        .ss-card-icon.legal { background: #fdece3; color: #c2410c; }
-        .ss-card-icon.hours { background: #f3e8ff; color: #7c3aed; }
-        .ss-card-icon.rules { background: #fdece3; color: #c2410c; }
-        .ss-card-icon.currency { background: #e6f7ef; color: #059669; }
-        .ss-card-icon.payments { background: #fff4e3; color: #d97706; }
-        .ss-card-icon.alerts { background: #fff4e3; color: #d97706; }
-        .ss-card-icon.channels { background: #eef4fb; color: #1d4ed8; }
+        .ss-card-icon.building { background: var(--brand-surface); color: var(--brand-blue); }
+        .ss-card-icon.legal { background: var(--error-bg); color: var(--error); }
+        .ss-card-icon.hours { background: var(--brand-surface); color: var(--brand-blue); }
+        .ss-card-icon.rules { background: var(--error-bg); color: var(--error); }
+        .ss-card-icon.currency { background: var(--success-bg); color: var(--success); }
+        .ss-card-icon.payments { background: var(--warning-bg); color: var(--warning); }
+        .ss-card-icon.alerts { background: var(--warning-bg); color: var(--warning); }
+        .ss-card-icon.channels { background: var(--brand-surface); color: var(--brand-blue); }
 
         .ss-card-header h3 {
           margin: 0 0 3px 0;
@@ -901,7 +1180,7 @@ export function SystemSettingsPage() {
         }
 
         .ss-icon-btn-close:hover {
-          background: #f3f4f6;
+          background: var(--brand-bg);
           color: var(--ss-text);
         }
 
@@ -917,7 +1196,7 @@ export function SystemSettingsPage() {
           justify-content: space-between;
           align-items: center;
           padding: 9px 0;
-          border-bottom: 1px dashed #eef3f1;
+          border-bottom: 1px dashed var(--brand-border);
           font-size: 13px;
         }
 
@@ -952,13 +1231,13 @@ export function SystemSettingsPage() {
         }
 
         .ss-badge-positive {
-          background: #eef7f1;
-          color: #059669;
+          background: var(--success-bg);
+          color: var(--success);
         }
 
         .ss-badge-neutral {
-          background: #eef2f6;
-          color: #64748b;
+          background: var(--brand-bg);
+          color: var(--brand-text-muted);
         }
 
         .ss-toggle {
@@ -967,7 +1246,7 @@ export function SystemSettingsPage() {
           width: 44px;
           height: 24px;
           border-radius: 12px;
-          background: #e2e8f0;
+          background: var(--brand-border);
           transition: all 0.2s ease;
         }
 
@@ -977,13 +1256,13 @@ export function SystemSettingsPage() {
         }
 
         .ss-toggle-off {
-          background: #cbd5e1;
+          background: var(--brand-border);
         }
 
         .ss-modal-overlay {
           position: fixed;
           inset: 0;
-          background: rgba(24, 55, 61, 0.45);
+          background: rgba(11, 23, 57, 0.45);
           backdrop-filter: blur(4px);
           display: grid;
           place-items: center;
@@ -999,7 +1278,7 @@ export function SystemSettingsPage() {
           max-height: 85vh;
           display: flex;
           flex-direction: column;
-          box-shadow: 0 24px 48px rgba(24, 55, 61, 0.18);
+          box-shadow: 0 24px 48px rgba(11, 23, 57, 0.18);
           border: 1px solid var(--ss-border);
           overflow: hidden;
         }
@@ -1010,7 +1289,7 @@ export function SystemSettingsPage() {
           align-items: center;
           padding: 20px 24px;
           border-bottom: 1px solid var(--ss-border);
-          background: #fafbf9;
+          background: var(--brand-bg);
         }
 
         .ss-modal-header h3 {
@@ -1064,7 +1343,7 @@ export function SystemSettingsPage() {
         .ss-form-group select:focus {
           outline: none;
           border-color: var(--ss-primary);
-          box-shadow: 0 0 0 3px rgba(14, 119, 113, 0.1);
+          box-shadow: 0 0 0 3px rgba(0, 140, 255, 0.15);
         }
 
         .ss-chip-list {
@@ -1103,7 +1382,7 @@ export function SystemSettingsPage() {
           gap: 10px;
           padding: 16px 24px;
           border-top: 1px solid var(--ss-border);
-          background: #fafbf9;
+          background: var(--brand-bg);
         }
 
         @media (max-width: 768px) {

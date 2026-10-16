@@ -39,7 +39,7 @@ export function ActivityBoard({
                     width: `${Math.max(2, (x.value / max) * 100)}%`,
                     background:
                       x.color ||
-                      ["#087bfa", "#19bfda", "#8d82e9", "#36bda0"][i % 4],
+                      ["#008cff", "#00c8ff", "#64748b", "#10b981"][i % 4],
                   }}
                 />
               </div>
@@ -51,7 +51,7 @@ export function ActivityBoard({
           <span
             className="activity-ring"
             style={{
-              background: `conic-gradient(#087bfa 0deg ${angle}deg,#eaf1fa ${angle}deg 360deg)`,
+              background: `conic-gradient(#008cff 0deg ${angle}deg,#eaf4ff ${angle}deg 360deg)`,
             }}
           >
             <span>
