@@ -1883,6 +1883,12 @@ const FRENCH_BY_ENGLISH = Object.entries(EN_TEXT).reduce<
   map[value] = FR_TEXT[key] || value;
   return map;
 }, {});
+const ENGLISH_BY_FRENCH = Object.entries(FRENCH_BY_ENGLISH).reduce<
+  Record<string, string>
+>((map, [english, french]) => {
+  if (!map[french]) map[french] = english;
+  return map;
+}, {});
 
 const TranslationContext = createContext<TranslationContextType | undefined>(
   undefined
@@ -1948,7 +1954,9 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
       const trimmed = value.trim();
       if (!trimmed) return value;
       const translated =
-        lang === "fr" ? FRENCH_BY_ENGLISH[trimmed] || trimmed : trimmed;
+        lang === "fr"
+          ? FRENCH_BY_ENGLISH[trimmed] || trimmed
+          : ENGLISH_BY_FRENCH[trimmed] || trimmed;
       return value.replace(trimmed, translated);
     };
 
@@ -1979,21 +1987,26 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
       const elements =
         root instanceof Element
           ? [root, ...Array.from(root.querySelectorAll("*"))]
-          : Array.from((root as Document).querySelectorAll("*"));
+          : root instanceof Document
+            ? Array.from(root.querySelectorAll("*"))
+            : [];
       for (const element of elements) {
-        const htmlElement = element as HTMLElement;
-        if (!originalAttributes.has(htmlElement)) {
-          originalAttributes.set(htmlElement, new Map());
-        }
-        const attributes = originalAttributes.get(htmlElement)!;
-        for (const name of ["placeholder", "title", "aria-label", "alt"]) {
-          const current = htmlElement.getAttribute(name);
-          if (current == null) continue;
-          const source = attributes.get(name) ?? current;
-          if (!attributes.has(name)) attributes.set(name, source);
-          const next = translate(source);
-          if (current !== next) htmlElement.setAttribute(name, next);
-        }
+        translateAttributes(element as HTMLElement);
+      }
+    };
+
+    const translateAttributes = (htmlElement: HTMLElement) => {
+      if (!originalAttributes.has(htmlElement)) {
+        originalAttributes.set(htmlElement, new Map());
+      }
+      const attributes = originalAttributes.get(htmlElement)!;
+      for (const name of ["placeholder", "title", "aria-label", "alt"]) {
+        const current = htmlElement.getAttribute(name);
+        if (current == null) continue;
+        const source = attributes.get(name) ?? current;
+        if (!attributes.has(name)) attributes.set(name, source);
+        const next = translate(source);
+        if (current !== next) htmlElement.setAttribute(name, next);
       }
     };
 
@@ -2006,26 +2019,39 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
     update();
     const observer = new MutationObserver((mutations) => {
       if (updating) return;
+      observer.disconnect();
       updating = true;
-      for (const mutation of mutations) {
-        if (mutation.type === "characterData") {
-          const node = mutation.target as Text;
-          const current = node.nodeValue ?? "";
-          const source =
-            renderedText.get(node) === current
-              ? originalText.get(node) ?? current
-              : current;
-          originalText.set(node, source);
-          const next = translate(source);
-          node.nodeValue = next;
-          renderedText.set(node, next);
-        } else if (mutation.type === "attributes") {
-          scan(mutation.target);
-        } else {
-          mutation.addedNodes.forEach((node) => scan(node));
+      try {
+        for (const mutation of mutations) {
+          if (mutation.type === "characterData") {
+            const node = mutation.target as Text;
+            const current = node.nodeValue ?? "";
+            const source =
+              renderedText.get(node) === current
+                ? originalText.get(node) ?? current
+                : current;
+            originalText.set(node, source);
+            const next = translate(source);
+            node.nodeValue = next;
+            renderedText.set(node, next);
+          } else if (mutation.type === "attributes") {
+            if (mutation.target instanceof HTMLElement) {
+              translateAttributes(mutation.target);
+            }
+          } else {
+            mutation.addedNodes.forEach((node) => scan(node));
+          }
         }
+      } finally {
+        updating = false;
+        observer.observe(document.body, {
+          subtree: true,
+          childList: true,
+          characterData: true,
+          attributes: true,
+          attributeFilter: ["placeholder", "title", "aria-label", "alt"],
+        });
       }
-      updating = false;
     });
     observer.observe(document.body, {
       subtree: true,

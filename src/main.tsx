@@ -3062,6 +3062,7 @@ function LegacyPlatform() {
 }
 function Platform() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [session, setSession] = useState(
     () => sessionStorage.getItem("allneeds.authenticated") === "true"
   );
@@ -3076,6 +3077,20 @@ function Platform() {
     () => sessionStorage.getItem("allneeds.business") || null
   );
   const active = businesses.find((b) => b.id === activeId) || null;
+  useEffect(() => {
+    const match = location.pathname.match(/^\/business\/([^/]+)/);
+    if (!match) return;
+    const business = businesses.find((item) => item.type === match[1]);
+    if (
+      !business ||
+      (account?.businessId && account.businessId !== business.id) ||
+      activeId === business.id
+    ) {
+      return;
+    }
+    sessionStorage.setItem("allneeds.business", business.id);
+    setActiveId(business.id);
+  }, [account?.businessId, activeId, location.pathname]);
   const login = (email: string, password: string) => {
     const found =
       demoAccounts.find(
