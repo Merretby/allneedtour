@@ -10,6 +10,13 @@
   gap: 18px;
   margin-bottom: 20px;
 }
+
+/* The application shell already provides the module title and context. */
+.an-page-header,
+.reservation-list-page .reservation-head > div:first-child,
+.tables-service-heading > div:first-child {
+  display: none;
+}
 .tables-service-heading h2 {
   font-size: 29px;
   margin: 5px 0 7px;

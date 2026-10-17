@@ -294,35 +294,6 @@ export const TechnicalSheetsPage: React.FC = () => {
     <div
       style={{ padding: "1.5rem", fontFamily: "Inter, system-ui, sans-serif" }}
     >
-      {/* Header & Metrics */}
-      <div style={{ marginBottom: "2rem" }}>
-        <p
-          style={{
-            fontSize: "0.75rem",
-            fontWeight: 700,
-            color: "#64748b",
-            letterSpacing: "0.05em",
-            textTransform: "uppercase",
-            marginBottom: "0.5rem",
-          }}
-        >
-          Kitchen Control
-        </p>
-        <h1
-          style={{
-            margin: "0 0 0.5rem 0",
-            fontSize: "1.75rem",
-            color: "#0b1739",
-            fontWeight: 700,
-          }}
-        >
-          Technical Sheets
-        </h1>
-        <p style={{ margin: 0, color: "#64748b", fontSize: "0.875rem" }}>
-          Recipes, yields, allergens and food-cost details for every item.
-        </p>
-      </div>
-
       <div
         style={{
           display: "grid",

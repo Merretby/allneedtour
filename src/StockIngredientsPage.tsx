@@ -273,35 +273,6 @@ export const StockIngredientsPage: React.FC = () => {
 
   return (
     <div className="an-card">
-      {/* Header & Metrics */}
-      <div style={{ marginBottom: "2rem" }}>
-        <p
-          style={{
-            fontSize: "0.75rem",
-            fontWeight: 700,
-            color: "var(--brand-text-muted)",
-            letterSpacing: "0.05em",
-            textTransform: "uppercase",
-            marginBottom: "0.5rem",
-          }}
-        >
-          Inventory Control
-        </p>
-        <h1
-          style={{
-            margin: "0 0 0.5rem 0",
-            fontSize: "1.75rem",
-            color: "var(--brand-navy)",
-            fontWeight: 700,
-          }}
-        >
-          Stock & Ingredients
-        </h1>
-        <p style={{ margin: 0, color: "var(--brand-text-muted)", fontSize: "0.875rem" }}>
-          Monitor ingredients, thresholds, movements and stock value.
-        </p>
-      </div>
-
       <div className="an-page-actions">
         <div className="an-metric" style={{ flex: 1, minWidth: 200 }}>
           <span className="an-metric-label">Total Items</span>
