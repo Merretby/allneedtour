@@ -58,7 +58,6 @@ import {
   Menu,
   MoreHorizontal,
   Plus,
-  RefreshCw,
   Search,
   Settings,
   ShieldCheck,
@@ -425,14 +424,6 @@ function RestaurantApp({ account }: { account?: DemoAccount }) {
             <span className="live">
               <i /> Protected session
             </span>
-            <LanguageSelector />
-            <button
-              className="icon-btn"
-              title="Refresh workspace"
-              onClick={() => window.location.reload()}
-            >
-              <RefreshCw size={16} />
-            </button>
             <span className="avatar small">SB</span>
           </div>
         </header>
